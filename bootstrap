@@ -1,0 +1,8 @@
+#to set install path run cmake .. -DCMAKE_INSTALL_PREFIX="your_install_path"
+
+mkdir build && \
+cd build && \
+cmake .. && \
+make && \
+make install
+
