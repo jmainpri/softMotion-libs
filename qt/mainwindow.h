@@ -34,6 +34,9 @@ private:
     void plotMotionLaw(Curve &curv);
     void plotIdealProfile(Curve &curv);
     void plotGraph(QwtPlot *p, double xData[], double yData[], int size, char* xName, char *yName, char *title);
+    void plotResults(Curve &curv2);
+    void plotErrors(Curve &curv2, std::vector<double> &error);
+    void plotHaus(std::vector<double> &dis1, std::vector<double> &dis2);
     std::string fileName;
     bool isFullScreen;
 
