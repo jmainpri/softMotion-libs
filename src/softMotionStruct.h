@@ -31,10 +31,15 @@
 #ifndef SOFT_MOTION_STRUCT_H
 #define SOFT_MOTION_STRUCT_H
 
+#ifdef __cplusplus
+#include <stdio.h>
+#include <string.h>
+#include <list>
+#include <string>
 
+#endif
 
 #include "softMotionConst.h"
-
 typedef enum SM_STATUS {
   SM_OK    = 0,
   SM_ERROR = 1
@@ -232,6 +237,93 @@ typedef enum SM_INTERP_TYPE {
 	SM_PASS_NEAR = 2
 } SM_INTERP_TYPE;
 
+typedef struct SM_TIMES_STOP {
+	double T1;
+	double T2;
+	double T3;
+	double T4;
+	double T5;
+	double T6;
+	double T7;
+	double T8;
+	double T9;
+	double T10;
+} SM_TIMES_STOP;
+
+/*--------------------------- Trajectory defenition ---------------------*/
+typedef struct SM_LINE_ARC{
+	double invR0; // inverse of starting radius
+	double invRf; // inverse of ending radius
+	double Ls;    // length of line or arc
+} SM_LINE_ARC;
+
+typedef struct SM_CURVE_DATA{
+	double t;       // time value of the given data
+	double u;       // curvature abcissa
+	double du;      // tangential velocity
+	double ddu;     // tangential acceleration
+	double Pos[3];  // cartesian coordinate
+	double Vel[3];  // projected velocity in cartesian coordinate 
+	double Acc[3];  // projected acceleration in cartesian coordinate 
+         double Jerk[3];
+	double AccNorm; // acceleration norm 
+}SM_CURVE_DATA;
+
+typedef struct SM_ROT{
+	double thetaX; // angle of rotation /x
+	double thetaY; // angle of rotation /y
+	double thetaZ; // angle of rotation /z
+	double R[3][3]; //rotation matrix
+}SM_ROT;
+
+typedef struct SM_COND_DIM{
+	SM_COND Axis[3]; // Initial or final condition in 3 axis
+} SM_COND_DIM;
+
+typedef struct SM_OUTPUT{
+	double Jerk[3]; // output jerk
+	double Time[3]; // output time
+	SM_COND IC[3]; // output initial condition (at the beginning of the segmnent, before applying Jerk)
+}SM_OUTPUT;
+
+
+#ifdef __cplusplus
+typedef struct Point2D
+{
+  float x, y;
+} Point2D;
+
+typedef enum SubPathType
+  {
+    LINE,
+    BEZIER3,
+  } SubPathType;
+
+
+typedef struct SubPath
+{
+  SubPathType type;
+  Point2D start, end;
+  Point2D bezier3[2]; // control point at start and end
+} SubPath;
+
+typedef struct Path
+{
+  Point2D origin;
+  int nbSubPath;
+  std::list<SubPath> subpath;
+} Path;
+
+
+typedef struct kinPoint 
+{
+  SM_COND kc[3];
+  double t;
+} kinPoint;
+
+
+
+#endif
 
 
 #endif

@@ -1,0 +1,1974 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>979</width>
+    <height>959</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_17">
+    <item>
+     <widget class="QTabWidget" name="tabWidget_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tabSoftMotionPlanner">
+       <attribute name="title">
+        <string>Soft Motion Planner</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_33">
+        <item>
+         <widget class="QWidget" name="widget_4" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <widget class="QWidget" name="widget_19" native="true">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QwtPlot" name="qwtPlot">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QwtPlot" name="qwtPlot_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_6">
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_16">
+              <item>
+               <widget class="QLabel" name="label_29">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="pixmap">
+                 <pixmap>logoLaas.png</pixmap>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_28">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
+                </property>
+                <property name="autoFillBackground">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>Motion</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_18" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <item>
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>Critical Length</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="doubleSpinBox_dc">
+                   <property name="buttonSymbols">
+                    <enum>QAbstractSpinBox::NoButtons</enum>
+                   </property>
+                   <property name="keyboardTracking">
+                    <bool>true</bool>
+                   </property>
+                   <property name="decimals">
+                    <number>6</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-99.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_20" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_2">
+                 <item>
+                  <widget class="QWidget" name="widget_7" native="true">
+                   <layout class="QVBoxLayout" name="verticalLayout_32">
+                    <item>
+                     <widget class="QLabel" name="label_9">
+                      <property name="text">
+                       <string>T1</string>
+                      </property>
+                      <property name="scaledContents">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_10">
+                      <property name="text">
+                       <string>T2</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>T3</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_12">
+                      <property name="text">
+                       <string>T4</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_13">
+                      <property name="text">
+                       <string>T5</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_14">
+                      <property name="text">
+                       <string>T6</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_15">
+                      <property name="text">
+                       <string>T7</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QWidget" name="widget_6" native="true">
+                   <layout class="QVBoxLayout" name="verticalLayout_19">
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T1">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T2">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T3">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T4">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T5">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T6">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T7">
+                      <property name="buttonSymbols">
+                       <enum>QAbstractSpinBox::NoButtons</enum>
+                      </property>
+                      <property name="keyboardTracking">
+                       <bool>true</bool>
+                      </property>
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                   <zorder>widget_7</zorder>
+                   <zorder>doubleSpinBox_T7</zorder>
+                   <zorder>doubleSpinBox_T7</zorder>
+                   <zorder>doubleSpinBox_T1</zorder>
+                   <zorder>doubleSpinBox_T2</zorder>
+                   <zorder>doubleSpinBox_T3</zorder>
+                   <zorder>doubleSpinBox_T4</zorder>
+                   <zorder>doubleSpinBox_T5</zorder>
+                   <zorder>doubleSpinBox_T6</zorder>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_21" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLabel" name="label_30">
+                   <property name="text">
+                    <string>Total time</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QDoubleSpinBox" name="doubleSpinBox_totalTime">
+                   <property name="buttonSymbols">
+                    <enum>QAbstractSpinBox::NoButtons</enum>
+                   </property>
+                   <property name="keyboardTracking">
+                    <bool>true</bool>
+                   </property>
+                   <property name="decimals">
+                    <number>6</number>
+                   </property>
+                   <property name="minimum">
+                    <double>-99.000000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
+         <widget class="QWidget" name="widget_5" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QFrame" name="frame_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_24">
+              <item>
+               <widget class="QLabel" name="label_20">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <italic>false</italic>
+                  <bold>true</bold>
+                  <strikeout>false</strikeout>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Kinematic Constraints</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_11" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_25">
+                 <item>
+                  <widget class="QLabel" name="label_21">
+                   <property name="text">
+                    <string>Jmax</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_9">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Jmax_3">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_Jmax_3">
+                     <property name="valid">
+                      <bool>true</bool>
+                     </property>
+                     <property name="mass">
+                      <double>0.000000000000000</double>
+                     </property>
+                     <property name="thumbLength">
+                      <number>31</number>
+                     </property>
+                     <property name="thumbWidth">
+                      <number>16</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_12" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_26">
+                 <item>
+                  <widget class="QLabel" name="label_22">
+                   <property name="text">
+                    <string>Amax</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_10">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Amax_3">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_Amax_3"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_13" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_27">
+                 <item>
+                  <widget class="QLabel" name="label_23">
+                   <property name="text">
+                    <string>Vmax</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_11">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Vmax_3">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_Vmax_3"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_28">
+              <item>
+               <widget class="QLabel" name="label_24">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <italic>false</italic>
+                  <bold>true</bold>
+                  <strikeout>false</strikeout>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Initial Conditions</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_15" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_29">
+                 <item>
+                  <widget class="QLabel" name="label_25">
+                   <property name="text">
+                    <string>A0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_12">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_A0">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_A0">
+                     <property name="valid">
+                      <bool>true</bool>
+                     </property>
+                     <property name="mass">
+                      <double>0.000000000000000</double>
+                     </property>
+                     <property name="thumbLength">
+                      <number>31</number>
+                     </property>
+                     <property name="thumbWidth">
+                      <number>16</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_16" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_30">
+                 <item>
+                  <widget class="QLabel" name="label_26">
+                   <property name="text">
+                    <string>V0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_13">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_V0">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_V0"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_17" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_31">
+                 <item>
+                  <widget class="QLabel" name="label_27">
+                   <property name="text">
+                    <string>X0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_14">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_X0">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="maximum">
+                      <double>0.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.001000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_X0"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Panel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="lineWidth">
+              <number>1</number>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_20">
+              <item>
+               <widget class="QLabel" name="label_16">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <italic>false</italic>
+                  <bold>true</bold>
+                  <strikeout>false</strikeout>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Final Conditions</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_8" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_21">
+                 <item>
+                  <widget class="QLabel" name="label_17">
+                   <property name="text">
+                    <string>Af</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_5">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Af">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_Af">
+                     <property name="valid">
+                      <bool>true</bool>
+                     </property>
+                     <property name="mass">
+                      <double>0.000000000000000</double>
+                     </property>
+                     <property name="thumbLength">
+                      <number>31</number>
+                     </property>
+                     <property name="thumbWidth">
+                      <number>16</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_9" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_22">
+                 <item>
+                  <widget class="QLabel" name="label_18">
+                   <property name="text">
+                    <string>Vf</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_7">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Vf">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.010000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_Vf"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QWidget" name="widget_10" native="true">
+                <layout class="QVBoxLayout" name="verticalLayout_23">
+                 <item>
+                  <widget class="QLabel" name="label_19">
+                   <property name="text">
+                    <string>Xf</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QFormLayout" name="formLayout_8">
+                   <item row="0" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Xf">
+                     <property name="decimals">
+                      <number>3</number>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.001000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
+                    <widget class="QwtSlider" name="Slider_Xf"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tabTrajectoryApproximation">
+       <attribute name="title">
+        <string>Trajectory Approximation</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QSplitter" name="splitter">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>35</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <italic>false</italic>
+            </font>
+           </property>
+           <property name="tabPosition">
+            <enum>QTabWidget::North</enum>
+           </property>
+           <property name="tabShape">
+            <enum>QTabWidget::Rounded</enum>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="planner">
+            <attribute name="title">
+             <string>Planner</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_12">
+             <item>
+              <widget class="QFrame" name="frame">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::Panel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
+               <property name="lineWidth">
+                <number>1</number>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_10">
+                <item>
+                 <widget class="QLabel" name="label_4">
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <italic>false</italic>
+                    <bold>true</bold>
+                    <strikeout>false</strikeout>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Trajectory Motion Law</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_7">
+                   <item>
+                    <widget class="QLabel" name="label">
+                     <property name="text">
+                      <string>Maximum Jerk</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QFormLayout" name="formLayout">
+                     <item row="0" column="0">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_Jmax"/>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QwtSlider" name="Slider_Jmax">
+                       <property name="valid">
+                        <bool>true</bool>
+                       </property>
+                       <property name="mass">
+                        <double>0.000000000000000</double>
+                       </property>
+                       <property name="thumbLength">
+                        <number>31</number>
+                       </property>
+                       <property name="thumbWidth">
+                        <number>16</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget_2" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_8">
+                   <item>
+                    <widget class="QLabel" name="label_2">
+                     <property name="text">
+                      <string>Maximum Acceleration</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QFormLayout" name="formLayout_2">
+                     <item row="0" column="0">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_Amax"/>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QwtSlider" name="Slider_Amax"/>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget_3" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_9">
+                   <item>
+                    <widget class="QLabel" name="label_3">
+                     <property name="text">
+                      <string>Maximum Velocity</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QFormLayout" name="formLayout_3">
+                     <item row="0" column="0">
+                      <widget class="QDoubleSpinBox" name="doubleSpinBox_Vmax"/>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QwtSlider" name="Slider_Vmax"/>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QFrame" name="frame_2">
+               <property name="frameShape">
+                <enum>QFrame::Panel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <widget class="QLabel" name="label_5">
+                  <property name="font">
+                   <font>
+                    <weight>75</weight>
+                    <bold>true</bold>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Trajectory Parameters</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_13">
+                  <item>
+                   <widget class="QLabel" name="label_6">
+                    <property name="text">
+                     <string>Number of 3-segment Intervals</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QFormLayout" name="formLayout_4">
+                    <item row="0" column="1">
+                     <widget class="QwtSlider" name="Slider_Interval"/>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_14">
+                  <item>
+                   <widget class="QLabel" name="label_7">
+                    <property name="text">
+                     <string>Sampling Time</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QFormLayout" name="formLayout_6">
+                    <item row="0" column="0">
+                     <widget class="QDoubleSpinBox" name="doubleSpinBox_SamplingTime"/>
+                    </item>
+                    <item row="0" column="1">
+                     <widget class="QwtSlider" name="Slider_SamplingTime"/>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButton">
+               <property name="text">
+                <string>Compute</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="Traj">
+            <attribute name="title">
+             <string>Trajectory</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_4">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_TrajJerk">
+               <property name="frameShape">
+                <enum>QFrame::NoFrame</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Plain</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_TrajAcc"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_TrajVel"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="axisX">
+            <attribute name="title">
+             <string>Axis X Approx</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_JerkXapprox"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_AccXapprox"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_VelXapprox"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="axisY">
+            <attribute name="title">
+             <string>Axis Y Approx</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_JerkYapprox"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_AccYapprox"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_VelYapprox"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="axisZ">
+            <attribute name="title">
+             <string>Axis Z Approx</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_JerkZapprox"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_AccZapprox"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_VelZapprox"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabIdealX">
+            <attribute name="title">
+             <string>Ideal X</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_AccXideal"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_VelXideal"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_PosXideal"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabIdealY">
+            <attribute name="title">
+             <string>IdealY</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_15">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_AccYideal">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>16777214</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_VelYideal"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_PosYideal"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tabError">
+            <attribute name="title">
+             <string>Error</string>
+            </attribute>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_haussdorff1"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_haussdorff2"/>
+             </item>
+             <item>
+              <widget class="QwtPlot" name="qwtPlot_errortraj"/>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="tab_2">
+            <attribute name="title">
+             <string>Page</string>
+            </attribute>
+           </widget>
+          </widget>
+          <widget class="Viewer" name="viewer" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>20</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>979</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Open"/>
+    <addaction name="action_Close_2"/>
+    <addaction name="action_Close"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menu_Window">
+    <property name="title">
+     <string>&amp;Window</string>
+    </property>
+    <addaction name="actionFull_screen"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionHelp"/>
+    <addaction name="actionAbout_Soft_Motion_Planner"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
+   <addaction name="menu_Window"/>
+   <addaction name="menu_Help"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QToolBar" name="toolBar_2">
+   <property name="windowTitle">
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="action_Open">
+   <property name="text">
+    <string>&amp;Open file</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action_Close">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAbout_Soft_Motion_Planner">
+   <property name="text">
+    <string>About &amp;Soft Motion Planner</string>
+   </property>
+  </action>
+  <action name="actionFull_screen">
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+   <property name="shortcut">
+    <string>F11</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+  </action>
+  <action name="action_Close_2">
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QwtPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_plot.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QwtSlider</class>
+   <extends>QWidget</extends>
+   <header>qwt_slider.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Viewer</class>
+   <extends>QWidget</extends>
+   <header>viewer.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>doubleSpinBox_Amax</tabstop>
+  <tabstop>doubleSpinBox_Jmax</tabstop>
+  <tabstop>doubleSpinBox_Vmax</tabstop>
+  <tabstop>doubleSpinBox_SamplingTime</tabstop>
+  <tabstop>Slider_Vmax</tabstop>
+  <tabstop>Slider_SamplingTime</tabstop>
+  <tabstop>Slider_Interval</tabstop>
+  <tabstop>Slider_Amax</tabstop>
+  <tabstop>Slider_Jmax</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>action_Close</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>423</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Jmax</sender>
+   <signal>sliderMoved(double)</signal>
+   <receiver>doubleSpinBox_Jmax</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>251</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_SamplingTime</sender>
+   <signal>sliderMoved(double)</signal>
+   <receiver>doubleSpinBox_SamplingTime</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>329</x>
+     <y>539</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>103</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Interval</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>103</x>
+     <y>485</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>331</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Amax</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Amax</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>273</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Amax</sender>
+   <signal>sliderMoved(double)</signal>
+   <receiver>doubleSpinBox_Amax</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>246</x>
+     <y>291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>111</x>
+     <y>297</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Vmax</sender>
+   <signal>sliderMoved(double)</signal>
+   <receiver>doubleSpinBox_Vmax</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>269</x>
+     <y>367</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>105</x>
+     <y>373</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Jmax</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Jmax</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>221</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>292</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_SamplingTime</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_SamplingTime</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>103</x>
+     <y>545</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>539</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Interval</sender>
+   <signal>sliderMoved(double)</signal>
+   <receiver>doubleSpinBox</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>479</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>103</x>
+     <y>485</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Vmax</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Vmax</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>111</x>
+     <y>373</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>computeTraj()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>789</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>423</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Jmax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Jmax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>73</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>164</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Jmax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Jmax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>164</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>76</x>
+     <y>168</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Amax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Amax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>139</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>79</x>
+     <y>226</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Vmax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Vmax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>82</x>
+     <y>289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Vmax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Vmax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>155</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>171</x>
+     <y>289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Amax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Amax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>75</x>
+     <y>227</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>132</x>
+     <y>230</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Vmax_3</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Vmax_3</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>290</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_A0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_A0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>156</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>164</x>
+     <y>392</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_V0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_V0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>446</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>164</x>
+     <y>453</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_X0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_X0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>141</x>
+     <y>511</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>149</x>
+     <y>511</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_A0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_A0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>98</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>69</x>
+     <y>392</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_V0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_V0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>131</x>
+     <y>451</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>71</x>
+     <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_X0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_X0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>78</x>
+     <y>511</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>71</x>
+     <y>513</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Af</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Af</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>154</x>
+     <y>616</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>175</x>
+     <y>615</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Vf</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Vf</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>167</x>
+     <y>680</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>188</x>
+     <y>674</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Xf</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Xf</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>735</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>203</x>
+     <y>734</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Af</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Af</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>107</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>84</x>
+     <y>616</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Vf</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Vf</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>119</x>
+     <y>675</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>87</x>
+     <y>675</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Xf</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Xf</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>740</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>79</x>
+     <y>737</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Af</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Af</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>65</x>
+     <y>615</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>203</x>
+     <y>615</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Vf</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Vf</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>70</x>
+     <y>678</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>296</x>
+     <y>674</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_Xf</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_Xf</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>734</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>273</x>
+     <y>738</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_Af</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_Af</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>206</x>
+     <y>616</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>69</x>
+     <y>616</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_A0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_A0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>395</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>88</x>
+     <y>392</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_A0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_A0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>68</x>
+     <y>388</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>265</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Slider_X0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>doubleSpinBox_X0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>508</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>67</x>
+     <y>513</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>doubleSpinBox_X0</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Slider_X0</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>510</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>287</x>
+     <y>510</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>computeTraj()</slot>
+ </slots>
+</ui>

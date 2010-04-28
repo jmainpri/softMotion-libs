@@ -43,3 +43,9 @@
 #define SM_S_T                      10
 #define SM_S_TD                     1000
 #define SM_NB_TICK_SEC              100
+
+
+/*--------------------------- Trajectory defenition ---------------------*/
+#define SM_NB_LINE_N_ARC 10
+#define SM_NB_INTERVALS_MAX 1000 
+#define SM_NB_DISC_MAX 100000

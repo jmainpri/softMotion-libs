@@ -21,12 +21,27 @@ project(src)
 file(GLOB source_files ./*)
 
 
-#SET(CMAKE_C_COMPILER g++)
-#SET(CMAKE_CXX_COMPILER g++)
+SET(CMAKE_C_COMPILER g++)
+SET(CMAKE_CXX_COMPILER g++)
 
-SET(CMAKE_C_FLAGS "-lm ")
+SET(CMAKE_CXX_FLAGS " -lm ")
+
+
+FIND_PACKAGE(LibXml2 REQUIRED)
+INCLUDE_directories(${LIBXML2_INCLUDE_DIR})
+SET(INCLUDE_DIRS ${INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR})
+SET(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
+
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE})
+
+
+IF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+  ADD_DEFINITIONS(-g -Wall -Wno-unknown-pragmas)
+ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
+  ADD_DEFINITIONS(-O2 -Wall -Wno-unknown-pragmas)
+ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+
 
 add_library(
 softMotion
@@ -34,7 +49,14 @@ SHARED
 ${source_files}
 )
 
-SET_TARGET_PROPERTIES(softMotion PROPERTIES LINKER_LANGUAGE C)
+add_executable(
+softMotionPlannerTest
+${source_files}
+)
+
+TARGET_LINK_LIBRARIES(softMotionPlannerTest ${LIBS})
+
+SET_TARGET_PROPERTIES(softMotion PROPERTIES LINKER_LANGUAGE CXX)
 
 # -------------------------------------------------------------
 # --- Installation --------------------------------------------
