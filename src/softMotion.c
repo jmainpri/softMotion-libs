@@ -7923,7 +7923,7 @@ double err;
 
 
 
-SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y){
+SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y){
 
 /*
     double diff_pos_X = 0.0;
@@ -7933,28 +7933,19 @@ SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double
 */
     
     for (unsigned int j=0;j<IdealTraj.size();j++){
-//        diff_pos_X = (IdealTraj[j].Pos[0]-IdealTraj[j-1].Pos[0]);
-//        diff_pos_Y = (IdealTraj[j].Pos[1]-IdealTraj[j-1].Pos[1]);
-         
-//        vel_discr_X.push_back(diff_pos_X/0.001);
-//        vel_discr_Y.push_back(diff_pos_Y/0.001);
+        pos_discr_X.push_back(IdealTraj[j].Pos[0]);
+        pos_discr_Y.push_back(IdealTraj[j].Pos[1]);
+    }
+    for (unsigned int j=0;j<IdealTraj.size();j++){
         vel_discr_X.push_back(IdealTraj[j].Vel[0]);
-
         vel_discr_Y.push_back(IdealTraj[j].Vel[1]);
     }
-
     for (unsigned int k = 0; k<vel_discr_X.size();k++){
-//         diff_vel_X = (vel_discr_X[k]-vel_discr_X[k-1]);
-//         diff_vel_Y = (vel_discr_Y[k]-vel_discr_Y[k-1]);
-// 
-//         acc_discr_X.push_back(diff_vel_X/0.001);
-//         acc_discr_Y.push_back(diff_vel_Y/0.001);
         acc_discr_X.push_back(IdealTraj[k].Acc[0]);
         acc_discr_Y.push_back(IdealTraj[k].Acc[1]);
     }
 
     return SM_OK;
-
 }
 
 SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_x, std::vector<double> &vel_path_y, double sample_time){
@@ -8019,7 +8010,66 @@ SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_
     return SM_OK;
 }
 
+SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2){
+    int size = IdealTraj.size();
+    double dis_hausdorff;
+    double sup1,sup2;
 
+ // f1 pour calculer la distance la plus longue entre courbe1 et courbe2
+    std::vector<double> dis1;
+
+
+    for (int i=0; i<size; i++){
+        for (int j=0; j<size; j++){
+            dis1.push_back ( sqrt  (pow((idealTraj[i].Pos[0]-proxTraj[j].Pos[0]),2) + 
+                    (pow(idealTraj[i].Pos[1]-proxTraj[j].Pos[1]),2 ) +
+                    (pow(idealTraj[i].Pos[2]-proxTraj[j].Pos[2]),2)));
+        }
+
+        double inf1 = dis1[0];
+        
+        for (int k=1; k<size; k++){
+            if (dis1[k]<inf1) {inf1 = dis1[k];}
+        }
+        dis_a_tracer1.push_back(inf1);
+    }
+
+    sup1 = dis_a_tracer1[0];
+
+    for (int m=1; m<size; m++){
+        if (dis_a_tracer1[m]>sup1) {sup1 = dis_a_tracer1[m];}
+    }
+
+// f2 pour calculer la distance la plus longue entre courbe2 et courbe1
+    std::vector<double> dis2;
+
+
+    for (int i=0; i<SM_NB_MAX; i++){
+        for (int j=0; j<SM_NB_MAX; j++){
+            dis2.push_back( sqrt  (pow((proxTraj[i].Pos[0]-idealTraj[j].Pos[0]),2) + 
+                    (pow(proxTraj[i].Pos[1]-idealTraj[j].Pos[1]),2 ) +
+                    (pow(proxTraj[i].Pos[2]-idealTraj[j].Pos[2]),2)));
+        }
+
+        double inf2 = dis2[0];
+        
+        for (int k=1; k<size; k++){
+            if (dis2[k]<inf2) {inf2 = dis2[k];}
+        }
+        dis_a_tracer2.push_back(inf2);
+    }
+
+    sup2 = dis_a_tracer2[0];
+
+    for (int m=1; m<size; m++){
+        if (dis_a_tracer2[m]>sup2) {sup2 = dis_a_tracer2[m];}
+    }
+
+// calcul de la distance hausdorff
+    dis_hausdorff = (sup_buffer[0] > sup_buffer[1] ? sup_buffer[0] : sup_buffer[1]);
+
+    return SM_OK;
+}
 
 // int sm_PathDefine_MatlabTest(double *nbPoints, double xs[10000],double ys[10000], double zs[10000], double J[90], double T[90]){
 // 	
