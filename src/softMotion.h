@@ -177,7 +177,7 @@ extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC,std::vector<SM_
 extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y);
 extern SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_x, std::vector<double> &vel_path_y, double  sample_time);
 extern SM_STATUS Courbure(std::list<Path> &path, std::vector<double> &curvature);
-extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double> & error);
-extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2);
+extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
+extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
 #endif
 #endif

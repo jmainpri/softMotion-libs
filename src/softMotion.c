@@ -5792,7 +5792,11 @@ SM_STATUS sm_AVX_TimeVar(double IC[3], double *T, double *J, int nbSeg, double *
      -- *x : output array of computed position
   */
 	
-  double *Tac, *const0, *const1, *const2, *const3;
+  double *Tac= NULL;
+  double *const0 = NULL;
+  double *const1 = NULL;
+  double *const2 = NULL;
+  double *const3 = NULL;
   int i, j,n ;
   double auxT;
 
@@ -6719,18 +6723,20 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
   //double dcOut;
   double ICloc[3];
   //SM_TIMES TimeSeg;
-  double t;
+  double t = 0;
 
   double Tloc,Jloc[3];
   double aloc[3], vloc[3], xloc[3];
   int timefile = 0;
 
   double t0 = 0;
-  double tl;
+  double tl = 0;
   int interval = 0;
   int index = 0;
   Tloc = 0;
-  double tloctot;
+  double tloctot = 0;
+SM_CURVE_DATA curveData;
+bzero(&curveData, sizeof(SM_CURVE_DATA));
   for (i = 0; i < motion.size(); i++){
     tloctot += motion[i].Time[0];
 
@@ -6758,21 +6764,35 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
 	    sm_AVX_TimeVar(ICloc, &Tloc, &Jloc[j], 1, &tl, 1, &aloc[j], &vloc[j], &xloc[j]);
       }
 
-      ApproxTraj[index ].t = t; // il faut mettre le temps
-      ApproxTraj[index ].Pos[0]  = xloc[0];
-      ApproxTraj[index ].Pos[1]  = xloc[1];
-      ApproxTraj[index ].Pos[2]  = xloc[2];
-      ApproxTraj[index ].Vel[0]  = vloc[0];
-      ApproxTraj[index ].Vel[1]  = vloc[1];
-      ApproxTraj[index ].Vel[2]  = vloc[2];
-      ApproxTraj[index ].Acc[0]  = aloc[0];
-      ApproxTraj[index ].Acc[1]  = aloc[1];
-      ApproxTraj[index ].Acc[2]  = aloc[2];
-      ApproxTraj[index ].Jerk[0]  = motion[interval].Jerk[0];
-      ApproxTraj[index ].Jerk[1]  = motion[interval].Jerk[1];
-      ApproxTraj[index ].Jerk[2]  = motion[interval].Jerk[2];
+//       ApproxTraj[index ].t = t; // il faut mettre le temps
+//       ApproxTraj[index ].Pos[0]  = xloc[0];
+//       ApproxTraj[index ].Pos[1]  = xloc[1];
+//       ApproxTraj[index ].Pos[2]  = xloc[2];
+//       ApproxTraj[index ].Vel[0]  = vloc[0];
+//       ApproxTraj[index ].Vel[1]  = vloc[1];
+//       ApproxTraj[index ].Vel[2]  = vloc[2];
+//       ApproxTraj[index ].Acc[0]  = aloc[0];
+//       ApproxTraj[index ].Acc[1]  = aloc[1];
+//       ApproxTraj[index ].Acc[2]  = aloc[2];
+//       ApproxTraj[index ].Jerk[0]  = motion[interval].Jerk[0];
+//       ApproxTraj[index ].Jerk[1]  = motion[interval].Jerk[1];
+//       ApproxTraj[index ].Jerk[2]  = motion[interval].Jerk[2];
 
-      index ++;
+      curveData.t = t; // il faut mettre le temps
+      curveData.Pos[0]  = xloc[0];
+      curveData.Pos[1]  = xloc[1];
+      curveData.Pos[2]  = xloc[2];
+      curveData.Vel[0]  = vloc[0];
+      curveData.Vel[1]  = vloc[1];
+      curveData.Vel[2]  = vloc[2];
+      curveData.Acc[0]  = aloc[0];
+      curveData.Acc[1]  = aloc[1];
+      curveData.Acc[2]  = aloc[2];
+      curveData.Jerk[0]  = motion[interval].Jerk[0];
+      curveData.Jerk[1]  = motion[interval].Jerk[1];
+      curveData.Jerk[2]  = motion[interval].Jerk[2];
+      ApproxTraj.push_back(curveData);
+//       index ++;
   }
   
   return SM_OK;
@@ -7672,7 +7692,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   J[6] = Lim.maxJerk;
 
   for (i = 0; i < 7; i++){
-    total_time = total_time + Time[i]; // total_time is the time for every 7 segment
+    total_time = total_time + Time[i]; // total_time is the time for 7 segment
   }
 
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
@@ -7891,12 +7911,11 @@ fileName.append(argv[1]);
 
 
 
-SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error){
+SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max){
 
     error.clear();
-double errMax= 0.0;
-double err;
-    for (unsigned int i = 0; i< IdealTraj.size(); i++){
+    double err;
+    for (unsigned int i = 0; i< ApproxTraj.size(); i++){
 
         err = sqrt(
 (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].
@@ -7905,13 +7924,13 @@ double err;
         Pos[1 ])+
 (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].
         Pos[2 ]));
-        if(err > errMax) {
+        if(err > *val_err_max) {
         
         errorMax->kc[0].x= IdealTraj[i].Pos[0];
         errorMax->kc[1].x= IdealTraj[i].Pos[1];
         errorMax->kc[2].x= IdealTraj[i].Pos[2];
         errorMax->t= IdealTraj[i].t;
-         errMax = err;
+        *val_err_max = err;
         }
         error.push_back(err);
     }
@@ -8010,63 +8029,63 @@ SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_
     return SM_OK;
 }
 
-SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2){
-    int size = IdealTraj.size();
+SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double *sup1, double *sup2){
+ 
     double dis_hausdorff;
-    double sup1,sup2;
-
- // f1 pour calculer la distance la plus longue entre courbe1 et courbe2
-    std::vector<double> dis1;
+    double w=0;
+    // f1 pour calculer la distance la plus longue entre courbe1 et courbe2
 
 
-    for (int i=0; i<size; i++){
-        for (int j=0; j<size; j++){
-            dis1.push_back ( sqrt  (pow((idealTraj[i].Pos[0]-proxTraj[j].Pos[0]),2) + 
-                    (pow(idealTraj[i].Pos[1]-proxTraj[j].Pos[1]),2 ) +
-                    (pow(idealTraj[i].Pos[2]-proxTraj[j].Pos[2]),2)));
+    for (int i=0; i< idealTraj.size(); i++){
+        std::vector<double> dis1;
+
+        for (int j=0; j<  proxTraj.size(); j++){
+	  w = sqrt(  pow(     (idealTraj[i].Pos[0]-proxTraj[j].Pos[0])  ,2) +  pow( (idealTraj[i].Pos[1]-proxTraj[j].Pos[1]),2 ) +      pow((idealTraj[i].Pos[2]-proxTraj[j].Pos[2]), 2));
+            dis1.push_back (w);
         }
 
         double inf1 = dis1[0];
         
-        for (int k=1; k<size; k++){
+        for (int k=1; k<proxTraj.size(); k++){
             if (dis1[k]<inf1) {inf1 = dis1[k];}
         }
         dis_a_tracer1.push_back(inf1);
     }
 
-    sup1 = dis_a_tracer1[0];
+    *sup1 = dis_a_tracer1[0];
 
-    for (int m=1; m<size; m++){
-        if (dis_a_tracer1[m]>sup1) {sup1 = dis_a_tracer1[m];}
+    for (int m=1; m<idealTraj.size(); m++){
+        if (dis_a_tracer1[m]>(*sup1)) {*sup1 = dis_a_tracer1[m];}
     }
 
 // f2 pour calculer la distance la plus longue entre courbe2 et courbe1
-    std::vector<double> dis2;
+ 
+    for (int i=0; i< proxTraj.size(); i++){
+        std::vector<double> dis2;
 
+        for (int j=0; j< idealTraj.size(); j++){
+	  w = sqrt  (      pow(   (proxTraj[i].Pos[0]-idealTraj[j].Pos[0]),2) + pow((proxTraj[i].Pos[1]-idealTraj[j].Pos[1]),2 ) +
+			   pow((proxTraj[i].Pos[2]-idealTraj[j].Pos[2]),2));
 
-    for (int i=0; i<SM_NB_MAX; i++){
-        for (int j=0; j<SM_NB_MAX; j++){
-            dis2.push_back( sqrt  (pow((proxTraj[i].Pos[0]-idealTraj[j].Pos[0]),2) + 
-                    (pow(proxTraj[i].Pos[1]-idealTraj[j].Pos[1]),2 ) +
-                    (pow(proxTraj[i].Pos[2]-idealTraj[j].Pos[2]),2)));
+            dis2.push_back(w);
         }
 
         double inf2 = dis2[0];
         
-        for (int k=1; k<size; k++){
+        for (int k=1; k<idealTraj.size(); k++){
             if (dis2[k]<inf2) {inf2 = dis2[k];}
         }
         dis_a_tracer2.push_back(inf2);
     }
 
-    sup2 = dis_a_tracer2[0];
+    *sup2 = dis_a_tracer2[0];
 
-    for (int m=1; m<size; m++){
-        if (dis_a_tracer2[m]>sup2) {sup2 = dis_a_tracer2[m];}
+    for (int m=1; m<proxTraj.size() ; m++){
+        if (dis_a_tracer2[m]>(*sup2)) {*sup2 = dis_a_tracer2[m];}
     }
 
 // calcul de la distance hausdorff
-    dis_hausdorff = (sup_buffer[0] > sup_buffer[1] ? sup_buffer[0] : sup_buffer[1]);
+    dis_hausdorff = (*sup1 > *sup2 ? *sup1 : *sup2);
 
     return SM_OK;
 }
