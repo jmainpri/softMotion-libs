@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>979</width>
-    <height>959</height>
+    <width>997</width>
+    <height>805</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -44,748 +44,760 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_33">
         <item>
-         <widget class="QWidget" name="widget_4" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_7">
-           <item>
-            <widget class="QWidget" name="widget_19" native="true">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QwtPlot" name="qwtPlot">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QwtPlot" name="qwtPlot_2">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_6">
-             <property name="frameShape">
-              <enum>QFrame::Panel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="lineWidth">
-              <number>1</number>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_16">
-              <item>
-               <widget class="QLabel" name="label_29">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="pixmap">
-                 <pixmap>logoLaas.png</pixmap>
-                </property>
-                <property name="scaledContents">
-                 <bool>false</bool>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_28">
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="layoutDirection">
-                 <enum>Qt::LeftToRight</enum>
-                </property>
-                <property name="autoFillBackground">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Motion</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_18" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
-                 <item>
-                  <widget class="QLabel" name="label_8">
-                   <property name="text">
-                    <string>Critical Length</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="doubleSpinBox_dc">
-                   <property name="buttonSymbols">
-                    <enum>QAbstractSpinBox::NoButtons</enum>
-                   </property>
-                   <property name="keyboardTracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="decimals">
-                    <number>6</number>
-                   </property>
-                   <property name="minimum">
-                    <double>-99.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_20" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <item>
-                  <widget class="QWidget" name="widget_7" native="true">
-                   <layout class="QVBoxLayout" name="verticalLayout_32">
-                    <item>
-                     <widget class="QLabel" name="label_9">
-                      <property name="text">
-                       <string>T1</string>
-                      </property>
-                      <property name="scaledContents">
-                       <bool>false</bool>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_10">
-                      <property name="text">
-                       <string>T2</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_11">
-                      <property name="text">
-                       <string>T3</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_12">
-                      <property name="text">
-                       <string>T4</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_13">
-                      <property name="text">
-                       <string>T5</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_14">
-                      <property name="text">
-                       <string>T6</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_15">
-                      <property name="text">
-                       <string>T7</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QWidget" name="widget_6" native="true">
-                   <layout class="QVBoxLayout" name="verticalLayout_19">
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T1">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T2">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T3">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T4">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T5">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T6">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QDoubleSpinBox" name="doubleSpinBox_T7">
-                      <property name="buttonSymbols">
-                       <enum>QAbstractSpinBox::NoButtons</enum>
-                      </property>
-                      <property name="keyboardTracking">
-                       <bool>true</bool>
-                      </property>
-                      <property name="decimals">
-                       <number>4</number>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
-                   <zorder>widget_7</zorder>
-                   <zorder>doubleSpinBox_T7</zorder>
-                   <zorder>doubleSpinBox_T7</zorder>
-                   <zorder>doubleSpinBox_T1</zorder>
-                   <zorder>doubleSpinBox_T2</zorder>
-                   <zorder>doubleSpinBox_T3</zorder>
-                   <zorder>doubleSpinBox_T4</zorder>
-                   <zorder>doubleSpinBox_T5</zorder>
-                   <zorder>doubleSpinBox_T6</zorder>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_21" native="true">
-                <layout class="QHBoxLayout" name="horizontalLayout_6">
-                 <item>
-                  <widget class="QLabel" name="label_30">
-                   <property name="text">
-                    <string>Total time</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QDoubleSpinBox" name="doubleSpinBox_totalTime">
-                   <property name="buttonSymbols">
-                    <enum>QAbstractSpinBox::NoButtons</enum>
-                   </property>
-                   <property name="keyboardTracking">
-                    <bool>true</bool>
-                   </property>
-                   <property name="decimals">
-                    <number>6</number>
-                   </property>
-                   <property name="minimum">
-                    <double>-99.000000000000000</double>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QWidget" name="widget_5" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
-           <item>
-            <widget class="QFrame" name="frame_4">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Panel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="lineWidth">
-              <number>1</number>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_24">
-              <item>
-               <widget class="QLabel" name="label_20">
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <italic>false</italic>
-                  <bold>true</bold>
-                  <strikeout>false</strikeout>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Kinematic Constraints</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_11" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_25">
-                 <item>
-                  <widget class="QLabel" name="label_21">
-                   <property name="text">
-                    <string>Jmax</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_9">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Jmax_3">
-                     <property name="decimals">
-                      <number>3</number>
+         <widget class="QScrollArea" name="scrollArea">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="scrollAreaWidgetContents">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>953</width>
+             <height>671</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_18">
+            <item>
+             <widget class="QWidget" name="widget_4" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <widget class="QWidget" name="widget_19" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_3">
+                  <item>
+                   <widget class="QwtPlot" name="qwtPlot">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QwtPlot" name="qwtPlot_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QScrollArea" name="scrollArea_2">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="widgetResizable">
+                     <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetContents_2">
+                     <property name="geometry">
+                      <rect>
+                       <x>0</x>
+                       <y>0</y>
+                       <width>241</width>
+                       <height>378</height>
+                      </rect>
                      </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
+                     <layout class="QVBoxLayout" name="verticalLayout_16">
+                      <item>
+                       <widget class="QLabel" name="label_28">
+                        <property name="text">
+                         <string>Motion</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_20" native="true">
+                        <layout class="QHBoxLayout" name="horizontalLayout_2">
+                         <item>
+                          <widget class="QWidget" name="widget_7" native="true">
+                           <layout class="QVBoxLayout" name="verticalLayout_32">
+                            <item>
+                             <widget class="QLabel" name="label_9">
+                              <property name="text">
+                               <string>T1</string>
+                              </property>
+                              <property name="scaledContents">
+                               <bool>false</bool>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_10">
+                              <property name="text">
+                               <string>T2</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_11">
+                              <property name="text">
+                               <string>T3</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_12">
+                              <property name="text">
+                               <string>T4</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_13">
+                              <property name="text">
+                               <string>T5</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_14">
+                              <property name="text">
+                               <string>T6</string>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QLabel" name="label_15">
+                              <property name="text">
+                               <string>T7</string>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                          </widget>
+                         </item>
+                         <item>
+                          <widget class="QWidget" name="widget_6" native="true">
+                           <layout class="QVBoxLayout" name="verticalLayout_19">
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T1">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T2">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T3">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T4">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T5">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T6">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                            <item>
+                             <widget class="QDoubleSpinBox" name="doubleSpinBox_T7">
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::NoButtons</enum>
+                              </property>
+                              <property name="keyboardTracking">
+                               <bool>true</bool>
+                              </property>
+                              <property name="decimals">
+                               <number>4</number>
+                              </property>
+                             </widget>
+                            </item>
+                           </layout>
+                           <zorder>doubleSpinBox_T7</zorder>
+                           <zorder>doubleSpinBox_T1</zorder>
+                           <zorder>doubleSpinBox_T2</zorder>
+                           <zorder>doubleSpinBox_T3</zorder>
+                           <zorder>doubleSpinBox_T4</zorder>
+                           <zorder>doubleSpinBox_T5</zorder>
+                           <zorder>doubleSpinBox_T6</zorder>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_21" native="true">
+                        <layout class="QGridLayout" name="gridLayout">
+                         <item row="0" column="0">
+                          <widget class="QLabel" name="label_30">
+                           <property name="text">
+                            <string>Total time</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="0" column="1">
+                          <widget class="QDoubleSpinBox" name="doubleSpinBox_totalTime">
+                           <property name="buttonSymbols">
+                            <enum>QAbstractSpinBox::NoButtons</enum>
+                           </property>
+                           <property name="keyboardTracking">
+                            <bool>true</bool>
+                           </property>
+                           <property name="decimals">
+                            <number>6</number>
+                           </property>
+                           <property name="minimum">
+                            <double>-99.000000000000000</double>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="1">
+                          <widget class="QDoubleSpinBox" name="doubleSpinBox_dc">
+                           <property name="buttonSymbols">
+                            <enum>QAbstractSpinBox::NoButtons</enum>
+                           </property>
+                           <property name="keyboardTracking">
+                            <bool>true</bool>
+                           </property>
+                           <property name="decimals">
+                            <number>6</number>
+                           </property>
+                           <property name="minimum">
+                            <double>-99.000000000000000</double>
+                           </property>
+                          </widget>
+                         </item>
+                         <item row="1" column="0">
+                          <widget class="QLabel" name="label_8">
+                           <property name="text">
+                            <string>Critical Length</string>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QScrollArea" name="scrollArea_3">
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetContents_3">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>996</width>
+                 <height>302</height>
+                </rect>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <item>
+                 <widget class="QFrame" name="frame_5">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Panel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="lineWidth">
+                   <number>1</number>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_28">
+                   <item>
+                    <widget class="QLabel" name="label_24">
+                     <property name="font">
+                      <font>
+                       <weight>75</weight>
+                       <italic>false</italic>
+                       <bold>true</bold>
+                       <strikeout>false</strikeout>
+                      </font>
+                     </property>
+                     <property name="text">
+                      <string>Initial Conditions</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_Jmax_3">
-                     <property name="valid">
-                      <bool>true</bool>
-                     </property>
-                     <property name="mass">
-                      <double>0.000000000000000</double>
-                     </property>
-                     <property name="thumbLength">
-                      <number>31</number>
-                     </property>
-                     <property name="thumbWidth">
-                      <number>16</number>
-                     </property>
+                   <item>
+                    <widget class="QWidget" name="widget_15" native="true">
+                     <layout class="QVBoxLayout" name="verticalLayout_29">
+                      <item>
+                       <widget class="QLabel" name="label_25">
+                        <property name="text">
+                         <string>A0</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QFormLayout" name="formLayout_12">
+                        <item row="0" column="0">
+                         <widget class="QDoubleSpinBox" name="doubleSpinBox_A0">
+                          <property name="decimals">
+                           <number>3</number>
+                          </property>
+                          <property name="singleStep">
+                           <double>0.010000000000000</double>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QwtSlider" name="Slider_A0">
+                          <property name="valid">
+                           <bool>true</bool>
+                          </property>
+                          <property name="mass">
+                           <double>0.000000000000000</double>
+                          </property>
+                          <property name="thumbLength">
+                           <number>31</number>
+                          </property>
+                          <property name="thumbWidth">
+                           <number>16</number>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_12" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_26">
-                 <item>
-                  <widget class="QLabel" name="label_22">
-                   <property name="text">
-                    <string>Amax</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_10">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Amax_3">
-                     <property name="decimals">
-                      <number>3</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
+                   <item>
+                    <widget class="QWidget" name="widget_16" native="true">
+                     <layout class="QVBoxLayout" name="verticalLayout_30">
+                      <item>
+                       <widget class="QLabel" name="label_26">
+                        <property name="text">
+                         <string>V0</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QFormLayout" name="formLayout_13">
+                        <item row="0" column="0">
+                         <widget class="QDoubleSpinBox" name="doubleSpinBox_V0">
+                          <property name="decimals">
+                           <number>3</number>
+                          </property>
+                          <property name="singleStep">
+                           <double>0.010000000000000</double>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QwtSlider" name="Slider_V0"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_Amax_3"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_13" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_27">
-                 <item>
-                  <widget class="QLabel" name="label_23">
-                   <property name="text">
-                    <string>Vmax</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_11">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Vmax_3">
-                     <property name="decimals">
-                      <number>3</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_Vmax_3"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_5">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Panel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="lineWidth">
-              <number>1</number>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_28">
-              <item>
-               <widget class="QLabel" name="label_24">
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <italic>false</italic>
-                  <bold>true</bold>
-                  <strikeout>false</strikeout>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Initial Conditions</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_15" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_29">
-                 <item>
-                  <widget class="QLabel" name="label_25">
-                   <property name="text">
-                    <string>A0</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_12">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_A0">
-                     <property name="decimals">
-                      <number>3</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_A0">
-                     <property name="valid">
-                      <bool>true</bool>
-                     </property>
-                     <property name="mass">
-                      <double>0.000000000000000</double>
-                     </property>
-                     <property name="thumbLength">
-                      <number>31</number>
-                     </property>
-                     <property name="thumbWidth">
-                      <number>16</number>
-                     </property>
+                   <item>
+                    <widget class="QWidget" name="widget_17" native="true">
+                     <layout class="QVBoxLayout" name="verticalLayout_31">
+                      <item>
+                       <widget class="QLabel" name="label_27">
+                        <property name="text">
+                         <string>X0</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QFormLayout" name="formLayout_14">
+                        <item row="0" column="0">
+                         <widget class="QDoubleSpinBox" name="doubleSpinBox_X0">
+                          <property name="decimals">
+                           <number>3</number>
+                          </property>
+                          <property name="maximum">
+                           <double>0.000000000000000</double>
+                          </property>
+                          <property name="singleStep">
+                           <double>0.001000000000000</double>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QwtSlider" name="Slider_X0"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
                   </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_16" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_30">
-                 <item>
-                  <widget class="QLabel" name="label_26">
-                   <property name="text">
-                    <string>V0</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_13">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_V0">
-                     <property name="decimals">
-                      <number>3</number>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_4">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Panel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Sunken</enum>
+                  </property>
+                  <property name="lineWidth">
+                   <number>1</number>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_24">
+                   <item>
+                    <widget class="QLabel" name="label_20">
+                     <property name="font">
+                      <font>
+                       <weight>75</weight>
+                       <italic>false</italic>
+                       <bold>true</bold>
+                       <strikeout>false</strikeout>
+                      </font>
                      </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_V0"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_17" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_31">
-                 <item>
-                  <widget class="QLabel" name="label_27">
-                   <property name="text">
-                    <string>X0</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_14">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_X0">
-                     <property name="decimals">
-                      <number>3</number>
-                     </property>
-                     <property name="maximum">
-                      <double>0.000000000000000</double>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.001000000000000</double>
+                     <property name="text">
+                      <string>Kinematic Constraints</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_X0"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QFrame" name="frame_3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::Panel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Sunken</enum>
-             </property>
-             <property name="lineWidth">
-              <number>1</number>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_20">
-              <item>
-               <widget class="QLabel" name="label_16">
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <italic>false</italic>
-                  <bold>true</bold>
-                  <strikeout>false</strikeout>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Final Conditions</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_8" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_21">
-                 <item>
-                  <widget class="QLabel" name="label_17">
-                   <property name="text">
-                    <string>Af</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_5">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Af">
-                     <property name="decimals">
-                      <number>3</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
-                     </property>
+                   <item>
+                    <widget class="QWidget" name="widget_11" native="true">
+                     <layout class="QVBoxLayout" name="verticalLayout_25">
+                      <item>
+                       <widget class="QLabel" name="label_21">
+                        <property name="text">
+                         <string>Jmax</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QFormLayout" name="formLayout_9">
+                        <item row="0" column="0">
+                         <widget class="QDoubleSpinBox" name="doubleSpinBox_Jmax_3">
+                          <property name="decimals">
+                           <number>3</number>
+                          </property>
+                          <property name="singleStep">
+                           <double>0.010000000000000</double>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QwtSlider" name="Slider_Jmax_3">
+                          <property name="valid">
+                           <bool>true</bool>
+                          </property>
+                          <property name="mass">
+                           <double>0.000000000000000</double>
+                          </property>
+                          <property name="thumbLength">
+                           <number>31</number>
+                          </property>
+                          <property name="thumbWidth">
+                           <number>16</number>
+                          </property>
+                         </widget>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_Af">
-                     <property name="valid">
-                      <bool>true</bool>
-                     </property>
-                     <property name="mass">
-                      <double>0.000000000000000</double>
-                     </property>
-                     <property name="thumbLength">
-                      <number>31</number>
-                     </property>
-                     <property name="thumbWidth">
-                      <number>16</number>
-                     </property>
+                   <item>
+                    <widget class="QWidget" name="widget_12" native="true">
+                     <layout class="QVBoxLayout" name="verticalLayout_26">
+                      <item>
+                       <widget class="QLabel" name="label_22">
+                        <property name="text">
+                         <string>Amax</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QFormLayout" name="formLayout_10">
+                        <item row="0" column="0">
+                         <widget class="QDoubleSpinBox" name="doubleSpinBox_Amax_3">
+                          <property name="decimals">
+                           <number>3</number>
+                          </property>
+                          <property name="singleStep">
+                           <double>0.010000000000000</double>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QwtSlider" name="Slider_Amax_3"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QWidget" name="widget_13" native="true">
+                     <layout class="QVBoxLayout" name="verticalLayout_27">
+                      <item>
+                       <widget class="QLabel" name="label_23">
+                        <property name="text">
+                         <string>Vmax</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <layout class="QFormLayout" name="formLayout_11">
+                        <item row="0" column="0">
+                         <widget class="QDoubleSpinBox" name="doubleSpinBox_Vmax_3">
+                          <property name="decimals">
+                           <number>3</number>
+                          </property>
+                          <property name="singleStep">
+                           <double>0.010000000000000</double>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="0" column="1">
+                         <widget class="QwtSlider" name="Slider_Vmax_3"/>
+                        </item>
+                       </layout>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
                   </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_9" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_22">
-                 <item>
-                  <widget class="QLabel" name="label_18">
-                   <property name="text">
-                    <string>Vf</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_7">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Vf">
-                     <property name="decimals">
-                      <number>3</number>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widget_5" native="true">
+                  <layout class="QHBoxLayout" name="horizontalLayout_4">
+                   <item>
+                    <widget class="QFrame" name="frame_3">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
                      </property>
-                     <property name="singleStep">
-                      <double>0.010000000000000</double>
+                     <property name="frameShape">
+                      <enum>QFrame::Panel</enum>
                      </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Sunken</enum>
+                     </property>
+                     <property name="lineWidth">
+                      <number>1</number>
+                     </property>
+                     <layout class="QVBoxLayout" name="verticalLayout_20">
+                      <item>
+                       <widget class="QLabel" name="label_16">
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <italic>false</italic>
+                          <bold>true</bold>
+                          <strikeout>false</strikeout>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>Final Conditions</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_8" native="true">
+                        <layout class="QVBoxLayout" name="verticalLayout_21">
+                         <item>
+                          <widget class="QLabel" name="label_17">
+                           <property name="text">
+                            <string>Af</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QFormLayout" name="formLayout_5">
+                           <item row="0" column="0">
+                            <widget class="QDoubleSpinBox" name="doubleSpinBox_Af">
+                             <property name="decimals">
+                              <number>3</number>
+                             </property>
+                             <property name="singleStep">
+                              <double>0.010000000000000</double>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QwtSlider" name="Slider_Af">
+                             <property name="valid">
+                              <bool>true</bool>
+                             </property>
+                             <property name="mass">
+                              <double>0.000000000000000</double>
+                             </property>
+                             <property name="thumbLength">
+                              <number>31</number>
+                             </property>
+                             <property name="thumbWidth">
+                              <number>16</number>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_9" native="true">
+                        <layout class="QVBoxLayout" name="verticalLayout_22">
+                         <item>
+                          <widget class="QLabel" name="label_18">
+                           <property name="text">
+                            <string>Vf</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QFormLayout" name="formLayout_7">
+                           <item row="0" column="0">
+                            <widget class="QDoubleSpinBox" name="doubleSpinBox_Vf">
+                             <property name="decimals">
+                              <number>3</number>
+                             </property>
+                             <property name="singleStep">
+                              <double>0.010000000000000</double>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QwtSlider" name="Slider_Vf"/>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QWidget" name="widget_10" native="true">
+                        <layout class="QVBoxLayout" name="verticalLayout_23">
+                         <item>
+                          <widget class="QLabel" name="label_19">
+                           <property name="text">
+                            <string>Xf</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QFormLayout" name="formLayout_8">
+                           <item row="0" column="0">
+                            <widget class="QDoubleSpinBox" name="doubleSpinBox_Xf">
+                             <property name="decimals">
+                              <number>3</number>
+                             </property>
+                             <property name="singleStep">
+                              <double>0.001000000000000</double>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QwtSlider" name="Slider_Xf"/>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </widget>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_Vf"/>
-                   </item>
                   </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QWidget" name="widget_10" native="true">
-                <layout class="QVBoxLayout" name="verticalLayout_23">
-                 <item>
-                  <widget class="QLabel" name="label_19">
-                   <property name="text">
-                    <string>Xf</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QFormLayout" name="formLayout_8">
-                   <item row="0" column="0">
-                    <widget class="QDoubleSpinBox" name="doubleSpinBox_Xf">
-                     <property name="decimals">
-                      <number>3</number>
-                     </property>
-                     <property name="singleStep">
-                      <double>0.001000000000000</double>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="1">
-                    <widget class="QwtSlider" name="Slider_Xf"/>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-          </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -1198,7 +1210,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>979</width>
+     <width>997</width>
      <height>24</height>
     </rect>
    </property>
