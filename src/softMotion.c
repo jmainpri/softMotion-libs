@@ -48,7 +48,7 @@
 #include <libxml2/libxml/xmlreader.h>
 #include <time.h>
 #include <stdlib.h>
-#ifdef MACOSX
+#ifdef __APPLE__
 #include <malloc/malloc.h>
 #include <cstdlib>
 #else
