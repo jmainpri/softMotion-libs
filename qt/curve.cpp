@@ -65,7 +65,7 @@ Curve::~Curve()
 
 Curve& Curve::operator=(const Curve& curv)
 {
-  Curve o;
+  static Curve o;
 
   return o;
 }

@@ -37,67 +37,69 @@
 #include <qwt_legend.h>
 #include <qwt_legend_item.h>
 #include <qwt_plot_marker.h>
+#include <qwt_painter.h>
+#include <qwt_symbol.h>
 
- #include <QFileDialog>
+#include <QFileDialog>
 
- #include "../src/softMotion.h"
+#include "../src/softMotion.h"
 using namespace std;
 
 // the definition of the fonction MainWindow
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    Ui_MainWindow()
+  QMainWindow(parent),
+  Ui_MainWindow()
 {
-    this->setupUi(this);
+  this->setupUi(this);
 
-    setWindowTitle(QApplication::translate("MainWindow", "Soft Motion Planner", 0, QApplication::UnicodeUTF8));
+  setWindowTitle(QApplication::translate("MainWindow", "Soft Motion Planner", 0, QApplication::UnicodeUTF8));
 
-    this->Slider_Jmax->setRange(0,60,0.001);
-    this->doubleSpinBox_Jmax->setSingleStep(0.1);
-    this->doubleSpinBox_Jmax->setRange(0,60);
-    this->doubleSpinBox_Jmax->setDecimals(4);
+  this->Slider_Jmax->setRange(0,60,0.001);
+  this->doubleSpinBox_Jmax->setSingleStep(0.1);
+  this->doubleSpinBox_Jmax->setRange(0,60);
+  this->doubleSpinBox_Jmax->setDecimals(4);
 
-    this->Slider_Amax->setRange(0,5,0.01);
-    this->doubleSpinBox_Amax->setSingleStep(0.01);
-    this->doubleSpinBox_Amax->setRange(0,5);
-    this->doubleSpinBox_Amax->setDecimals(4);
+  this->Slider_Amax->setRange(0,5,0.01);
+  this->doubleSpinBox_Amax->setSingleStep(0.01);
+  this->doubleSpinBox_Amax->setRange(0,5);
+  this->doubleSpinBox_Amax->setDecimals(4);
 
-    this->Slider_Vmax->setRange(0,2,0.001);
-    this->doubleSpinBox_Vmax->setRange(0,2);
-    this->doubleSpinBox_Vmax->setSingleStep(0.001);
-    this->doubleSpinBox_Vmax->setDecimals(4);
+  this->Slider_Vmax->setRange(0,2,0.001);
+  this->doubleSpinBox_Vmax->setRange(0,2);
+  this->doubleSpinBox_Vmax->setSingleStep(0.001);
+  this->doubleSpinBox_Vmax->setDecimals(4);
 
-    this->Slider_SamplingTime->setRange(0.0001,0.01,0.0001);
-    this->doubleSpinBox_SamplingTime->setRange(0.0001,0.01);
-    this->doubleSpinBox_SamplingTime->setSingleStep(0.001);	
-    this->doubleSpinBox_SamplingTime->setDecimals(4);
+  this->Slider_SamplingTime->setRange(0.0001,0.01,0.0001);
+  this->doubleSpinBox_SamplingTime->setRange(0.0001,0.01);
+  this->doubleSpinBox_SamplingTime->setSingleStep(0.001);	
+  this->doubleSpinBox_SamplingTime->setDecimals(4);
 
-    this->doubleSpinBox_Jmax->setValue(0.9);
-    this->doubleSpinBox_Amax->setValue(0.3);
-    this->doubleSpinBox_Vmax->setValue(0.02);
-    this->doubleSpinBox_SamplingTime->setValue(0.001);
-    this->Slider_Interval->setValue(100);
+  this->doubleSpinBox_Jmax->setValue(0.9);
+  this->doubleSpinBox_Amax->setValue(0.3);
+  this->doubleSpinBox_Vmax->setValue(0.02);
+  this->doubleSpinBox_SamplingTime->setValue(0.001);
+  this->Slider_Interval->setValue(100);
     
-    this->doubleSpinBox_SamplingTime->setValue(0.001);
+  this->doubleSpinBox_SamplingTime->setValue(0.001);
 
-/*number of interval here*/
-    this->doubleSpinBox->setRange(0,500);
-    this->doubleSpinBox->setDecimals(0);
-    this->doubleSpinBox->setSingleStep(10);
-    this->doubleSpinBox->setValue(100);
+  /*number of interval here*/
+  this->doubleSpinBox->setRange(0,500);
+  this->doubleSpinBox->setDecimals(0);
+  this->doubleSpinBox->setSingleStep(10);
+  this->doubleSpinBox->setValue(100);
 
     
-    connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
-    connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
-    connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
-    //    connect(this->pushButton, SIGNAL(clicked(bool)), this, SLOT(computeTraj()) ) ;
-    // connect(this->pushButton, SIGNAL(clicked(bool)), this, SLOT(test()) ) ;
+  connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
+  connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
+  connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
+  //    connect(this->pushButton, SIGNAL(clicked(bool)), this, SLOT(computeTraj()) ) ;
+  // connect(this->pushButton, SIGNAL(clicked(bool)), this, SLOT(test()) ) ;
 
 
 
-    ////////////////////////////////////////////////////////////
-    //////  SoftMotion Planner                    /////////////
-    ///////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////
+  //////  SoftMotion Planner                    /////////////
+  ///////////////////////////////////////////////////////////
     
     this->Slider_Jmax_3->setRange(0,60,0.001);
     this->doubleSpinBox_Jmax_3->setSingleStep(0.1);
@@ -179,21 +181,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::changeEvent(QEvent *e)
 {
-    QMainWindow::changeEvent(e);
-    switch (e->type()) {
-    case QEvent::LanguageChange:
-        this->retranslateUi(this);
-        break;
-    default:
-        break;
-    }
+  QMainWindow::changeEvent(e);
+  switch (e->type()) {
+  case QEvent::LanguageChange:
+    this->retranslateUi(this);
+    break;
+  default:
+    break;
+  }
 }
 
+/**
+ * 
+ * @param str 
+ */
 void MainWindow::loadSvgFile(string str)
 {
-    Curve curv;
+  Curve curv;
 
-    this->viewer->curve.push_back(curv);
+  this->viewer->curve.push_back(curv);
 }
 
 void MainWindow::openFile()
@@ -252,18 +258,17 @@ void MainWindow::openFile()
 }
 
 
-
 void MainWindow::fullScreen()
 {
-    if(this->isFullScreen == false){
-        this->showFullScreen();
-        this->isFullScreen = true;
-    } 
-    else {
-        this->isFullScreen = false;
-        this->showMaximized();
-    }
-    return;
+  if(this->isFullScreen == false){
+    this->showFullScreen();
+    this->isFullScreen = true;
+  } 
+  else {
+    this->isFullScreen = false;
+    this->showMaximized();
+  }
+  return;
 }
 
 void MainWindow::closeFile()
@@ -388,9 +393,9 @@ void MainWindow::plotMotionLaw(Curve &curv) {
     }
 
         /* plot accel, vel and abscicca*/
-    plotGraph(qwtPlot_TrajJerk, xData_a, yData_a, curv.traj.size(), "time (s)", "Accel (m/s^2)", "");
-    plotGraph(qwtPlot_TrajAcc, xData_v, yData_v, curv.traj.size(), "time (s)", "Velocity (m/s)", "");
-    plotGraph(qwtPlot_TrajVel, xData_ab, yData_ab, curv.traj.size(), "time (s)", "absicce (m)", "");
+    plotGraph(qwtPlot_TrajJerk, xData_a, yData_a, curv.traj.size(),  (char *)"time (s)", (char *)"Accel (m/s^2)", (char *)"");
+    plotGraph(qwtPlot_TrajAcc, xData_v, yData_v, curv.traj.size(),   (char *)"time (s)", (char *)"Velocity (m/s)", (char *)"");
+    plotGraph(qwtPlot_TrajVel, xData_ab, yData_ab, curv.traj.size(), (char *)"time (s)", (char *)"absicce (m)", (char *)"");
 
     qwtPlot_TrajJerk->replot();
     qwtPlot_TrajAcc->replot();
@@ -427,22 +432,22 @@ void MainWindow::plotIdealProfile(Curve &curv) {
     xData_ax_tra = (double* ) malloc (sizeof(double) * curv.traj.size());
     yData_ax_tra = (double* ) malloc (sizeof(double) * curv.traj.size());
 
-    for (int i  = 0; i < curv.traj.size();i++){
+    for (int i  = 0; i < (int)curv.traj.size();i++){
       yData_px_tra [i] = pos_discr_X[i];
       xData_px_tra [i] = curv.traj[i].t;
     }
-    for (int i  = 0; i < curv.traj.size();i++){
+    for (int i  = 0; i < (int)curv.traj.size();i++){
       yData_vx_tra [i] = vel_discr_X[i];
       xData_vx_tra [i] = curv.traj[i].t;
     }
-    for (int i  = 0; i < curv.traj.size();i++){
+    for (int i  = 0; i < (int)curv.traj.size();i++){
       yData_ax_tra [i] = acc_discr_X[i];
       xData_ax_tra [i] = curv.traj[i].t;
     }
 
-    plotGraph(qwtPlot_PosXideal, xData_px_tra, yData_px_tra, curv.traj.size(), "time (s)", "Pos (m)", ""); 
-    plotGraph(qwtPlot_VelXideal, xData_vx_tra, yData_vx_tra, curv.traj.size(), "time (s)", "Velocity of traj (m/s)", ""); 
-    plotGraph(qwtPlot_AccXideal, xData_ax_tra, yData_ax_tra, curv.traj.size(), "time (s)", "Accel of traj (m/s^2)", ""); 
+    plotGraph(qwtPlot_PosXideal, xData_px_tra, yData_px_tra, curv.traj.size(), (char *)"time (s)", (char *)"Pos (m)", (char *)""); 
+    plotGraph(qwtPlot_VelXideal, xData_vx_tra, yData_vx_tra, curv.traj.size(), (char *)"time (s)", (char *)"Velocity of traj (m/s)", (char *)""); 
+    plotGraph(qwtPlot_AccXideal, xData_ax_tra, yData_ax_tra, curv.traj.size(), (char *)"time (s)", (char *)"Accel of traj (m/s^2)", (char *)""); 
 
     /* Axis Y */
     double *xData_py_tra = NULL, *yData_py_tra  = NULL;    
@@ -468,9 +473,9 @@ void MainWindow::plotIdealProfile(Curve &curv) {
         xData_ay_tra [i] = curv.traj[i].t;
     }
 
-    plotGraph(qwtPlot_PosYideal, xData_py_tra, yData_py_tra, curv.traj.size(), "time (s)", "Pos (m)", ""); 
-    plotGraph(qwtPlot_VelYideal, xData_vy_tra, yData_vy_tra, curv.traj.size(), "time (s)", "Velocity of traj (m/s)", ""); 
-    plotGraph(qwtPlot_AccYideal, xData_ay_tra, yData_ay_tra, curv.traj.size(), "time (s)", "Accel of traj (m/s^2)", ""); 
+    plotGraph(qwtPlot_PosYideal, xData_py_tra, yData_py_tra, curv.traj.size(), (char *)"time (s)", (char *)"Pos (m)", (char *)""); 
+    plotGraph(qwtPlot_VelYideal, xData_vy_tra, yData_vy_tra, curv.traj.size(), (char *)"time (s)", (char *)"Velocity of traj (m/s)", (char *)""); 
+    plotGraph(qwtPlot_AccYideal, xData_ay_tra, yData_ay_tra, curv.traj.size(), (char *)"time (s)", (char *)"Accel of traj (m/s^2)", (char *)""); 
 
     /* free the memory */
     free(xData_px_tra);
@@ -491,6 +496,7 @@ void MainWindow::plotIdealProfile(Curve &curv) {
 //     plotGraph(qwtPlot_haussdorff1, xData_haus1, yData_haus1, dis_a_tracer1.size(), "sample_point", "dis_hausdorff1", "");
 void MainWindow::plotGraph(QwtPlot *p, double xData[], double yData[], int size, char* xName, char *yName, char *title) {
     QwtPlotCurve *curve_ay_tra = new QwtPlotCurve("plot");
+    QwtPlotZoomer *zoom = NULL;    
     curve_ay_tra->setData(xData,yData, size);
     curve_ay_tra->attach(p);
     p->setAxisTitle(p->xBottom, xName );
@@ -501,9 +507,8 @@ void MainWindow::plotGraph(QwtPlot *p, double xData[], double yData[], int size,
     g->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     g->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     g->attach(p);
-    QwtPlotZoomer *zoom = new QwtPlotZoomer(p->xBottom, p->yLeft, p->canvas());
+    zoom = new QwtPlotZoomer(p->xBottom, p->yLeft, p->canvas());
     p->replot();
-//     p->show();
     p->setCanvasBackground(QColor(Qt::white));
     return;
 
@@ -513,13 +518,14 @@ void MainWindow::plotGraph(QwtPlot *p, double xData[], double yData[], int size,
 
 void MainWindow::plotErrors(Curve &curv2, std::vector<double> &error, double *val_err_max) {
     double *xData_error = NULL, *yData_error  = NULL;
+    QwtPlotZoomer *zoom1 = NULL;
     xData_error  = (double* ) malloc (sizeof(double) * curv2.traj.size());
     yData_error  = (double* ) malloc (sizeof(double) * curv2.traj.size());
     for (unsigned int i  = 0; i < curv2.traj.size();i++){
         xData_error [i] = curv2.traj[i].t;
         yData_error [i] = error[i];
     }
-    plotGraph(qwtPlot_errortraj, xData_error, yData_error, curv2.traj.size(), "time (s)", "error (m)", "");
+    plotGraph(qwtPlot_errortraj, xData_error, yData_error, curv2.traj.size(), (char *)"time (s)", (char *)"error (m)", (char *)"");
 
     QwtPlotCurve *error_approx = new QwtPlotCurve("error_approx");
     error_approx->setData(xData_error,yData_error, curv2.traj.size());
@@ -534,7 +540,7 @@ void MainWindow::plotErrors(Curve &curv2, std::vector<double> &error, double *va
     g1->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     g1->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     g1->attach(qwtPlot_errortraj);
-    QwtPlotZoomer *zoom1 = new QwtPlotZoomer(qwtPlot_errortraj->xBottom, qwtPlot_errortraj->yLeft, qwtPlot_errortraj->canvas());
+    zoom1 = new QwtPlotZoomer(qwtPlot_errortraj->xBottom, qwtPlot_errortraj->yLeft, qwtPlot_errortraj->canvas());
     qwtPlot_errortraj->replot();
     qwtPlot_errortraj->setCanvasBackground(QColor(Qt::white));
 
@@ -621,18 +627,18 @@ void MainWindow::plotResults(Curve &curv2) {
         xData_V_Z [i] = curv2.traj[i].t;
         yData_V_Z [i] = curv2.traj[i].Vel[2];
     }
-    cout << "break"<< endl;
-    plotGraph(qwtPlot_JerkXapprox, xData_J_X, yData_J_X, curv2.traj.size(), "time (s)", "Jerk (m/s^3)", "");
-    plotGraph(qwtPlot_JerkYapprox, xData_J_Y, yData_J_Y, curv2.traj.size(), "time (s)", "Jerk (m/s^3)", "");
-    plotGraph(qwtPlot_JerkZapprox, xData_J_Z, yData_J_Z, curv2.traj.size(), "time (s)", "Jerk (m/s^3)", "");
 
-    plotGraph(qwtPlot_AccXapprox, xData_A_X, yData_A_X, curv2.traj.size(), "time (s)", "Accelaration (m/s^2)", "");
-    plotGraph(qwtPlot_AccYapprox, xData_A_Y, yData_A_Y, curv2.traj.size(), "time (s)", "Accelaration (m/s^2)", "");
-    plotGraph(qwtPlot_AccZapprox, xData_A_Z, yData_A_Z, curv2.traj.size(), "time (s)", "Accelaration (m/s^2)", "");
+    plotGraph(qwtPlot_JerkXapprox, xData_J_X, yData_J_X, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");
+    plotGraph(qwtPlot_JerkYapprox, xData_J_Y, yData_J_Y, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");
+    plotGraph(qwtPlot_JerkZapprox, xData_J_Z, yData_J_Z, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");
 
-    plotGraph(qwtPlot_VelXapprox, xData_V_X, yData_V_X, curv2.traj.size(), "time (s)", "Velocity (m/s)", "");
-    plotGraph(qwtPlot_VelYapprox, xData_V_Y, yData_V_Y, curv2.traj.size(), "time (s)", "Velocity (m/s)", "");
-    plotGraph(qwtPlot_VelZapprox, xData_V_Z, yData_V_Z, curv2.traj.size(), "time (s)", "Velocity (m/s)", "");
+    plotGraph(qwtPlot_AccXapprox, xData_A_X, yData_A_X, curv2.traj.size(), (char *)"time (s)", (char *)"Accelaration (m/s^2)", (char *)"");
+    plotGraph(qwtPlot_AccYapprox, xData_A_Y, yData_A_Y, curv2.traj.size(), (char *)"time (s)", (char *)"Accelaration (m/s^2)", (char *)"");
+    plotGraph(qwtPlot_AccZapprox, xData_A_Z, yData_A_Z, curv2.traj.size(), (char *)"time (s)", (char *)"Accelaration (m/s^2)", (char *)"");
+									   		       
+    plotGraph(qwtPlot_VelXapprox, xData_V_X, yData_V_X, curv2.traj.size(), (char *)"time (s)", (char *)"Velocity (m/s)", (char *)"");
+    plotGraph(qwtPlot_VelYapprox, xData_V_Y, yData_V_Y, curv2.traj.size(), (char *)"time (s)", (char *)"Velocity (m/s)", (char *)"");
+    plotGraph(qwtPlot_VelZapprox, xData_V_Z, yData_V_Z, curv2.traj.size(), (char *)"time (s)", (char *)"Velocity (m/s)", (char *)"");
 
     qwtPlot_JerkXapprox->replot();
     qwtPlot_JerkYapprox->replot();
@@ -672,6 +678,7 @@ void MainWindow::plotResults(Curve &curv2) {
 void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double *sup1, double *sup2){
     double *xData_haus1 = NULL, *yData_haus1  = NULL;
     double *xData_haus2 = NULL, *yData_haus2  = NULL;
+    QwtPlotZoomer *zoom1 = NULL, *zoom2 = NULL;
     xData_haus1  = (double* ) malloc (sizeof(double) * dis_a_tracer1.size());
     yData_haus1  = (double* ) malloc (sizeof(double) * dis_a_tracer1.size());
     xData_haus2  = (double* ) malloc (sizeof(double) * dis_a_tracer2.size());
@@ -700,7 +707,7 @@ void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double
     g1->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     g1->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     g1->attach(qwtPlot_haussdorff1);
-    QwtPlotZoomer *zoom1 = new QwtPlotZoomer(qwtPlot_haussdorff1->xBottom, qwtPlot_haussdorff1->yLeft, qwtPlot_haussdorff1->canvas());
+    zoom1 = new QwtPlotZoomer(qwtPlot_haussdorff1->xBottom, qwtPlot_haussdorff1->yLeft, qwtPlot_haussdorff1->canvas());
     qwtPlot_haussdorff1->replot();
     qwtPlot_haussdorff1->setCanvasBackground(QColor(Qt::white));
 
@@ -718,7 +725,7 @@ void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double
     g2->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
     g2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
     g2->attach(qwtPlot_haussdorff2);
-    QwtPlotZoomer *zoom2 = new QwtPlotZoomer(qwtPlot_haussdorff2->xBottom, qwtPlot_haussdorff2->yLeft, qwtPlot_haussdorff2->canvas());
+    zoom2 = new QwtPlotZoomer(qwtPlot_haussdorff2->xBottom, qwtPlot_haussdorff2->yLeft, qwtPlot_haussdorff2->canvas());
     qwtPlot_haussdorff2->replot();
     qwtPlot_haussdorff2->setCanvasBackground(QColor(Qt::white)); 
 
@@ -842,7 +849,14 @@ void MainWindow::computeSoftMotion()
 
   
 
-  sm_ComputeSoftMotionLocal(ICloc, FCloc, lim, &TimeSegFond, &TrajectoryTypeFond, &dcOutFond, &zoneOutFond);
+  if(sm_ComputeSoftMotionLocal(ICloc, FCloc, lim, &TimeSegFond, &TrajectoryTypeFond, &dcOutFond, &zoneOutFond)!=0){
+    this->qwtPlot_2->clear();
+    this->qwtPlot->clear();
+    this->qwtPlot_2->replot();
+    this->qwtPlot->replot();
+    printf("**** ERROR softMotion-libs ****\n");
+    return;
+  }
 
   IC[0] = ICloc.a;
   IC[1] = ICloc.v;
@@ -887,81 +901,182 @@ void MainWindow::computeSoftMotion()
     sm_AVX_TimeVar(IC, Time, J, 7, tFond, nbPointsFond, dduFond, duFond, uFond);
 
     // plot
-    this->qwtPlot_2->clear();
-    this->qwtPlot->clear();
-    this->qwtPlot->setCanvasBackground(QColor(Qt::white));
-    this->qwtPlot_2->setCanvasBackground(QColor(Qt::white));
+//    this->qwtPlot_2->clear();
+//    this->qwtPlot->clear();
+//    this->qwtPlot->setCanvasBackground(QColor(Qt::white));
+//    this->qwtPlot_2->setCanvasBackground(QColor(Qt::white));
+//
+//    QwtPlotCurve *curve_pos = new QwtPlotCurve("Pos--(m)");
+//    QPen pen_pos = curve_pos->pen();
+//    pen_pos.setColor(Qt::darkYellow);
+//    pen_pos.setWidth(2);
+//    pen_pos.setStyle(Qt::DashDotLine);
+//    curve_pos->setPen(pen_pos);
+//    curve_pos->setData(t,u, nbPoints);
+//    curve_pos->attach(this->qwtPlot_2);
+//
+//    QwtPlotCurve *curve_vel = new QwtPlotCurve("Vel--(m/s)");
+//    QPen pen_vel = curve_vel->pen();
+//    pen_vel.setColor(Qt::darkGreen);
+//    pen_vel.setWidth(2);
+//    curve_vel->setPen(pen_vel);
+//    curve_vel->setData(t,du, nbPoints);
+//    curve_vel->attach(this->qwtPlot_2);
+//
+//    QwtPlotCurve *curve_acc = new QwtPlotCurve("Acc--(m/s^2)");
+//    QPen pen_acc = curve_acc->pen();
+//    pen_acc.setColor(Qt::blue);
+//    pen_acc.setWidth(2);
+//    curve_acc->setPen(pen_acc);
+//    curve_acc->setData(t,ddu, nbPoints);
+//    curve_acc->attach(this->qwtPlot_2);
+//
+//    QwtLegend *legend_droite = new QwtLegend;
+//    qwtPlot_2->insertLegend(legend_droite, QwtPlot::BottomLegend);
+//
+//    QwtPlotGrid *g = new QwtPlotGrid;
+//    g->enableXMin(true);
+//    g->enableYMin(true);
+//    g->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+//    g->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+//    g->attach(this->qwtPlot_2);
+////     if(lim.maxAcc > lim.maxVel) {
+////     this->qwtPlot_2->setAxisScale(qwtPlot_2->yLeft,-lim.maxAcc-(lim.maxAcc/10.0) , lim.maxAcc+(lim.maxAcc/10.0),0.1);
+////     } else {
+////     this->qwtPlot_2->setAxisScale(qwtPlot_2->yLeft,-lim.maxVel-(lim.maxVel/10.0) , lim.maxVel+(lim.maxVel/10.0),0.1);
+////     }
+//    this->qwtPlot_2->replot();
+//
+//    QwtPlotCurve *curve_velacc = new QwtPlotCurve("Vel_Acc");
+//    QPen pen_velacc = curve_velacc->pen();
+//    pen_velacc.setColor(Qt::red);
+//    pen_velacc.setWidth(2);
+//    curve_velacc->setPen(pen_velacc);
+//    curve_velacc->setData(du,ddu, nbPoints);
+//    curve_velacc->attach(this->qwtPlot);
+//
+//    QwtPlotCurve *curve_velaccFond = new QwtPlotCurve("Vel_Acc_Lim");
+//    QPen pen_velaccFond = curve_velaccFond->pen();
+//    pen_velaccFond.setColor(Qt::blue);
+//    pen_velaccFond.setWidth(1);
+//    curve_velaccFond->setPen(pen_velaccFond);
+//    curve_velaccFond->setData(duFond,dduFond, nbPointsFond);
+////     curve_velaccFond->setData(tFond,duFond, nbPointsFond);
+//    curve_velaccFond->attach(this->qwtPlot);
+//
+//
+//    QwtLegend *legend_gauche = new QwtLegend;
+//    qwtPlot->insertLegend(legend_gauche, QwtPlot::BottomLegend);
+//
+//    QwtPlotGrid *g2 = new QwtPlotGrid;
+//    g2->enableXMin(true);
+//    g2->enableYMin(true);
+//    this->qwtPlot->setAxisScale(qwtPlot->yLeft,-lim.maxAcc-(lim.maxAcc/10.0) , lim.maxAcc+(lim.maxAcc/10.0),0.1);
+//    this->qwtPlot->setAxisScale(qwtPlot->xBottom,-lim.maxVel-(lim.maxVel/10.0) , lim.maxVel+(lim.maxVel/10.0),0.1);
+//    g2->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+//    g2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+//    g2->attach(this->qwtPlot);
 
-    QwtPlotCurve *curve_pos = new QwtPlotCurve("Pos--(m)");
-    QPen pen_pos = curve_pos->pen();
-    pen_pos.setColor(Qt::darkYellow);
-    pen_pos.setWidth(2);
-    pen_pos.setStyle(Qt::DashDotLine);
-    curve_pos->setPen(pen_pos);
-    curve_pos->setData(t,u, nbPoints);
-    curve_pos->attach(this->qwtPlot_2);
 
-    QwtPlotCurve *curve_vel = new QwtPlotCurve("Vel--(m/s)");
-    QPen pen_vel = curve_vel->pen();
-    pen_vel.setColor(Qt::darkGreen);
-    pen_vel.setWidth(2);
-    curve_vel->setPen(pen_vel);
-    curve_vel->setData(t,du, nbPoints);
-    curve_vel->attach(this->qwtPlot_2);
+  this->qwtPlot_2->clear();
+  this->qwtPlot->clear();
+  this->qwtPlot->setCanvasBackground(QColor(Qt::white));
+  this->qwtPlot_2->setCanvasBackground(QColor(Qt::white));
 
-    QwtPlotCurve *curve_acc = new QwtPlotCurve("Acc--(m/s^2)");
-    QPen pen_acc = curve_acc->pen();
-    pen_acc.setColor(Qt::blue);
-    pen_acc.setWidth(2);
-    curve_acc->setPen(pen_acc);
-    curve_acc->setData(t,ddu, nbPoints);
-    curve_acc->attach(this->qwtPlot_2);
+  QwtPlotCurve *curve_pos = new QwtPlotCurve("Pos--(m)");
+  QPen pen_pos = curve_pos->pen();
+  pen_pos.setColor(Qt::darkYellow);
+  pen_pos.setWidth(2);
+  pen_pos.setStyle(Qt::DashDotLine);
+  curve_pos->setPen(pen_pos);
+  curve_pos->setData(t,u, nbPoints);
+  curve_pos->attach(this->qwtPlot_2);
 
-    QwtLegend *legend_droite = new QwtLegend;
-    qwtPlot_2->insertLegend(legend_droite, QwtPlot::BottomLegend);
+  QwtPlotCurve *curve_vel = new QwtPlotCurve("Vel--(m/s)");
+  QPen pen_vel = curve_vel->pen();
+  pen_vel.setColor(Qt::darkGreen);
+  pen_vel.setWidth(2);
+  curve_vel->setPen(pen_vel);
+  curve_vel->setData(t,du, nbPoints);
+  curve_vel->attach(this->qwtPlot_2);
 
-    QwtPlotGrid *g = new QwtPlotGrid;
-    g->enableXMin(true);
-    g->enableYMin(true);
-    g->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-    g->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    g->attach(this->qwtPlot_2);
-//     if(lim.maxAcc > lim.maxVel) {
-//     this->qwtPlot_2->setAxisScale(qwtPlot_2->yLeft,-lim.maxAcc-(lim.maxAcc/10.0) , lim.maxAcc+(lim.maxAcc/10.0),0.1);
-//     } else {
-//     this->qwtPlot_2->setAxisScale(qwtPlot_2->yLeft,-lim.maxVel-(lim.maxVel/10.0) , lim.maxVel+(lim.maxVel/10.0),0.1);
-//     }
-    this->qwtPlot_2->replot();
+  QwtPlotCurve *curve_acc = new QwtPlotCurve("Acc--(m/s^2)");
+  QPen pen_acc = curve_acc->pen();
+  pen_acc.setColor(Qt::blue);
+  pen_acc.setWidth(2);
+  curve_acc->setPen(pen_acc);
+  curve_acc->setData(t,ddu, nbPoints);
+  curve_acc->attach(this->qwtPlot_2);
 
-    QwtPlotCurve *curve_velacc = new QwtPlotCurve("Vel_Acc");
-    QPen pen_velacc = curve_velacc->pen();
-    pen_velacc.setColor(Qt::red);
-    pen_velacc.setWidth(2);
-    curve_velacc->setPen(pen_velacc);
-    curve_velacc->setData(du,ddu, nbPoints);
-    curve_velacc->attach(this->qwtPlot);
+  QwtLegend *legend_droite = new QwtLegend;
+  qwtPlot_2->insertLegend(legend_droite, QwtPlot::BottomLegend);
 
-    QwtPlotCurve *curve_velaccFond = new QwtPlotCurve("Vel_Acc_Lim");
-    QPen pen_velaccFond = curve_velaccFond->pen();
-    pen_velaccFond.setColor(Qt::blue);
-    pen_velaccFond.setWidth(1);
-    curve_velaccFond->setPen(pen_velaccFond);
-    curve_velaccFond->setData(duFond,dduFond, nbPointsFond);
-//     curve_velaccFond->setData(tFond,duFond, nbPointsFond);
-    curve_velaccFond->attach(this->qwtPlot);
+  QwtPlotGrid *g = new QwtPlotGrid;
+  g->enableXMin(true);
+  g->enableYMin(true);
+  g->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+  g->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+  g->attach(this->qwtPlot_2);
+
+  //     if(lim.maxAcc > lim.maxVel) {
+  //     this->qwtPlot_2->setAxisScale(qwtPlot_2->yLeft,-lim.maxAcc-(lim.maxAcc/10.0) , lim.maxAcc+(lim.maxAcc/10.0),0.1);
+  //     } else {
+  //     this->qwtPlot_2->setAxisScale(qwtPlot_2->yLeft,-lim.maxVel-(lim.maxVel/10.0) , lim.maxVel+(lim.maxVel/10.0),0.1);
+  //     }
+  this->qwtPlot_2->replot();
+
+  QwtPlotCurve *curve_velacc = new QwtPlotCurve("Vel_Acc");
+  QPen pen_velacc = curve_velacc->pen();
+  pen_velacc.setColor(Qt::red);
+  pen_velacc.setWidth(2);
+  curve_velacc->setPen(pen_velacc);
+  curve_velacc->setData(du,ddu, nbPoints);
+  curve_velacc->attach(this->qwtPlot);
+
+  QwtPlotCurve *curve_velaccFond = new QwtPlotCurve("Vel_Acc_Lim");
+  QPen pen_velaccFond = curve_velaccFond->pen();
+  pen_velaccFond.setColor(Qt::blue);
+  pen_velaccFond.setWidth(1);
+  curve_velaccFond->setPen(pen_velaccFond);
+  curve_velaccFond->setData(duFond,dduFond, nbPointsFond);
+  curve_velaccFond->attach(this->qwtPlot);
+
+  /*legend*/
+  QwtLegend *legend_gauche = new QwtLegend;
+  qwtPlot->insertLegend(legend_gauche, QwtPlot::BottomLegend);
+
+  QwtPlotGrid *g2 = new QwtPlotGrid;
+  g2->enableXMin(true);
+  g2->enableYMin(true);
+  this->qwtPlot->setAxisScale(qwtPlot->yLeft,-lim.maxAcc-(lim.maxAcc/10.0) , lim.maxAcc+(lim.maxAcc/10.0),0.1);
+  this->qwtPlot->setAxisScale(qwtPlot->xBottom,-lim.maxVel-(lim.maxVel/10.0) , lim.maxVel+(lim.maxVel/10.0),0.1);
+  g2->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+  g2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+  g2->attach(this->qwtPlot);
+
+  /*marker*/
+  QwtPlotMarker *d_mrk1 = new QwtPlotMarker();
+  d_mrk1->setSymbol( QwtSymbol(QwtSymbol::Diamond, QColor(Qt::green), QColor(Qt::green), QSize(10,10)));
+  d_mrk1->attach(this->qwtPlot);
+  d_mrk1->setValue(du[0], ddu[0]);
+  d_mrk1->setLabelAlignment(Qt::AlignLeft | Qt::AlignTop);
+  QString label1;
+  label1.sprintf("IC");
+  QwtText text1(label1);
+  d_mrk1->setLabel(text1);
+
+  QwtPlotMarker *d_mrk2 = new QwtPlotMarker();
+  d_mrk2->setSymbol( QwtSymbol(QwtSymbol::Diamond, QColor(Qt::red), QColor(Qt::red), QSize(10,10)));
+  d_mrk2->attach(this->qwtPlot);
+  d_mrk2->setValue(du[nbPoints-1], ddu[nbPoints-1]);
+  d_mrk2->setLabelAlignment(Qt::AlignRight | Qt::AlignBottom);
+  QString label2;
+  label2.sprintf("FC");
+  QwtText text2(label2);
+  d_mrk2->setLabel(text2);
 
 
-    QwtLegend *legend_gauche = new QwtLegend;
-    qwtPlot->insertLegend(legend_gauche, QwtPlot::BottomLegend);
 
-    QwtPlotGrid *g2 = new QwtPlotGrid;
-    g2->enableXMin(true);
-    g2->enableYMin(true);
-    this->qwtPlot->setAxisScale(qwtPlot->yLeft,-lim.maxAcc-(lim.maxAcc/10.0) , lim.maxAcc+(lim.maxAcc/10.0),0.1);
-    this->qwtPlot->setAxisScale(qwtPlot->xBottom,-lim.maxVel-(lim.maxVel/10.0) , lim.maxVel+(lim.maxVel/10.0),0.1);
-    g2->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-    g2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-    g2->attach(this->qwtPlot);
     this->qwtPlot->replot();
 
     free(t);
