@@ -27,7 +27,65 @@ IF(NOT CMAKE_BUILD_TYPE)
       FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
+	
+# Set the project version
 
+if( NOT PROJECT_VERSION)
+
+
+#if( NOT PROJECT_WC_REVISION)
+#message( "Unable to determine subversion revision")
+#set( PROJECT_WC_REVISION 1)
+#endif( NOT PROJECT_WC_REVISION)
+
+if( NOT PROJECT_MAJOR_VERSION)
+#message( STATUS "PROJECT_MAJOR_VERSION is not set")
+set( PROJECT_MAJOR_VERSION 1)
+endif( NOT PROJECT_MAJOR_VERSION)
+
+if( NOT PROJECT_MINOR_VERSION)
+#message( STATUS "PROJECT_MINOR_VERSION is not set")
+set( PROJECT_MINOR_VERSION 0)
+endif( NOT PROJECT_MINOR_VERSION)
+
+#message( STATUS "Current subversion revision is ${PROJECT_WC_REVISION}")
+
+#set( PROJECT_REVISION ${PROJECT_WC_REVISION})
+set( PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}")
+
+endif( NOT PROJECT_VERSION)
+
+if( NOT DEFINED PROJECT_MAJOR_VERSION)
+message( FATAL_ERROR "The project major version has not been defined.")
+endif( NOT DEFINED PROJECT_MAJOR_VERSION)
+	
+if( NOT DEFINED PROJECT_MINOR_VERSION)
+message( FATAL_ERROR "The project minor version has not been defined.")
+endif( NOT DEFINED PROJECT_MINOR_VERSION)
+
+#if( NOT DEFINED PROJECT_REVISION)
+#message( FATAL_ERROR "The project revision has not been defined.")
+#endif( NOT DEFINED PROJECT_REVISION)
+
+#message( STATUS "Current project major version is ${PROJECT_MAJOR_VERSION}")
+#message( STATUS "Current project minor version is ${PROJECT_MINOR_VERSION}")
+#message( STATUS "Current project revision is ${PROJECT_REVISION}")
+message( STATUS "Current project version is ${PROJECT_VERSION}")
+
+# Define the project version
+
+if( NOT NON_NATIVE_TARGET)
+add_definitions( -DPROJECT_VERSION="${PROJECT_VERSION}")
+endif( NOT NON_NATIVE_TARGET)
+
+# CMake information
+
+message( STATUS "CMake System = ${CMAKE_SYSTEM_NAME}")
+message( STATUS "CMake Processor = ${CMAKE_SYSTEM_PROCESSOR}")
+message( STATUS "CMake Source Dir = ${CMAKE_SOURCE_DIR}")
+message( STATUS "CMake Binary Dir = ${CMAKE_BINARY_DIR}")
+message( STATUS "CMake Install Prefix = ${CMAKE_INSTALL_PREFIX}")
+	
 
 # -------------------------------------------------------------
 # --- Default compilation option : ----------------------------

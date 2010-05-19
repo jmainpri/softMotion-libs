@@ -107,8 +107,6 @@ ENDMACRO(SMP_QT_GENERATE_UI_HEADERS)
 # -------------------------------------------------------------
 
 IF(QT_LIBRARY)
-MESSAGE("blabla")
-
 
 SMP_QT_GENERATE_MOC(mainwindow.h)
 SMP_QT_GENERATE_UI_HEADERS(mainwindow.ui)
@@ -155,12 +153,12 @@ IF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
   ADD_DEFINITIONS(-O2 -Wall -Wno-unknown-pragmas)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-MESSAGE("QT source")
-MESSAGE("${source_files}\n")
-MESSAGE("QT moc")
-MESSAGE("${SMP_QT_MOC}")
-MESSAGE("QT ui")
-MESSAGE("${SMP_QT_UI_HEADERS}")
+#MESSAGE("QT source")
+#MESSAGE("${source_files}\n")
+#MESSAGE("QT moc")
+#MESSAGE("${SMP_QT_MOC}")
+#MESSAGE("QT ui")
+#MESSAGE("${SMP_QT_UI_HEADERS}")
 ADD_EXECUTABLE(QSoftMotionPlanner ${source_files} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
 TARGET_LINK_LIBRARIES(QSoftMotionPlanner softMotion ${LIBS} m)
 
