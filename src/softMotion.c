@@ -48,7 +48,7 @@
 #include <libxml2/libxml/xmlreader.h>
 #include <time.h>
 #include <stdlib.h>
-#ifdef MACOSX
+#ifdef __APPLE__
 #include <malloc/malloc.h>
 #include <cstdlib>
 #else
@@ -5463,7 +5463,7 @@ SM_STATUS sm_ComputeSoftMotionPointToPoint_gen(int nbAxis,double* J_max, double 
 
 
   double MaxDist = 0.0;
-  double MaxLDist = 0.0;
+  //  double MaxLDist = 0.0;
   int MaxLAxis = 0;
   double LTjc = 0.0, LTac = 0.0, LTvc = 0.0, TimeLi = 0.0, TimeL = 0.0;
   double Tjc, Tac, Tvc;
@@ -6387,10 +6387,10 @@ SM_STATUS sm_InputScanning(char *fileName, int *nbLineArc, double *tic, int *nbI
 	
   FILE *ifp;
   char InputFileName[20];
-  char *mode = "r";
-  char myString[30];
-  double myValue;
-  int i, j, k;
+  char *mode = (char*)"r";
+  //  char myString[30];
+  //double myValue;
+  int i, j;
 	
   int auxInt;
   char auxChar[20];
@@ -6399,7 +6399,7 @@ SM_STATUS sm_InputScanning(char *fileName, int *nbLineArc, double *tic, int *nbI
 	
   double X, Y, Z;
   double nx, ny, nz;
-  double theta, theta0;
+  double theta = 0.0, theta0 = 0.0;
   double aux0, aux1, aux2;
   double u[1000];
   double La, Lb, dL;
@@ -6509,7 +6509,8 @@ SM_STATUS sm_InputScanning(char *fileName, int *nbLineArc, double *tic, int *nbI
     /* --------------------- If component is circle, transform circle parameters to general clothoids parameters ----------------*/
     else if (auxInt == 2){ 
 			
-      fscanf(ifp,"%lf %lf %lf %lf %lf %lf %lf",&X, &Y, &Z, &nx, &ny, &nz, &theta, &theta0);
+      //      fscanf(ifp,"%lf %lf %lf %lf %lf %lf %lf",&X, &Y, &Z, &nx, &ny, &nz, &theta, &theta0);
+      fscanf(ifp,"%lf %lf %lf %lf %lf %lf %lf",&X, &Y, &Z, &nx, &ny, &nz, &theta);
       printf("... load arc of type : Circle\n");
       // convert line to general clothoid
 	
@@ -6541,7 +6542,7 @@ SM_STATUS sm_InputScanning(char *fileName, int *nbLineArc, double *tic, int *nbI
     /* --------------------- If component is clothoids, update --------------------------------------------- ----------------*/
     else{ 
 			
-      fscanf(ifp,"%lf %lf %lf %lf %lf %lf %lf",&comp[j].invR0, &comp[j].invRf, &comp[j].Ls, &rot[j].thetaX, &rot[j].thetaY, &rot[j].thetaZ);
+      fscanf(ifp,"%lf %lf %lf %lf %lf %lf",&comp[j].invR0, &comp[j].invRf, &comp[j].Ls, &rot[j].thetaX, &rot[j].thetaY, &rot[j].thetaZ);
 			
       // update rotation matrix using Euler angle
       printf("... load arc of type : Clothoids\n");
@@ -6966,7 +6967,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
   std::string element;
   std::stringstream elementStream;
   std::string dummy;
-  long double ldValue1, ldValue2;
+  //  long double ldValue1, ldValue2;
   std::string key (",");
   size_t found;
   bool result, relative;
@@ -7079,13 +7080,13 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
   double svg_y_offset;
   cout << "parsing " << fileName.c_str() << endl;
   if(doc==NULL) {
-      printf("%s: %d: parseSvg(): document \"%s\" does not exist or was not parsed successfully by libxml2.\n", __FILE__, __LINE__, fileName);
+      printf("%s: %d: parseSvg(): document \"%s\" does not exist or was not parsed successfully by libxml2.\n", __FILE__, __LINE__, fileName.c_str());
       return SM_ERROR;
   }
   root = xmlDocGetRootElement(doc);
 
   if(root==NULL) {
-      printf("%s: %d: parseSvg(): document \"%s\" is empty.\n", __FILE__, __LINE__, fileName);
+      printf("%s: %d: parseSvg(): document \"%s\" is empty.\n", __FILE__, __LINE__, fileName.c_str());
       xmlFreeDoc(doc);
       return SM_ERROR;
   }
@@ -7239,7 +7240,6 @@ Point2D bezier_point(double t, Point2D start, Point2D control_1, Point2D control
 double bezier_length (Point2D start, Point2D control_1, Point2D control_2, Point2D end)
 {
   double t;
-  int i;
   double step;
   Point2D dot;
   Point2D previous_dot;
@@ -7263,11 +7263,16 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
   FILE * f = NULL;
 
   f = fopen(fileName.c_str(),"w");
+  if(f == NULL) {
+    printf("ERROR saveTraj : cannot open file\n");
+    return SM_ERROR;
+  }
 
-  for(i=0; i<traj.size() -1; i++){
+  for(i=0; i<(int)traj.size() -1; i++){
     fprintf(f,"%d %f %f %f %f %f\n", i,traj[i].Pos[0],traj[i].Pos[1],traj[i].Pos[2], traj[i].Vel[0], traj[i].Acc[0] );
   }
   fclose(f);
+  return SM_OK;
 }
 
 SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA> &IdealTraj, double width, double height)
@@ -7277,7 +7282,13 @@ SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA> &IdealT
 
   f = fopen(fileName.c_str(),"w");
 
-  for(i=0; i<IdealTraj.size() -1; i++){
+  if(f == NULL) {
+    printf("ERROR plotIdealTraj : cannot open file\n");
+    return SM_ERROR;
+  }
+
+
+  for(i=0; i<(int)IdealTraj.size() -1; i++){
     fprintf(f,"%d %f %f %f %f %f\n", i,IdealTraj[i].Pos[0],IdealTraj[i].Pos[1],IdealTraj[i].Pos[2], IdealTraj[i].Vel[0], IdealTraj[i].Acc[0] );
   }
   fclose(f);
@@ -7318,7 +7329,7 @@ int fi;
   f2 = fopen("idealTraj.dat","r");
   f3 = fopen("error.dat","w");
   
-  for(i=0; i<IdealTraj.size() -1; i++){
+  for(i=0; i<(int)IdealTraj.size() -1; i++){
     fprintf(f,"%d %f %f %f %f %f\n", i,IdealTraj[i].Pos[0],IdealTraj[i].Pos[1],IdealTraj[i].Pos[2], IdealTraj[i].Vel[0], IdealTraj[i].Acc[0] );
    fscanf(f2,"%d %f %f %f %f %f\n", &fi, &fx, &fy, &fz, &fvx, &fax);
    cout  << fi << " " << fx << endl;

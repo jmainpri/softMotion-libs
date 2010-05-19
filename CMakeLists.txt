@@ -27,7 +27,79 @@ IF(NOT CMAKE_BUILD_TYPE)
       FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
+
+
+# -------------------------------------------------------------
+# --- Default compilation option : ----------------------------
+# --- DO NOT MODIFY!!! use ccmake -----------------------------
+# -------------------------------------------------------------
+SET(SMP_CompilationFlags "")
+SET(SMP_LinkedCompilationFlags "")
+
+MACRO(SMP_flag flagName description status)
+  SET(flagName "${flagName}")
+  SET(description "${description}")
+  SET(status "${status}")
+  OPTION(${flagName} ${description} ${status})
+  LIST(APPEND SMP_CompilationFlags ${flagName})
+  FOREACH(linkFlag ${ARGN})
+    LIST(APPEND SMP_LinkedCompilationFlags "${flagName}:${linkFlag}")
+  ENDFOREACH(linkFlag)
+#  set_property(CACHE ANIMATION PROPERTY VALUE ON)
+ENDMACRO(SMP_flag)
+
+MACRO(SMP_CheckCompilationFlags)
+  SET(SMP_ActiveFlags "")
+  MESSAGE ("Active Flags :")
+  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/smpFlags "#Generated File Do not modify!!!\n" )
+  FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/smpFlags "SOFTMOTIONPLANNER_COMPILATION_FLAGS = ")
+  FOREACH(flag ${SMP_CompilationFlags})
+    IF(${flag})
+      FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/smpFlags "-D${flag} ")
+      MESSAGE("${flag}")
+      ADD_DEFINITIONS("-D${flag}")
+      LIST(APPEND SMP_ActiveFlags ${flag})
+    ENDIF()
+  ENDFOREACH(flag)
+
+#  MESSAGE ("\nLinked Flags :")
+#  FOREACH(activeFlag ${SMP_ActiveFlags})
+#    FOREACH(linkFlag ${SMP_LinkedCompilationFlags})
+#      IF(${linkFlag} MATCHES "${activeFlag}:(.*)")
+#        STRING(LENGTH "${activeFlag}:" prefixLength)
+#        STRING(LENGTH ${linkFlag} linkLength)
+#        MATH(EXPR linkLength "${linkLength} - ${prefixLength}")
+#        STRING(SUBSTRING ${linkFlag} ${prefixLength} ${linkLength} linkFlagToActivate)
+#        SET(isAlreadyActive 0)
+#        FOREACH(activeFlag2 ${SMP_ActiveFlags})
+#          IF(${activeFlag2} STREQUAL ${linkFlagToActivate})
+#            SET(isAlreadyActive 1)
+#          ENDIF(${activeFlag2} STREQUAL ${linkFlagToActivate})
+#        ENDFOREACH(activeFlag2)
+#        IF(${isAlreadyActive} EQUAL 0)
+#          SET(${linkFlagToActivate} ON)
+#
+#          MESSAGE("${activeFlag} -> ${linkFlagToActivate}")
+#          ADD_DEFINITIONS("-D${linkFlagToActivate}")
+#        ENDIF(${isAlreadyActive} EQUAL 0)
+#      ENDIF(${linkFlag} MATCHES "${activeFlag}:(.*)")
+#    ENDFOREACH(linkFlag)
+#  ENDFOREACH(activeFlag)
+#  MESSAGE("\n")
+ENDMACRO(SMP_CheckCompilationFlags)
+
+
+SMP_flag(QT_LIBRARY "Sets QtLibrary compiling mode" OFF)
+SMP_flag(WITH_TCL "Sets the tcl package compiling mode" OFF)
+
+SMP_CheckCompilationFlags()
+
+
 add_subdirectory(src)
+IF(WITH_TCL)
 add_subdirectory(tclsrc)
 add_subdirectory(tcl)
+ENDIF(WITH_TCL)
+IF(QT_LIBRARY)
 add_subdirectory(qt)
+ENDIF(QT_LIBRARY)
