@@ -6733,7 +6733,6 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
   double t0 = 0;
   double tl = 0;
   int interval = 0;
-  int index = 0;
   Tloc = 0;
   double tloctot = 0;
 SM_CURVE_DATA curveData;
@@ -8047,17 +8046,17 @@ SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURV
     // f1 pour calculer la distance la plus longue entre courbe1 et courbe2
 
 
-    for (int i=0; i< idealTraj.size(); i++){
+    for (int i=0; i< (int)idealTraj.size(); i++){
         std::vector<double> dis1;
 
-        for (int j=0; j<  proxTraj.size(); j++){
+        for (int j=0; j<  (int)proxTraj.size(); j++){
 	  w = sqrt(  pow(     (idealTraj[i].Pos[0]-proxTraj[j].Pos[0])  ,2) +  pow( (idealTraj[i].Pos[1]-proxTraj[j].Pos[1]),2 ) +      pow((idealTraj[i].Pos[2]-proxTraj[j].Pos[2]), 2));
             dis1.push_back (w);
         }
 
         double inf1 = dis1[0];
         
-        for (int k=1; k<proxTraj.size(); k++){
+        for (int k=1; k<(int)proxTraj.size(); k++){
             if (dis1[k]<inf1) {inf1 = dis1[k];}
         }
         dis_a_tracer1.push_back(inf1);
@@ -8065,16 +8064,16 @@ SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURV
 
     *sup1 = dis_a_tracer1[0];
 
-    for (int m=1; m<idealTraj.size(); m++){
+    for (int m=1; m<(int)idealTraj.size(); m++){
         if (dis_a_tracer1[m]>(*sup1)) {*sup1 = dis_a_tracer1[m];}
     }
 
 // f2 pour calculer la distance la plus longue entre courbe2 et courbe1
  
-    for (int i=0; i< proxTraj.size(); i++){
+    for (int i=0; i< (int)proxTraj.size(); i++){
         std::vector<double> dis2;
 
-        for (int j=0; j< idealTraj.size(); j++){
+        for (int j=0; j< (int)idealTraj.size(); j++){
 	  w = sqrt  (      pow(   (proxTraj[i].Pos[0]-idealTraj[j].Pos[0]),2) + pow((proxTraj[i].Pos[1]-idealTraj[j].Pos[1]),2 ) +
 			   pow((proxTraj[i].Pos[2]-idealTraj[j].Pos[2]),2));
 
@@ -8083,7 +8082,7 @@ SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURV
 
         double inf2 = dis2[0];
         
-        for (int k=1; k<idealTraj.size(); k++){
+        for (int k=1; k<(int)idealTraj.size(); k++){
             if (dis2[k]<inf2) {inf2 = dis2[k];}
         }
         dis_a_tracer2.push_back(inf2);
@@ -8091,7 +8090,7 @@ SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURV
 
     *sup2 = dis_a_tracer2[0];
 
-    for (int m=1; m<proxTraj.size() ; m++){
+    for (int m=1; m<(int)proxTraj.size() ; m++){
         if (dis_a_tracer2[m]>(*sup2)) {*sup2 = dis_a_tracer2[m];}
     }
 
