@@ -28,8 +28,10 @@ public :
 
   kinPoint errorMax;
   std::vector<kinPoint> discPoint;
-  std::vector<SM_CURVE_DATA> traj;//faut tracer
+  std::vector<SM_CURVE_DATA> traj;
   std::list<Path> path;
+  std::list<SubTraj> trajList;
+
 
 protected :
 
