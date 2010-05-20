@@ -49,6 +49,7 @@ Curve::Curve (const Curve& c)
   _color_f3 = c._color_f3;
   path = c.path;
   traj = c.traj;
+  trajList = c.trajList;
   discPoint = c.discPoint;
   errorMax = c.errorMax;
 }
