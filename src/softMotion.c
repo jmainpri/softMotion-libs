@@ -6725,7 +6725,7 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
   double ICloc[3];
   //SM_TIMES TimeSeg;
   double t = 0;
-
+ApproxTraj.clear();
   double Tloc,Jloc[3];
   double aloc[3], vloc[3], xloc[3];
   int timefile = 0;
