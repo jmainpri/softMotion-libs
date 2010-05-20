@@ -179,5 +179,10 @@ extern SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &ve
 extern SM_STATUS Courbure(std::list<Path> &path, std::vector<double> &curvature);
 extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
 extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
+
+extern SM_STATUS Path_Length(std::list<Path> &path, double *longeur);
+extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max, int ind);
+
+ 
 #endif
 #endif

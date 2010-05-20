@@ -6292,7 +6292,7 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
   unsigned int i, j;
 	
   // Compute jerk and time segment
-  for (i = 0; i < Timp.size(); i++){
+  for (i = 0; i < (int)IC.size(); i++){
     for (j = 0; j < 3; j++){
 			
       locRHS[0] = (FC[i].Axis[j].a - IC[i].Axis[j].a) / Timp [i];
@@ -6329,7 +6329,7 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
     }
   }
 	
-  for (i = 1; i < (3 * Timp.size()); i++){
+  for (i = 1; i < (3 * (int)IC.size()); i++){
 		
     for (j = 0; j < 3; j++){
 			
@@ -6357,7 +6357,7 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
 
 
 			
-      if(0){
+     if(0){
 	cout << endl << "segement " << i << endl;
 	cout << " IC " << motion[i].IC[j].a << " " << motion[i].IC[j].v << " " << motion[i].IC[j].x << endl;
 	cout << " FC " << aloc << " " << vloc << " " << xloc << endl;
@@ -6735,13 +6735,14 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
   int interval = 0;
   Tloc = 0;
   double tloctot = 0;
-SM_CURVE_DATA curveData;
-bzero(&curveData, sizeof(SM_CURVE_DATA));
+  SM_CURVE_DATA curveData;
+  bzero(&curveData, sizeof(SM_CURVE_DATA));
+  
   for (i = 0; i < motion.size(); i++){
     tloctot += motion[i].Time[0];
 
   }
-  cout << "tloc" << Tloc << endl;
+  //cout << "tloc" << Tloc << endl;
   timefile =0;
 
 
@@ -7377,6 +7378,9 @@ fclose(f3);
   return SM_OK;
 }
 
+
+/*  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);*/
+
 //SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std::vector<SM_CURVE_DATA> &IdealTraj)
 //{
 //
@@ -7393,9 +7397,11 @@ fclose(f3);
 //  */
 //      
 //  std::list<SubPath>::iterator iter;
-//  double llength = 0.0, lllength = 0.0, nbPointSampling = 0.0;
-//      int nbPoints;
-//  int i = 0, j = 0, k = 0;
+//  double lllength = 0.0;
+//  int nbPoints;
+//  unsigned int i = 0;
+//  int j = 0;
+//  int k = 0;
 //  int TrajType;
 //  int zoneOut;
 //  double TotalLength = 0.0;
@@ -7471,10 +7477,10 @@ fclose(f3);
 //  J[6] = Lim.maxJerk;
 //
 //  for (i = 0; i < 7; i++){
-//    total_time = total_time + Time[i];
+//    total_time = total_time + Time[i]; // total_time is the time for 7 segment
 //  }
 //
-//  nbPoints = ((int) (total_time/tic)) + 1;
+//  nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
 //  std::cout << "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time << std::endl;
 ////   if (SM_NB_DISC_MAX < *nbPoints){
 ////     //printf("Time to long. Max number of discretization reached");
@@ -7505,7 +7511,7 @@ fclose(f3);
 //
 // // IdealTraj[0].Pos[0] = path.back().origin.x;
 // // IdealTraj[0].Pos[1] = path.back().origin.y;
-//   IdealTraj[0].Pos[0] = 0.0;
+//  IdealTraj[0].Pos[0] = 0.0;
 //  IdealTraj[0].Pos[1] = 0.0;
 //  IdealTraj[0].Pos[2] = 0.0;
 //
@@ -7520,7 +7526,8 @@ fclose(f3);
 //    aux1 = 0.0;
 //    aux2 = 0.0;
 //
-//    while ((u[j] < Lac[i]) && (j < nbPoints - 1)){
+//    //while ((u[j] < Lac[i]) && (j < nbPoints - 1)){
+//    while ((u[j] < Lac[i]) && (j < nbPoints)){
 //
 //      j++;
 //      if (i == 0){
@@ -7554,7 +7561,7 @@ fclose(f3);
 //    i++;
 //  }
 //
-//  for (i = 0; i < nbPoints; i++){
+//  for (int i = 0; i < nbPoints; i++){
 //    IdealTraj[i].u   = u[i];
 //    IdealTraj[i].du  = du[i];
 //    IdealTraj[i].ddu  = du[i];
@@ -7574,20 +7581,22 @@ fclose(f3);
 //  IdealTraj[0].Acc[1] = 0.0;
 //  IdealTraj[0].Acc[2] = 0.0;
 //
-//  for (i = 1; i < nbPoints; i++){
+//  for (int i = 1; i < nbPoints; i++){
 //
 //    IdealTraj[i].du  = (IdealTraj[i].u  - IdealTraj[i - 1].u ) / (t[i] - t[i-1]);
 //    IdealTraj[i].ddu = (IdealTraj[i].du - IdealTraj[i - 1].du) / (t[i] - t[i-1]);
 //
-//    IdealTraj[i].Vel[0] = (IdealTraj[i].Pos[0] - IdealTraj[i - 1].Pos[0]) / (t[i] - t[i - 1]);
-//    IdealTraj[i].Vel[1] = (IdealTraj[i].Pos[1] - IdealTraj[i - 1].Pos[1]) / (t[i] - t[i - 1]);
-//    IdealTraj[i].Vel[2] = (IdealTraj[i].Pos[2] - IdealTraj[i - 1].Pos[2]) / (t[i] - t[i - 1]);
+//    IdealTraj[i-1].Vel[0] = (IdealTraj[i].Pos[0] - IdealTraj[i - 1].Pos[0]) / (t[i] - t[i - 1]);
+//    IdealTraj[i-1].Vel[1] = (IdealTraj[i].Pos[1] - IdealTraj[i - 1].Pos[1]) / (t[i] - t[i - 1]);
+//    IdealTraj[i-1].Vel[2] = (IdealTraj[i].Pos[2] - IdealTraj[i - 1].Pos[2]) / (t[i] - t[i - 1]);
 //
-//    IdealTraj[i].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i - 1].Vel[0]) / (t[i] - t[i - 1]);
-//    IdealTraj[i].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i - 1].Vel[1]) / (t[i] - t[i - 1]);
-//    IdealTraj[i].Acc[2] = (IdealTraj[i].Vel[2] - IdealTraj[i - 1].Vel[2]) / (t[i] - t[i - 1]);
-//
-//    IdealTraj[i].AccNorm = sqrt(pow(IdealTraj[i].Acc[0],2.0) + pow(IdealTraj[i].Acc[1],2.0) + pow(IdealTraj[i].Acc[2],2.0));
+//    if (i>1){
+//        IdealTraj[i-2].Acc[0] = (IdealTraj[i-1].Vel[0] - IdealTraj[i - 2].Vel[0]) / (t[i-1] - t[i - 2]);
+//        IdealTraj[i-2].Acc[1] = (IdealTraj[i-1].Vel[1] - IdealTraj[i - 2].Vel[1]) / (t[i-1] - t[i - 2]);
+//        IdealTraj[i-2].Acc[2] = (IdealTraj[i-1].Vel[2] - IdealTraj[i - 2].Vel[2]) / (t[i-1] - t[i - 2]);
+//    
+//        IdealTraj[i-2].AccNorm = sqrt((IdealTraj[i-2].Acc[0])*(IdealTraj[i-2].Acc[0]) + (IdealTraj[i-2].Acc[1])*(IdealTraj[i-2].Acc[1]) + (IdealTraj[i-2].Acc[2])*(IdealTraj[i-2].Acc[2]));        
+//    }
 //
 //  }
 //
@@ -7604,22 +7613,22 @@ fclose(f3);
 //
 //}
 
-/*  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);*/
+
 
 SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std::vector<SM_CURVE_DATA> &IdealTraj)
 {
 
   //SM_LINE_ARC PathComp[], SM_ROT Rot[], int nbComp, double PosInit[3], SM_LIMITS Lim, double tic, int *nbPoints, SM_CURVE_DATA IdealTraj[SM_NB_DISC_MAX]) {
 
-  /* This function take a serie of lines and arcs (using Euler spiral parameter)  and convert into a discretized trajectory
-     -------- PathComp[] : Line & Arc definition
-     -------- Rot[]      : Rotation Information (Rotation matrix)
-     -------- nbComp     : total number of line or arc
-     -------- PosInit    : Stating Position of the path
-     -------- tic        : Time step for discretization (in second)
-     -------- nbPoints   : Output number of sample points (echantillonage)
-     -------- IdealTraj[]: Discretized output information of the input curve
-  */
+//  This function take a serie of lines and arcs (using Euler spiral parameter)  and convert into a discretized trajectory
+//      -------- PathComp[] : Line & Arc definition
+//      -------- Rot[]      : Rotation Information (Rotation matrix)
+//      -------- nbComp     : total number of line or arc
+//      -------- PosInit    : Stating Position of the path
+//      -------- tic        : Time step for discretization (in second)
+//      -------- nbPoints   : Output number of sample points (echantillonage)
+//      -------- IdealTraj[]: Discretized output information of the input curve
+
       
   std::list<SubPath>::iterator iter;
   double lllength = 0.0;
@@ -7647,17 +7656,17 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
 
        
-  /* --------------------------- Using soft Motion to generate the trajectory along the path -------------*/
+ //  --------------------------- Using soft Motion to generate the trajectory along the path 
   Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
   for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
     if(iter->type == LINE) {
-	      
+          
       lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
       TotalLength += lllength;
       Lac[i] = TotalLength;
     }
     else if (iter->type == BEZIER3){
-	    
+        
       lllength = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
       TotalLength += lllength;
       Lac[i] = TotalLength;
@@ -7679,7 +7688,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
     return SM_ERROR;
   }
        
-  /* --------------------------- Compute u du ddu ---------------------------------------------*/
+  //--------------------------- Compute u du ddu ---------------------------------------------
 
   IC[0] = ICloc.a;
   IC[1] = ICloc.v;
@@ -7732,7 +7741,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
   sm_AVX_TimeVar(IC, Time, J, 7, t, nbPoints, ddu, du, u);
 
-  /* --------------------------- 3D evolution ---------------------------------------------*/
+  // --------------------------- 3D evolution ---------------------------------------------
 
  // IdealTraj[0].Pos[0] = path.back().origin.x;
  // IdealTraj[0].Pos[1] = path.back().origin.y;
@@ -7751,35 +7760,36 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
     aux1 = 0.0;
     aux2 = 0.0;
 
-    while ((u[j] < Lac[i]) && (j < nbPoints - 1)){
+    while ((u[j] < Lac[i]) && (j < nbPoints)){
 
-      j++;
+
       if (i == 0){
-	La = u[j];
-	Lb = 0.0;
-	dL = La - Lb;
+    La = u[j];
+    Lb = 0.0;
+    dL = La - Lb;
       }
       else {
-	La = u[j]     - Lac[i - 1];
-	Lb = Lac[i - 1];
-	dL = La - Lb;
+    La = u[j]     - Lac[i - 1];
+    Lb = Lac[i - 1];
+    dL = La - Lb;
       }
-			
+            
 
       if(iter->type == LINE) {
-	IdealTraj[j].Pos[0] = iter->start.x + (La / (Lac[i]-Lb))*(iter->end.x - iter->start.x);
-	IdealTraj[j].Pos[1] = iter->start.y + (La / (Lac[i]-Lb))*(iter->end.y - iter->start.y);
-	IdealTraj[j].Pos[2] = 0.0 ;//iter->start.z + (La / (Lac[i]-Lac[i - 1]))*(iter->end.z - iter->start.z);
-	//std::cout << "LINE traj[" << j << "] " << "x " << IdealTraj[j].Pos[0] << " y "<< IdealTraj[j].Pos[1] << "z " << IdealTraj[j].Pos[2] << std::endl;
+    IdealTraj[j].Pos[0] = iter->start.x + (La / (Lac[i]-Lb))*(iter->end.x - iter->start.x);
+    IdealTraj[j].Pos[1] = iter->start.y + (La / (Lac[i]-Lb))*(iter->end.y - iter->start.y);
+    IdealTraj[j].Pos[2] = 0.0 ;//iter->start.z + (La / (Lac[i]-Lac[i - 1]))*(iter->end.z - iter->start.z);
+    //std::cout << "LINE traj[" << j << "] " << "x " << IdealTraj[j].Pos[0] << " y "<< IdealTraj[j].Pos[1] << "z " << IdealTraj[j].Pos[2] << std::endl;
       }
 
       if(iter->type == BEZIER3) {
-	lpoint = bezier_point( (La / (Lac[i]-Lb)), iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
-	IdealTraj[j].Pos[0] = lpoint.x;
-	IdealTraj[j].Pos[1] = lpoint.y;
-	IdealTraj[j].Pos[2] = 0.0;
-	//std::cout << "BEZIER3 traj[" << j << "] " << "x " << IdealTraj[j].Pos[0] << " y "<< IdealTraj[j].Pos[1] << "z " << IdealTraj[j].Pos[2] << std::endl;
+    lpoint = bezier_point( (La / (Lac[i]-Lb)), iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
+    IdealTraj[j].Pos[0] = lpoint.x;
+    IdealTraj[j].Pos[1] = lpoint.y;
+    IdealTraj[j].Pos[2] = 0.0;
+    //std::cout << "BEZIER3 traj[" << j << "] " << "x " << IdealTraj[j].Pos[0] << " y "<< IdealTraj[j].Pos[1] << "z " << IdealTraj[j].Pos[2] << std::endl;
       }
+      j++;
     }
 
     i++;
@@ -7788,10 +7798,10 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   for (int i = 0; i < nbPoints; i++){
     IdealTraj[i].u   = u[i];
     IdealTraj[i].du  = du[i];
-    IdealTraj[i].ddu  = du[i];
+    IdealTraj[i].ddu  = ddu[i];
   }
 
-  /* --------------------------- Acceleration etc ---------------------------------------------*/
+  // --------------------------- Acceleration etc ---------------------------------------------
 
   IdealTraj[0].du      = 0.0;
   IdealTraj[0].ddu     = 0.0;
@@ -7823,19 +7833,14 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
     }
 
   }
-
   free(t);
   free(u);
   free(du);
   free(ddu);
   free(Lac);
-
-
   return SM_OK;
-
-
-
 }
+
 
 
 
@@ -8100,110 +8105,61 @@ SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURV
     return SM_OK;
 }
 
-// int sm_PathDefine_MatlabTest(double *nbPoints, double xs[10000],double ys[10000], double zs[10000], double J[90], double T[90]){
-// 	
-// 	SM_LINE_ARC Path[2];
-// 	SM_ROT Rot[2];
-// 	double PosInit[3];
-// 	int i, j ,k;
-// 	double tic = 0.01;
-// 	SM_LIMITS LimLoc;			
-// 	SM_CURVE_DATA IdealTraj[SM_NB_DISC_MAX];
-// 	int status;
-// 	int nbSamples;
-// 	
-// 	SM_COND_DIM IC[10];
-// 	SM_COND_DIM FC[10];
-// 	double Timp[10];
-// 	int IntervIndex[11];
-// 	SM_OUTPUT motion[30];
-// 	int nbIntervals = 10;
-// 	
-// 	Rot[0].R[0][0] = sqrt(0.5);
-// 	Rot[0].R[0][1] = -sqrt(0.5);
-// 	Rot[0].R[1][0] = sqrt(0.5);
-// 	Rot[0].R[1][0] = sqrt(0.5);
-// 	
-// 	Rot[1].R[0][0] = sqrt(0.5);
-// 	Rot[1].R[0][1] = -sqrt(0.5);
-// 	Rot[1].R[1][0] = sqrt(0.5);
-// 	Rot[1].R[1][0] = sqrt(0.5);
-// 	Path[0].invR0 = 0.0;
-// 	Path[0].invRf = 0.0;
-// 	Path[0].Ls    = 0.2;
-// 
-// 	Path[1].invR0 = 0.0;
-// 	Path[1].invRf = 1.0 / 0.1;
-// 	Path[1].Ls    = 0.7;
-// 	
-// 	PosInit[0] = 0.0;
-// 	PosInit[1] = 0.0;
-// 	PosInit[2] = 0.0;
-// 	
-// 
-// 	for (j = 0; j < 3; j++){
-// 		for (k = 0; k < 3; k++){
-// 			if (j == k){
-// 				Rot[0].R[j][k] = 1.0;
-// 				Rot[1].R[j][k] = 1.0;
-// 			}
-// 			else {
-// 				Rot[0].R[j][k] = 0.0;
-// 				Rot[1].R[j][k] = 0.0;
-// 			}
-// 		}
-// 	}
-// 	
-// 	Rot[0].R[0][0] = sqrt(0.5);
-// 	Rot[0].R[0][1] = -sqrt(0.5);
-// 	Rot[0].R[1][0] = sqrt(0.5);
-// 	Rot[0].R[1][0] = sqrt(0.5);
-// 	
-// 	Rot[1].R[0][0] = sqrt(0.5);
-// 	Rot[1].R[0][1] = -sqrt(0.5);
-// 	Rot[1].R[1][0] = sqrt(0.5);
-// 	Rot[1].R[1][0] = sqrt(0.5);
-// 	
-// 	LimLoc.maxJerk = 0.9;
-// 	LimLoc.maxAcc  = 0.3;
-// 	LimLoc.maxVel  = 0.15;
-// 				
-// 	status = sm_PathDefine(Path, Rot, 2 , PosInit, LimLoc, tic, &nbSamples, IdealTraj);
-// 	*nbPoints = (double) nbSamples;
-// 					
-// 	for (i = 0; i < *nbPoints; i++){
-// 		xs[i] = IdealTraj[i].Pos[0];
-// 		ys[i] = IdealTraj[i].Pos[1];
-// 		zs[i] = IdealTraj[i].Pos[2];
-// 	}
-// 	
-// 	nbIntervals = 10;
-// 	
-// 	sm_ComputeCondition(IdealTraj, nbSamples, nbIntervals, IC, FC, Timp, IntervIndex);
-// 	
-// 	sm_SolveWithoutOpt(IC, FC, Timp, nbIntervals, motion);
-// 	
-// 	for (i = 0; i < (3 * nbIntervals); i++){
-// 		
-// 		for (j = 0; j < 3; j++){
-// 			
-// 			J[j * nbIntervals * 3 + i] =  motion[i].Jerk[j];
-// 			T[j * nbIntervals * 3 + i] =  motion[i].Time[j];
-// 					
-// 		}
-// 	
-// 	}
-// 	
-// 	return (int) (1000.0 * Timp[9]) ;
-// }
 
-       
-// SM_STATUS sm_PlanTraj(char fileName[128]) {
-// 	
-// 	// readFile();
-// 	
-// 	
-// 	
-// 	
-// 	return SM_OK;
-// }
+SM_STATUS Path_Length(std::list<Path> &path, double *longeur){
+    std::list<SubPath>::iterator iter;
+    double lllength = 0.0;
+    unsigned int i = 0;
+    double TotalLength = 0.0;
+    double *Lac;
+    Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
+    for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
+        if(iter->type == LINE) {
+            lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + 
+                            (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
+            TotalLength += lllength;
+            Lac[i] = TotalLength;
+            *longeur = Lac[i];
+        }
+    else if (iter->type == BEZIER3){
+        
+        lllength = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
+        TotalLength += lllength;
+        Lac[i] = TotalLength;
+        *longeur = Lac[i];
+      //cout << " bEZIER3 length " << lllength << endl;
+        }
+    i++;
+    }
+return SM_OK;
+}
+
+
+SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max, int ind){
+    error.clear();
+    double err;
+    for (unsigned int i = 0; i< ind; i++){
+        err = sqrt(
+                (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])+
+                (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])+
+                (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2]));
+
+
+        if(err > *val_err_max) {
+
+            errorMax->kc[0].x= IdealTraj[i].Pos[0];
+
+            errorMax->kc[1].x= IdealTraj[i].Pos[1];
+
+            errorMax->kc[2].x= IdealTraj[i].Pos[2];
+
+            errorMax->t= IdealTraj[i].t;
+
+            *val_err_max = err;
+
+        }
+    error.push_back(err);
+
+    }
+    return SM_OK;
+}

@@ -36,6 +36,7 @@
 #include <string.h>
 #include <list>
 #include <string>
+#include <vector>
 
 #endif
 
@@ -311,6 +312,7 @@ typedef struct Path
 {
   Point2D origin;
   int nbSubPath;
+  double length;
   std::list<SubPath> subpath;
 } Path;
 
@@ -321,6 +323,14 @@ typedef struct kinPoint
   double t;
 } kinPoint;
 
+typedef struct SubTraj
+{
+  std::vector<SM_CURVE_DATA> traj;
+  std::vector<SM_OUTPUT> motion_par_seg;
+  std::vector<SM_COND_DIM> IC_par_seg;
+  std::vector<SM_COND_DIM> FC_par_seg;
+  double err;
+} SubTraj;
 
 
 #endif
