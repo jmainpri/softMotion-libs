@@ -17,14 +17,14 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void loadSvgFile(std::string str);
-    
+    void initializeApproxVariables();
+ 
 public slots:
     void openFile();
     void closeFile();
     void fullScreen();
     void computeTraj();
     void computeSoftMotion();
-    void test();
 
 protected:
     void changeEvent(QEvent *e);
@@ -38,13 +38,13 @@ private:
     void plotResults(Curve &curv2);
     void plotErrors(Curve &curv2, std::vector<double> &error, double *val_err_max);
     void plotHaus(std::vector<double> &dis1, std::vector<double> &dis2, double *sup1, double *sup2);
-    std::string fileName;
-    bool isFullScreen;
+
 
 private:
     /* Viewer params */
-    int nbCurve;
-
+    int _nbCurve;
+    std::string _fileName;
+    bool _isFullScreen;
 
     
 };
