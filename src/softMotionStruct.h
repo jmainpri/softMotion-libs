@@ -291,7 +291,7 @@ typedef struct SM_OUTPUT{
 #ifdef __cplusplus
 typedef struct Point2D
 {
-  float x, y;
+  double x, y;
 } Point2D;
 
 typedef enum SubPathType
