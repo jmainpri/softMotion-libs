@@ -96,7 +96,7 @@ void Viewer::draw()
 	glPopAttrib();
 	// curve[i].setColor(1,1,1);
       }
-      if(i>1) {
+      if(i>=1) {
 	curve[i].setColor(1,0,0);
       }
 	 
