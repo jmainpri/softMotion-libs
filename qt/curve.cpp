@@ -82,7 +82,7 @@ void Curve::setColor(float f1, float f2, float f3)
 void Curve::createPath(std::string file)
 {
   int i = 0;
-  float index, x, y, z, vx, ax;
+  double index, x, y, z, vx, ax;
   ifstream f (file.c_str());
   string line;
   int nbKeyFrames = 0;
@@ -116,7 +116,7 @@ void Curve::createPath(std::string file)
     for (i=0; i<nbKeyFrames; i++)     
     {
       getline (f,line);
-      sscanf(line.c_str(), "%f %f %f %f %f %f",&index, &x, &y, &z, &vx, &ax);
+      sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf",&index, &x, &y, &z, &vx, &ax);
       keyFrame_[i] = new qglviewer::ManipulatedFrame;
       keyFrame_[i]->setPosition((double)x, (double)y, 0.0);
       //keyFrame_[i]->setPosition(cos(i*2*M_PI/(nbKeyFrames-1)), sin(i*2*M_PI/(nbKeyFrames-1)), 0.0);
