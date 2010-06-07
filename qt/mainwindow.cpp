@@ -219,16 +219,16 @@ void MainWindow::openFile()
   Curve curv;
 
   if (!fileName.isEmpty()){
-    this->fileName = fileName.toStdString();
-    cout << "Open file " << this->fileName << endl;
+    this->_fileName = fileName.toStdString();
+    cout << "Open file " << this->_fileName << endl;
     str.clear();
     str += "Soft Motion Planner : ";
-    str += this->fileName.c_str();
+    str += this->_fileName.c_str();
 
     setWindowTitle(QApplication::translate("MainWindow", str.c_str(), 0, QApplication::UnicodeUTF8));
 
 
-    if (parseSvg(this->fileName.c_str(), curv.path, &curv.width, &curv.height) == SM_ERROR) {
+    if (parseSvg(this->_fileName.c_str(), curv.path, &curv.width, &curv.height) == SM_ERROR) {
       cout << " parse ERROR" << endl;
       return;
     }
@@ -290,7 +290,7 @@ void MainWindow::closeFile()
 void MainWindow::computeTraj()
 {
   SM_LIMITS lim;
-  int nbIntervals_local = 0;
+  int nbIntervals_local = 0; 
   int segment = 1;
   int segment_local = 1;
   int kk = 0;
