@@ -19,7 +19,7 @@
 
 PROJECT (QSoftMotionPlanner C CXX)
 
-file(GLOB source_files ./*.cpp)
+file(GLOB source_files main.cpp mainwindow.cpp curve.cpp viewer.cpp)
 
 #################################################################
 #### Add here a library to include (custom FindPackage.cmake ####
