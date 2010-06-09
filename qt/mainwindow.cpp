@@ -41,7 +41,7 @@
 #include <qwt_symbol.h>
 
 #include <QFileDialog>
-
+#include "../src/time_proto.h"
 #include "../src/softMotion.h"
 using namespace std;
 
@@ -300,6 +300,7 @@ void MainWindow::computeTraj()
   int hh = 0;
   int count_cond = 0;
   int nbIntervals_global = 0;
+  double tu,ts;
   double tic = 0.0;
   double pas_inter = 0.03;
   double longeur_path = 0.0;
@@ -328,6 +329,7 @@ void MainWindow::computeTraj()
   std::vector<double> dis_a_tracer2;
 
   std::list<SubTraj>::iterator iter_temp;
+  ChronoOn();
 
   for(unsigned int i=0 ; i< viewer->curve.size(); i++) {
     viewer->curve[i].setIsDraw(false);
@@ -487,7 +489,7 @@ void MainWindow::computeTraj()
 	memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
 	iter_divis->motion_par_seg.resize(3);
 	Temp_alias.clear();
-	Temp_alias.push_back(iter_temp_divis->traj.size()*tic);
+	Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
 	sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
 	iter_divis->traj.clear();
 	convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
@@ -539,17 +541,17 @@ void MainWindow::computeTraj()
   plotResults(curv2); 
   Calcul_Error(viewer->curve.begin()->traj, curv2.traj, &viewer->curve.begin()->errorMax, error_traj, &val_err_max_traj);
   plotErrors(curv2, error_traj, &val_err_max_traj);
-
-  cout<<"viewer->curve.begin()->traj.size() = "<<viewer->curve.begin()->traj.size()<<endl;
-  cout<<"curv2.traj.size() = "<<curv2.traj.size()<<endl;
-  Hausdorff(viewer->curve.begin()->traj, curv2.traj, dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
-  plotHaus(dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
+//   Hausdorff(viewer->curve.begin()->traj, curv2.traj, dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
+//   plotHaus(dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
 
   saveTraj("QtApproxTraj.dat", curv2.traj);
   curv2.createPath("QtApproxTraj.dat");
   curv2.setIsDraw(true);
   viewer->curve.push_back(curv2);
   viewer->updateGL();
+  ChronoPrint("");
+  ChronoTimes(&tu, &ts);
+  ChronoOff();
   return;
 }
 
@@ -625,9 +627,32 @@ void MainWindow::plotIdealProfile(Curve &curv) {
     yData_px_tra [i] = pos_discr_X[i];
     xData_px_tra [i] = curv.traj[i].t;
   }
+// double length_petit = 0.0;
+// double length_total = 0.0;
+// std::vector<double> length_vec;
+//     for (int i  = 0; i < (int)curv.traj.size();i++){
+//         if (i==0){
+//             length_vec.push_back(0);
+//         }
+//         else{
+//             length_petit = sqrt(
+//                         pow(curv.traj[i].Pos[0]-curv.traj[i-1].Pos[0],2)+
+//                         pow(curv.traj[i].Pos[1]-curv.traj[i-1].Pos[1],2)+
+//                         pow(curv.traj[i].Pos[2]-curv.traj[i-1].Pos[2],2) );
+//             length_total += length_petit;
+//             length_vec.push_back(length_total);
+//         }
+//     }
+//   for (int i  = 0; i < (int)curv.traj.size();i++){
+//     yData_px_tra [i] = length_vec[i];
+//     //       yData_ax_tra [i] = curv.traj[i].AccNorm;
+//     xData_px_tra [i] = curv.traj[i].t;
+//   }
+
   for (int i  = 0; i < (int)curv.traj.size();i++){
     yData_vx_tra [i] = vel_discr_X[i];
-    //       yData_vx_tra [i] = sqrt(curv.traj[i].Vel[0] * curv.traj[i].Vel[0] + curv.traj[i].Vel[1] * curv.traj[i].Vel[1]);
+//           yData_vx_tra [i] = sqrt(curv.traj[i].Vel[0] * curv.traj[i].Vel[0] + 
+//                                 curv.traj[i].Vel[1] * curv.traj[i].Vel[1]);
     //       yData_vx_tra [i] = curv.traj[i].Vel[0];
     xData_vx_tra [i] = curv.traj[i].t;
   }
@@ -755,6 +780,7 @@ void MainWindow::plotResults(Curve &curv2) {
     xData_J_Y [i] = curv2.traj[i].t;
     yData_J_Y [i] = curv2.traj[i].Jerk[1];
   }
+
   for (unsigned int i  = 0; i < curv2.traj.size();i++){
     xData_J_Z [i] = curv2.traj[i].t;
     yData_J_Z [i] = curv2.traj[i].Jerk[2];
