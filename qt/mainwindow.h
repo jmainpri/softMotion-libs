@@ -5,6 +5,7 @@
 #include <string>
 #include "curve.h"
 #include "ui_mainwindow.h"
+#include "gbM/gbGENOM.h"
 
 namespace Ui {
     class MainWindow;

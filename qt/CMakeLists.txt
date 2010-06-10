@@ -60,7 +60,12 @@ INCLUDE_directories(${LIBXML2_INCLUDE_DIR})
 SET(INCLUDE_DIRS ${INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${LIBXML2_LIBRARIES})
 
-
+#-------------- GBM ---------------------------------------
+#----------------------------------------------------------
+FIND_PACKAGE(GBM REQUIRED)
+INCLUDE_directories(${GBM_INCLUDE_DIR})
+  SET(INCLUDE_DIRS ${INCLUDE_DIRS} ${GBM_INCLUDE_DIR})
+SET(LIBS ${LIBS} ${GBM_LIBRARIES})
 
 #####################################################################
 #### Add here a src directory containing a SourceList.cmake file ####
