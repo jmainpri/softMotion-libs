@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Wed May 19 11:42:01 2010
+** Created: Thu Jun 10 11:38:20 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -30,6 +30,7 @@
 #include <QtGui/QSplitter>
 #include <QtGui/QStatusBar>
 #include <QtGui/QTabWidget>
+#include <QtGui/QTableView>
 #include <QtGui/QToolBar>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
@@ -159,7 +160,7 @@ public:
     QSplitter *splitter;
     QTabWidget *tabWidget;
     QWidget *planner;
-    QVBoxLayout *verticalLayout_12;
+    QVBoxLayout *verticalLayout_13;
     QFrame *frame;
     QVBoxLayout *verticalLayout_10;
     QLabel *label_4;
@@ -184,16 +185,20 @@ public:
     QFrame *frame_2;
     QVBoxLayout *verticalLayout_11;
     QLabel *label_5;
-    QVBoxLayout *verticalLayout_13;
-    QLabel *label_6;
-    QFormLayout *formLayout_4;
-    QwtSlider *Slider_Interval;
-    QDoubleSpinBox *doubleSpinBox;
     QVBoxLayout *verticalLayout_14;
     QLabel *label_7;
     QFormLayout *formLayout_6;
     QDoubleSpinBox *doubleSpinBox_SamplingTime;
     QwtSlider *Slider_SamplingTime;
+    QVBoxLayout *verticalLayout_34;
+    QLabel *label_29;
+    QFormLayout *formLayout_15;
+    QDoubleSpinBox *doubleSpinBox_DesError;
+    QwtSlider *Slider_desError;
+    QFrame *frame_7;
+    QVBoxLayout *verticalLayout_12;
+    QLabel *label_6;
+    QTableView *tableResults;
     QSpacerItem *verticalSpacer;
     QPushButton *pushButton;
     QWidget *Traj;
@@ -201,6 +206,11 @@ public:
     QwtPlot *qwtPlot_TrajJerk;
     QwtPlot *qwtPlot_TrajAcc;
     QwtPlot *qwtPlot_TrajVel;
+    QWidget *tab_2;
+    QVBoxLayout *verticalLayout_35;
+    QwtPlot *qwtPlot_TrajAccApprox;
+    QwtPlot *qwtPlot_TrajVelApprox;
+    QwtPlot *qwtPlot_TrajPosApprox;
     QWidget *axisX;
     QVBoxLayout *verticalLayout_3;
     QwtPlot *qwtPlot_JerkXapprox;
@@ -231,7 +241,6 @@ public:
     QwtPlot *qwtPlot_haussdorff1;
     QwtPlot *qwtPlot_haussdorff2;
     QwtPlot *qwtPlot_errortraj;
-    QWidget *tab_2;
     Viewer *viewer;
     QMenuBar *menuBar;
     QMenu *menu_File;
@@ -281,7 +290,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 981, 690));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 961, 823));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -910,10 +919,10 @@ public:
         tabWidget->setTabShape(QTabWidget::Rounded);
         planner = new QWidget();
         planner->setObjectName(QString::fromUtf8("planner"));
-        verticalLayout_12 = new QVBoxLayout(planner);
-        verticalLayout_12->setSpacing(6);
-        verticalLayout_12->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_12->setObjectName(QString::fromUtf8("verticalLayout_12"));
+        verticalLayout_13 = new QVBoxLayout(planner);
+        verticalLayout_13->setSpacing(6);
+        verticalLayout_13->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_13->setObjectName(QString::fromUtf8("verticalLayout_13"));
         frame = new QFrame(planner);
         frame->setObjectName(QString::fromUtf8("frame"));
         sizePolicy4.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
@@ -1026,7 +1035,7 @@ public:
         verticalLayout_10->addWidget(widget_3);
 
 
-        verticalLayout_12->addWidget(frame);
+        verticalLayout_13->addWidget(frame);
 
         frame_2 = new QFrame(planner);
         frame_2->setObjectName(QString::fromUtf8("frame_2"));
@@ -1044,33 +1053,6 @@ public:
         label_5->setFont(font2);
 
         verticalLayout_11->addWidget(label_5);
-
-        verticalLayout_13 = new QVBoxLayout();
-        verticalLayout_13->setSpacing(6);
-        verticalLayout_13->setObjectName(QString::fromUtf8("verticalLayout_13"));
-        label_6 = new QLabel(frame_2);
-        label_6->setObjectName(QString::fromUtf8("label_6"));
-
-        verticalLayout_13->addWidget(label_6);
-
-        formLayout_4 = new QFormLayout();
-        formLayout_4->setSpacing(6);
-        formLayout_4->setObjectName(QString::fromUtf8("formLayout_4"));
-        Slider_Interval = new QwtSlider(frame_2);
-        Slider_Interval->setObjectName(QString::fromUtf8("Slider_Interval"));
-
-        formLayout_4->setWidget(0, QFormLayout::FieldRole, Slider_Interval);
-
-        doubleSpinBox = new QDoubleSpinBox(frame_2);
-        doubleSpinBox->setObjectName(QString::fromUtf8("doubleSpinBox"));
-
-        formLayout_4->setWidget(0, QFormLayout::LabelRole, doubleSpinBox);
-
-
-        verticalLayout_13->addLayout(formLayout_4);
-
-
-        verticalLayout_11->addLayout(verticalLayout_13);
 
         verticalLayout_14 = new QVBoxLayout();
         verticalLayout_14->setSpacing(6);
@@ -1099,17 +1081,70 @@ public:
 
         verticalLayout_11->addLayout(verticalLayout_14);
 
+        verticalLayout_34 = new QVBoxLayout();
+        verticalLayout_34->setSpacing(6);
+        verticalLayout_34->setObjectName(QString::fromUtf8("verticalLayout_34"));
+        label_29 = new QLabel(frame_2);
+        label_29->setObjectName(QString::fromUtf8("label_29"));
 
-        verticalLayout_12->addWidget(frame_2);
+        verticalLayout_34->addWidget(label_29);
+
+        formLayout_15 = new QFormLayout();
+        formLayout_15->setSpacing(6);
+        formLayout_15->setObjectName(QString::fromUtf8("formLayout_15"));
+        doubleSpinBox_DesError = new QDoubleSpinBox(frame_2);
+        doubleSpinBox_DesError->setObjectName(QString::fromUtf8("doubleSpinBox_DesError"));
+        doubleSpinBox_DesError->setDecimals(6);
+        doubleSpinBox_DesError->setMaximum(0.01);
+        doubleSpinBox_DesError->setSingleStep(1e-06);
+        doubleSpinBox_DesError->setValue(0.001);
+
+        formLayout_15->setWidget(0, QFormLayout::LabelRole, doubleSpinBox_DesError);
+
+        Slider_desError = new QwtSlider(frame_2);
+        Slider_desError->setObjectName(QString::fromUtf8("Slider_desError"));
+
+        formLayout_15->setWidget(0, QFormLayout::FieldRole, Slider_desError);
+
+
+        verticalLayout_34->addLayout(formLayout_15);
+
+
+        verticalLayout_11->addLayout(verticalLayout_34);
+
+
+        verticalLayout_13->addWidget(frame_2);
+
+        frame_7 = new QFrame(planner);
+        frame_7->setObjectName(QString::fromUtf8("frame_7"));
+        frame_7->setFrameShape(QFrame::Panel);
+        frame_7->setFrameShadow(QFrame::Sunken);
+        verticalLayout_12 = new QVBoxLayout(frame_7);
+        verticalLayout_12->setSpacing(6);
+        verticalLayout_12->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_12->setObjectName(QString::fromUtf8("verticalLayout_12"));
+        label_6 = new QLabel(frame_7);
+        label_6->setObjectName(QString::fromUtf8("label_6"));
+        label_6->setFont(font2);
+
+        verticalLayout_12->addWidget(label_6);
+
+        tableResults = new QTableView(frame_7);
+        tableResults->setObjectName(QString::fromUtf8("tableResults"));
+
+        verticalLayout_12->addWidget(tableResults);
+
+
+        verticalLayout_13->addWidget(frame_7);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout_12->addItem(verticalSpacer);
+        verticalLayout_13->addItem(verticalSpacer);
 
         pushButton = new QPushButton(planner);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
 
-        verticalLayout_12->addWidget(pushButton);
+        verticalLayout_13->addWidget(pushButton);
 
         tabWidget->addTab(planner, QString());
         Traj = new QWidget();
@@ -1136,6 +1171,28 @@ public:
         verticalLayout_4->addWidget(qwtPlot_TrajVel);
 
         tabWidget->addTab(Traj, QString());
+        tab_2 = new QWidget();
+        tab_2->setObjectName(QString::fromUtf8("tab_2"));
+        verticalLayout_35 = new QVBoxLayout(tab_2);
+        verticalLayout_35->setSpacing(6);
+        verticalLayout_35->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_35->setObjectName(QString::fromUtf8("verticalLayout_35"));
+        qwtPlot_TrajAccApprox = new QwtPlot(tab_2);
+        qwtPlot_TrajAccApprox->setObjectName(QString::fromUtf8("qwtPlot_TrajAccApprox"));
+
+        verticalLayout_35->addWidget(qwtPlot_TrajAccApprox);
+
+        qwtPlot_TrajVelApprox = new QwtPlot(tab_2);
+        qwtPlot_TrajVelApprox->setObjectName(QString::fromUtf8("qwtPlot_TrajVelApprox"));
+
+        verticalLayout_35->addWidget(qwtPlot_TrajVelApprox);
+
+        qwtPlot_TrajPosApprox = new QwtPlot(tab_2);
+        qwtPlot_TrajPosApprox->setObjectName(QString::fromUtf8("qwtPlot_TrajPosApprox"));
+
+        verticalLayout_35->addWidget(qwtPlot_TrajPosApprox);
+
+        tabWidget->addTab(tab_2, QString());
         axisX = new QWidget();
         axisX->setObjectName(QString::fromUtf8("axisX"));
         verticalLayout_3 = new QVBoxLayout(axisX);
@@ -1270,9 +1327,6 @@ public:
         verticalLayout_2->addWidget(qwtPlot_errortraj);
 
         tabWidget->addTab(tabError, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QString::fromUtf8("tab_2"));
-        tabWidget->addTab(tab_2, QString());
         splitter->addWidget(tabWidget);
         viewer = new Viewer(splitter);
         viewer->setObjectName(QString::fromUtf8("viewer"));
@@ -1325,10 +1379,8 @@ public:
         QWidget::setTabOrder(doubleSpinBox_Vmax, doubleSpinBox_SamplingTime);
         QWidget::setTabOrder(doubleSpinBox_SamplingTime, Slider_Vmax);
         QWidget::setTabOrder(Slider_Vmax, Slider_SamplingTime);
-        QWidget::setTabOrder(Slider_SamplingTime, Slider_Interval);
-        QWidget::setTabOrder(Slider_Interval, Slider_Amax);
+        QWidget::setTabOrder(Slider_SamplingTime, Slider_Amax);
         QWidget::setTabOrder(Slider_Amax, Slider_Jmax);
-        QWidget::setTabOrder(Slider_Jmax, doubleSpinBox);
 
         menuBar->addAction(menu_File->menuAction());
         menuBar->addAction(menu_Edit->menuAction());
@@ -1345,13 +1397,11 @@ public:
         QObject::connect(action_Close, SIGNAL(triggered()), MainWindow, SLOT(close()));
         QObject::connect(Slider_Jmax, SIGNAL(sliderMoved(double)), doubleSpinBox_Jmax, SLOT(setValue(double)));
         QObject::connect(Slider_SamplingTime, SIGNAL(sliderMoved(double)), doubleSpinBox_SamplingTime, SLOT(setValue(double)));
-        QObject::connect(doubleSpinBox, SIGNAL(valueChanged(double)), Slider_Interval, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_Amax, SIGNAL(valueChanged(double)), Slider_Amax, SLOT(setValue(double)));
         QObject::connect(Slider_Amax, SIGNAL(sliderMoved(double)), doubleSpinBox_Amax, SLOT(setValue(double)));
         QObject::connect(Slider_Vmax, SIGNAL(sliderMoved(double)), doubleSpinBox_Vmax, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_Jmax, SIGNAL(valueChanged(double)), Slider_Jmax, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_SamplingTime, SIGNAL(valueChanged(double)), Slider_SamplingTime, SLOT(setValue(double)));
-        QObject::connect(Slider_Interval, SIGNAL(sliderMoved(double)), doubleSpinBox, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), Slider_Vmax, SLOT(setValue(double)));
         QObject::connect(pushButton, SIGNAL(clicked()), MainWindow, SLOT(computeTraj()));
         QObject::connect(doubleSpinBox_Jmax_3, SIGNAL(valueChanged(double)), Slider_Jmax_3, SLOT(setValue(double)));
@@ -1381,8 +1431,10 @@ public:
         QObject::connect(doubleSpinBox_A0, SIGNAL(valueChanged(double)), Slider_A0, SLOT(setValue(double)));
         QObject::connect(Slider_X0, SIGNAL(valueChanged(double)), doubleSpinBox_X0, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_X0, SIGNAL(valueChanged(double)), Slider_X0, SLOT(setValue(double)));
+        QObject::connect(Slider_desError, SIGNAL(valueChanged(double)), doubleSpinBox_DesError, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_DesError, SIGNAL(valueChanged(double)), Slider_desError, SLOT(setValue(double)));
 
-        tabWidget_2->setCurrentIndex(0);
+        tabWidget_2->setCurrentIndex(1);
         tabWidget->setCurrentIndex(0);
 
 
@@ -1430,18 +1482,19 @@ public:
         label_2->setText(QApplication::translate("MainWindow", "Maximum Acceleration", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("MainWindow", "Maximum Velocity", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("MainWindow", "Trajectory Parameters", 0, QApplication::UnicodeUTF8));
-        label_6->setText(QApplication::translate("MainWindow", "Number of 3-segment Intervals", 0, QApplication::UnicodeUTF8));
-        label_7->setText(QApplication::translate("MainWindow", "Sampling Time", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("MainWindow", "Sampling", 0, QApplication::UnicodeUTF8));
+        label_29->setText(QApplication::translate("MainWindow", "Desired Error (mm)", 0, QApplication::UnicodeUTF8));
+        label_6->setText(QApplication::translate("MainWindow", "Approximation Results", 0, QApplication::UnicodeUTF8));
         pushButton->setText(QApplication::translate("MainWindow", "Compute", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(planner), QApplication::translate("MainWindow", "Planner", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(Traj), QApplication::translate("MainWindow", "Trajectory", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Traj Approx", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(axisX), QApplication::translate("MainWindow", "Axis X Approx", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(axisY), QApplication::translate("MainWindow", "Axis Y Approx", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(axisZ), QApplication::translate("MainWindow", "Axis Z Approx", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tabIdealX), QApplication::translate("MainWindow", "Ideal X", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tabIdealY), QApplication::translate("MainWindow", "IdealY", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tabError), QApplication::translate("MainWindow", "Error", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Page", 0, QApplication::UnicodeUTF8));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabTrajectoryApproximation), QApplication::translate("MainWindow", "Trajectory Approximation", 0, QApplication::UnicodeUTF8));
         menu_File->setTitle(QApplication::translate("MainWindow", "&File", 0, QApplication::UnicodeUTF8));
         menu_Edit->setTitle(QApplication::translate("MainWindow", "&Edit", 0, QApplication::UnicodeUTF8));

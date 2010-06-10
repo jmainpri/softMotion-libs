@@ -78,15 +78,15 @@ MainWindow::MainWindow(QWidget *parent) :
   this->doubleSpinBox_Amax->setValue(0.3);
   this->doubleSpinBox_Vmax->setValue(0.02);
   this->doubleSpinBox_SamplingTime->setValue(0.001);
-  this->Slider_Interval->setValue(100);
-    
+      
   this->doubleSpinBox_SamplingTime->setValue(0.001);
 
-  /*number of interval here*/
-  this->doubleSpinBox->setRange(0,500);
-  this->doubleSpinBox->setDecimals(0);
-  this->doubleSpinBox->setSingleStep(10);
-  this->doubleSpinBox->setValue(100);
+  /*desired error here*/
+  this->Slider_desError->setRange(0,0.01, 0.000001); 
+  this->doubleSpinBox_DesError->setRange(0,0.01);
+  this->doubleSpinBox_DesError->setDecimals(6);
+  this->doubleSpinBox_DesError->setSingleStep(0.000001);
+  this->doubleSpinBox_DesError->setValue(0.001);
 
     
   connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
