@@ -569,7 +569,9 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = ./src \
-		       ./qt
+		       ./qt \
+		       ../src \
+		       ../qt
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -603,7 +605,10 @@ RECURSIVE              = YES
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
 EXCLUDE                =./qt/ui_mainwindow.h \
-		       ./qt/mainwindow.ui
+		       ./qt/mainwindow.ui \
+		       moc_mainwindow.cxx \
+		       ../qt/ui_mainwindow.h \
+		       ../qt/mainwindow.ui
 
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
