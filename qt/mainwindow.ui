@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>985</width>
-    <height>754</height>
+    <height>823</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,8 +43,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>961</width>
-         <height>823</height>
+         <width>965</width>
+         <height>774</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -1056,6 +1056,52 @@
                   </widget>
                  </item>
                  <item>
+                  <layout class="QGridLayout" name="gridLayout_3">
+                   <item row="0" column="1">
+                    <widget class="QPushButton" name="pushButtonComputeTrajApprox">
+                     <property name="text">
+                      <string>Compute approximated trajectory</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="1">
+                    <layout class="QGridLayout" name="gridLayout_2">
+                     <item row="0" column="1">
+                      <widget class="QPushButton" name="pushButtonGenFile">
+                       <property name="text">
+                        <string>Generate Trajectory file</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QPushButton" name="pushButtonComputeHauss">
+                     <property name="text">
+                      <string>Compute Hausdorff</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="checkBox">
+                     <property name="text">
+                      <string>Draw Trajectory</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="2" column="0">
+                    <widget class="QDoubleSpinBox" name="doubleSpinBoxFileSampling">
+                     <property name="maximum">
+                      <double>1000.000000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>10.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
                   <spacer name="verticalSpacer">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
@@ -1067,13 +1113,6 @@
                     </size>
                    </property>
                   </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pushButton">
-                   <property name="text">
-                    <string>Compute</string>
-                   </property>
-                  </widget>
                  </item>
                 </layout>
                </widget>
@@ -1252,7 +1291,7 @@
      <x>0</x>
      <y>0</y>
      <width>985</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -1382,7 +1421,7 @@
  </customwidgets>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>pushButtonComputeTrajApprox</tabstop>
   <tabstop>doubleSpinBox_Amax</tabstop>
   <tabstop>doubleSpinBox_Jmax</tabstop>
   <tabstop>doubleSpinBox_Vmax</tabstop>
@@ -1539,7 +1578,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>pushButtonComputeTrajApprox</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>computeTraj()</slot>
