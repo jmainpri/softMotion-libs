@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Thu Jun 10 11:38:20 2010
+** Created: Wed Jun 30 10:46:43 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,6 +14,7 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
+#include <QtGui/QCheckBox>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QFormLayout>
 #include <QtGui/QFrame>
@@ -199,8 +200,14 @@ public:
     QVBoxLayout *verticalLayout_12;
     QLabel *label_6;
     QTableView *tableResults;
+    QGridLayout *gridLayout_3;
+    QPushButton *pushButtonComputeTrajApprox;
+    QGridLayout *gridLayout_2;
+    QPushButton *pushButtonGenFile;
+    QPushButton *pushButtonComputeHauss;
+    QCheckBox *checkBox;
+    QDoubleSpinBox *doubleSpinBoxFileSampling;
     QSpacerItem *verticalSpacer;
-    QPushButton *pushButton;
     QWidget *Traj;
     QVBoxLayout *verticalLayout_4;
     QwtPlot *qwtPlot_TrajJerk;
@@ -256,7 +263,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(985, 754);
+        MainWindow->resize(985, 823);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -290,7 +297,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 961, 823));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 965, 774));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -1137,14 +1144,48 @@ public:
 
         verticalLayout_13->addWidget(frame_7);
 
+        gridLayout_3 = new QGridLayout();
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
+        pushButtonComputeTrajApprox = new QPushButton(planner);
+        pushButtonComputeTrajApprox->setObjectName(QString::fromUtf8("pushButtonComputeTrajApprox"));
+
+        gridLayout_3->addWidget(pushButtonComputeTrajApprox, 0, 1, 1, 1);
+
+        gridLayout_2 = new QGridLayout();
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
+        pushButtonGenFile = new QPushButton(planner);
+        pushButtonGenFile->setObjectName(QString::fromUtf8("pushButtonGenFile"));
+
+        gridLayout_2->addWidget(pushButtonGenFile, 0, 1, 1, 1);
+
+
+        gridLayout_3->addLayout(gridLayout_2, 2, 1, 1, 1);
+
+        pushButtonComputeHauss = new QPushButton(planner);
+        pushButtonComputeHauss->setObjectName(QString::fromUtf8("pushButtonComputeHauss"));
+
+        gridLayout_3->addWidget(pushButtonComputeHauss, 1, 1, 1, 1);
+
+        checkBox = new QCheckBox(planner);
+        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+
+        gridLayout_3->addWidget(checkBox, 0, 0, 1, 1);
+
+        doubleSpinBoxFileSampling = new QDoubleSpinBox(planner);
+        doubleSpinBoxFileSampling->setObjectName(QString::fromUtf8("doubleSpinBoxFileSampling"));
+        doubleSpinBoxFileSampling->setMaximum(1000);
+        doubleSpinBoxFileSampling->setValue(10);
+
+        gridLayout_3->addWidget(doubleSpinBoxFileSampling, 2, 0, 1, 1);
+
+
+        verticalLayout_13->addLayout(gridLayout_3);
+
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout_13->addItem(verticalSpacer);
-
-        pushButton = new QPushButton(planner);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-
-        verticalLayout_13->addWidget(pushButton);
 
         tabWidget->addTab(planner, QString());
         Traj = new QWidget();
@@ -1350,7 +1391,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 985, 24));
+        menuBar->setGeometry(QRect(0, 0, 985, 25));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         menu_Edit = new QMenu(menuBar);
@@ -1372,8 +1413,8 @@ public:
         toolBar_2 = new QToolBar(MainWindow);
         toolBar_2->setObjectName(QString::fromUtf8("toolBar_2"));
         MainWindow->addToolBar(Qt::TopToolBarArea, toolBar_2);
-        QWidget::setTabOrder(tabWidget, pushButton);
-        QWidget::setTabOrder(pushButton, doubleSpinBox_Amax);
+        QWidget::setTabOrder(tabWidget, pushButtonComputeTrajApprox);
+        QWidget::setTabOrder(pushButtonComputeTrajApprox, doubleSpinBox_Amax);
         QWidget::setTabOrder(doubleSpinBox_Amax, doubleSpinBox_Jmax);
         QWidget::setTabOrder(doubleSpinBox_Jmax, doubleSpinBox_Vmax);
         QWidget::setTabOrder(doubleSpinBox_Vmax, doubleSpinBox_SamplingTime);
@@ -1403,7 +1444,7 @@ public:
         QObject::connect(doubleSpinBox_Jmax, SIGNAL(valueChanged(double)), Slider_Jmax, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_SamplingTime, SIGNAL(valueChanged(double)), Slider_SamplingTime, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), Slider_Vmax, SLOT(setValue(double)));
-        QObject::connect(pushButton, SIGNAL(clicked()), MainWindow, SLOT(computeTraj()));
+        QObject::connect(pushButtonComputeTrajApprox, SIGNAL(clicked()), MainWindow, SLOT(computeTraj()));
         QObject::connect(doubleSpinBox_Jmax_3, SIGNAL(valueChanged(double)), Slider_Jmax_3, SLOT(setValue(double)));
         QObject::connect(Slider_Jmax_3, SIGNAL(valueChanged(double)), doubleSpinBox_Jmax_3, SLOT(setValue(double)));
         QObject::connect(Slider_Amax_3, SIGNAL(valueChanged(double)), doubleSpinBox_Amax_3, SLOT(setValue(double)));
@@ -1485,7 +1526,10 @@ public:
         label_7->setText(QApplication::translate("MainWindow", "Sampling", 0, QApplication::UnicodeUTF8));
         label_29->setText(QApplication::translate("MainWindow", "Desired Error (mm)", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("MainWindow", "Approximation Results", 0, QApplication::UnicodeUTF8));
-        pushButton->setText(QApplication::translate("MainWindow", "Compute", 0, QApplication::UnicodeUTF8));
+        pushButtonComputeTrajApprox->setText(QApplication::translate("MainWindow", "Compute approximated trajectory", 0, QApplication::UnicodeUTF8));
+        pushButtonGenFile->setText(QApplication::translate("MainWindow", "Generate Trajectory file", 0, QApplication::UnicodeUTF8));
+        pushButtonComputeHauss->setText(QApplication::translate("MainWindow", "Compute Hausdorff", 0, QApplication::UnicodeUTF8));
+        checkBox->setText(QApplication::translate("MainWindow", "Draw Trajectory", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(planner), QApplication::translate("MainWindow", "Planner", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(Traj), QApplication::translate("MainWindow", "Trajectory", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Traj Approx", 0, QApplication::UnicodeUTF8));
