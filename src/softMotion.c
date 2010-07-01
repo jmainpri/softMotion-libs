@@ -62,7 +62,7 @@
 #ifndef MY_FREE
 #define MY_FREE(ptr,type,n) free(ptr)
 #endif
-
+#define PI 3.14159265
 #include "gnuplot_i.hpp"
 
 using std::cout;
@@ -6732,7 +6732,6 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
   double Tloc,Jloc[3];
   double aloc[3], vloc[3], xloc[3];
   int timefile = 0;
-
   double t0 = 0;
   double tl = 0;
   int interval = 0;
@@ -6748,19 +6747,13 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
 
   limit_Time = round (tloctot/tic)+1;
   timefile =0;
-
   for (int tt = 0; tt < limit_Time; tt++) {
       t = tt * tic;
       if((t > (t0 + motion[interval].Time[0])) && (t <= 3*motion[interval].Time[0] )) {
 	    t0  += motion[interval].Time[0];
 	    interval ++;
       }
-//   for (t= 0.0; t< tloctot; t+= tic) {
-// 
-//       if(t >= (t0 + motion[interval].Time[0])) {
-//     t0  += motion[interval].Time[0];
-//     interval ++;
-//       }
+
       for (j = 0; j < 3; j++){
 	    Jloc[j] = motion[interval].Jerk[j];
 	    ICloc[0] = motion[interval].IC[j].a;
@@ -6770,7 +6763,7 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
 	    sm_AVX_TimeVar(ICloc, &Tloc, &Jloc[j], 1, &tl, 1, &aloc[j], &vloc[j], &xloc[j]);
       }
 
-      curveData.t = t; // il faut mettre le temps
+      curveData.t = t;
       curveData.Pos[0]  = xloc[0];
       curveData.Pos[1]  = xloc[1];
       curveData.Pos[2]  = xloc[2];
@@ -6939,6 +6932,8 @@ plotApproxTraj(fileNameApprox, ApproxTraj, width, height) ;
 //  return SM_OK;
 //}
 
+
+
 SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_ratio, double svg_y_sign, double svg_y_offset, double scalex, double scaley) {
   Path lpath;
   SubPath lsubpath;
@@ -6995,13 +6990,15 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	lsubpath.type = LINE;
 	path.back().subpath.push_back(lsubpath);
 	path.back().nbSubPath ++;
-	if(0) {
+	if(1) {
 	  std::cout << "LINE" << std::endl;
 	  std::cout << "start point " << path.back().subpath.back().start.x << " " << path.back().subpath.back().start.y << std::endl;
 	  std::cout << "end   point " << path.back().subpath.back().end.x << " " << path.back().subpath.back().end.y << std::endl;
 
 	}
-      } else if(element=="C") {
+      }
+
+    else if(element=="C") {
 	iss >> element;
 	sscanf(element.c_str(), "%lf,%lf", &lsubpath.bezier3[0].x, &lsubpath.bezier3[0].y);
 	lsubpath.bezier3[0].x = lsubpath.bezier3[0].x* svg_ratio* scalex - lpath.origin.x;
@@ -7024,7 +7021,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	}
 	path.back().subpath.push_back(lsubpath);
 	path.back().nbSubPath ++;
-	if(0) {
+	if(1) {
 	  std::cout << "BEZIER3" << std::endl;
 	  std::cout << "start  point " << path.back().subpath.back().start.x << " " << path.back().subpath.back().start.y << std::endl;
 	  std::cout << "end    point " << path.back().subpath.back().end.x << " " << path.back().subpath.back().end.y << std::endl;
@@ -7032,11 +7029,6 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	  std::cout << "cntrl2 point " << path.back().subpath.back().bezier3[1].x << " " << path.back().subpath.back().bezier3[1].y << std::endl;
 	}
       }
-      else //point
-	{
-	  // 	   path.push_back(subpath);
-	}
-
       iss >> element;
 
     }
@@ -7190,50 +7182,7 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
 }
 
 
-/*
-  Calculate parametric value of x or y given t and the four point
-  coordinates of a cubic bezier curve.
-*/
-Point2D bezier_point(double t, Point2D start, Point2D control_1, Point2D control_2, Point2D end) {
-  Point2D out;
 
-  out.x =  double(
-             start.x * (1.0 - t) * (1.0 - t)  * (1.0 - t)
-    + 3.0 *  control_1.x * (1.0 - t) * (1.0 - t)  * t
-    + 3.0 *  control_2.x * (1.0 - t) * t          * t
-    +              end.x * t         * t          * t   );
-  out.y =  double(
-             start.y * (1.0 - t) * (1.0 - t)  * (1.0 - t)
-    + 3.0 *  control_1.y * (1.0 - t) * (1.0 - t)  * t
-    + 3.0 *  control_2.y * (1.0 - t) * t          * t
-    +              end.y * t         * t          * t   );
-  
-  return out;
-}
-
-/*
-  Approximate length of the Bezier curve which starts at "start" and
-  is defined by "c". According to Computing the Arc Length of Cubic Bezier Curves
-  there is no closed form integral for it.
-*/
-
-double bezier_length (Point2D start, Point2D control_1, Point2D control_2, Point2D end, double step)
-{
-  double t;
-  Point2D dot;
-  Point2D previous_dot;
-  double length = 0.0;
-  for (t = 0; t <= 1.0; t = t+step) {
-    dot = bezier_point (t, start, control_1, control_2, end);
-    if (t > 0) {
-      double x_diff = dot.x - previous_dot.x;
-      double y_diff = dot.y - previous_dot.y;
-      length += sqrt (x_diff * x_diff + y_diff * y_diff);
-    }
-    previous_dot = dot;
-  }
-  return length;
-}
 
 SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
 {
@@ -7356,241 +7305,117 @@ fclose(f3);
   return SM_OK;
 }
 
+SM_STATUS parsePath_sinus(std::list<Path> &path, double tic) {
+    Path lpath;
+    SubPath lsubpath;
+    lsubpath.sinus.start.x = 0.0;
+    lsubpath.sinus.start.y = 0.0;
+    lsubpath.sinus.phase = 0.0;
+    lsubpath.sinus.amplitude = 0.05;
+    lsubpath.sinus.frequency = 10.0;
+    lsubpath.type = SINUS;
+    lpath.subpath.push_back(lsubpath);
+    path.push_back(lpath);
 
-/*  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);*/
+    return SM_OK;
+}
 
-//SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std::vector<SM_CURVE_DATA> &IdealTraj)
-//{
-//
-//  //SM_LINE_ARC PathComp[], SM_ROT Rot[], int nbComp, double PosInit[3], SM_LIMITS Lim, double tic, int *nbPoints, SM_CURVE_DATA IdealTraj[SM_NB_DISC_MAX]) {
-//
-//  /* This function take a serie of lines and arcs (using Euler spiral parameter)  and convert into a discretized trajectory
-//     -------- PathComp[] : Line & Arc definition
-//     -------- Rot[]      : Rotation Information (Rotation matrix)
-//     -------- nbComp     : total number of line or arc
-//     -------- PosInit    : Stating Position of the path
-//     -------- tic        : Time step for discretization (in second)
-//     -------- nbPoints   : Output number of sample points (echantillonage)
-//     -------- IdealTraj[]: Discretized output information of the input curve
-//  */
-//      
-//  std::list<SubPath>::iterator iter;
-//  double lllength = 0.0;
-//  int nbPoints;
-//  unsigned int i = 0;
-//  int j = 0;
-//  int k = 0;
-//  int TrajType;
-//  int zoneOut;
-//  double TotalLength = 0.0;
-//  double dcOut;
-//  SM_COND ICloc, FCloc;
-//  SM_TIMES TimeSeg;
-//
-//  double Time[7];
-//  double IC[3];
-//  double J[7];
-//
-//  double *t, *ddu, *du, *u;
-//  double total_time = 0.0;
-//  double La, Lb, dL;
-//  double *Lac;
-//  double aux0, aux1, aux2;
-//  Point2D lpoint;
-//
-//
-//       
-//  /* --------------------------- Using soft Motion to generate the trajectory along the path -------------*/
-//  Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
-//  for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
-//    if(iter->type == LINE) {
-//	      
-//      lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
-//      TotalLength += lllength;
-//      Lac[i] = TotalLength;
-//    }
-//    else if (iter->type == BEZIER3){
-//	    
-//      lllength = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
-//      TotalLength += lllength;
-//      Lac[i] = TotalLength;
-//      //cout << " bEZIER3 length " << lllength << endl;
-//    }
-//    i++;
-//  }
-//
-//       
-//  ICloc.a = 0.0;
-//  ICloc.v = 0.0;
-//  ICloc.x = 0.0;
-//
-//  FCloc.a = 0.0;
-//  FCloc.v = 0.0;
-//  FCloc.x = TotalLength;
-//
-//  if (sm_ComputeSoftMotionLocal(ICloc, FCloc, Lim, &TimeSeg, &TrajType, &dcOut, &zoneOut) != 0) {
-//    return SM_ERROR;
-//  }
-//       
-//  /* --------------------------- Compute u du ddu ---------------------------------------------*/
-//
-//  IC[0] = ICloc.a;
-//  IC[1] = ICloc.v;
-//  IC[2] = ICloc.x;
-//
-//  Time[0] = TimeSeg.Tjpa;
-//  Time[1] = TimeSeg.Taca;
-//  Time[2] = TimeSeg.Tjna;
-//  Time[3] = TimeSeg.Tvc;
-//  Time[4] = TimeSeg.Tjnb;
-//  Time[5] = TimeSeg.Tacb;
-//  Time[6] = TimeSeg.Tjpb;
-//
-//  J[0] = Lim.maxJerk;
-//  J[1] = 0.0;
-//  J[2] = - Lim.maxJerk;
-//  J[3] = 0.0;
-//  J[4] = - Lim.maxJerk;
-//  J[5] = 0.0;
-//  J[6] = Lim.maxJerk;
-//
-//  for (i = 0; i < 7; i++){
-//    total_time = total_time + Time[i]; // total_time is the time for 7 segment
-//  }
-//
-//  nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
-//  std::cout << "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time << std::endl;
-////   if (SM_NB_DISC_MAX < *nbPoints){
-////     //printf("Time to long. Max number of discretization reached");
-////     return SM_ERROR;
-////   }
-//
-//  IdealTraj.resize(nbPoints);
-//  //= (SM_CURVE_DATA *) malloc(sizeof(SM_CURVE_DATA) * *nbPoints);
-//
-//  t   = (double *) malloc(sizeof(double) * nbPoints);
-//  ddu = (double *) malloc(sizeof(double) * nbPoints);
-//  du  = (double *) malloc(sizeof(double) * nbPoints);
-//  u   = (double *) malloc(sizeof(double) * nbPoints);
-//
-//  for (i = 0; i < IdealTraj.size(); i++){
-//    IdealTraj[i].t = i * tic;
-//    if (IdealTraj[i].t >= total_time) {
-//      IdealTraj[i].t =total_time;
-//    }
-//    t[i] = IdealTraj[i].t;
-//  }
-//
-//  //IdealTraj.at(i).t
-//
-//  sm_AVX_TimeVar(IC, Time, J, 7, t, nbPoints, ddu, du, u);
-//
-//  /* --------------------------- 3D evolution ---------------------------------------------*/
-//
-// // IdealTraj[0].Pos[0] = path.back().origin.x;
-// // IdealTraj[0].Pos[1] = path.back().origin.y;
-//  IdealTraj[0].Pos[0] = 0.0;
-//  IdealTraj[0].Pos[1] = 0.0;
-//  IdealTraj[0].Pos[2] = 0.0;
-//
-//  j = 0;
-//  i = 0;
-//
-//  for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
-//
-//    k = j;
-//
-//    aux0 = 0.0;
-//    aux1 = 0.0;
-//    aux2 = 0.0;
-//
-//    //while ((u[j] < Lac[i]) && (j < nbPoints - 1)){
-//    while ((u[j] < Lac[i]) && (j < nbPoints)){
-//
-//      j++;
-//      if (i == 0){
-//	La = u[j];
-//	Lb = 0.0;
-//	dL = La - Lb;
-//      }
-//      else {
-//	La = u[j]     - Lac[i - 1];
-//	Lb = Lac[i - 1];
-//	dL = La - Lb;
-//      }
-//			
-//
-//      if(iter->type == LINE) {
-//	IdealTraj[j].Pos[0] = iter->start.x + (La / (Lac[i]-Lb))*(iter->end.x - iter->start.x);
-//	IdealTraj[j].Pos[1] = iter->start.y + (La / (Lac[i]-Lb))*(iter->end.y - iter->start.y);
-//	IdealTraj[j].Pos[2] = 0.0 ;//iter->start.z + (La / (Lac[i]-Lac[i - 1]))*(iter->end.z - iter->start.z);
-//	//std::cout << "LINE traj[" << j << "] " << "x " << IdealTraj[j].Pos[0] << " y "<< IdealTraj[j].Pos[1] << "z " << IdealTraj[j].Pos[2] << std::endl;
-//      }
-//
-//      if(iter->type == BEZIER3) {
-//	lpoint = bezier_point( (La / (Lac[i]-Lb)), iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
-//	IdealTraj[j].Pos[0] = lpoint.x;
-//	IdealTraj[j].Pos[1] = lpoint.y;
-//	IdealTraj[j].Pos[2] = 0.0;
-//	//std::cout << "BEZIER3 traj[" << j << "] " << "x " << IdealTraj[j].Pos[0] << " y "<< IdealTraj[j].Pos[1] << "z " << IdealTraj[j].Pos[2] << std::endl;
-//      }
-//    }
-//
-//    i++;
-//  }
-//
-//  for (int i = 0; i < nbPoints; i++){
-//    IdealTraj[i].u   = u[i];
-//    IdealTraj[i].du  = du[i];
-//    IdealTraj[i].ddu  = du[i];
-//  }
-//
-//  /* --------------------------- Acceleration etc ---------------------------------------------*/
-//
-//  IdealTraj[0].du      = 0.0;
-//  IdealTraj[0].ddu     = 0.0;
-//  IdealTraj[0].AccNorm = 0.0;
-//
-//  IdealTraj[0].Vel[0] = 0.0;
-//  IdealTraj[0].Vel[1] = 0.0;
-//  IdealTraj[0].Vel[2] = 0.0;
-//
-//  IdealTraj[0].Acc[0] = 0.0;
-//  IdealTraj[0].Acc[1] = 0.0;
-//  IdealTraj[0].Acc[2] = 0.0;
-//
-//  for (int i = 1; i < nbPoints; i++){
-//
-//    IdealTraj[i].du  = (IdealTraj[i].u  - IdealTraj[i - 1].u ) / (t[i] - t[i-1]);
-//    IdealTraj[i].ddu = (IdealTraj[i].du - IdealTraj[i - 1].du) / (t[i] - t[i-1]);
-//
-//    IdealTraj[i-1].Vel[0] = (IdealTraj[i].Pos[0] - IdealTraj[i - 1].Pos[0]) / (t[i] - t[i - 1]);
-//    IdealTraj[i-1].Vel[1] = (IdealTraj[i].Pos[1] - IdealTraj[i - 1].Pos[1]) / (t[i] - t[i - 1]);
-//    IdealTraj[i-1].Vel[2] = (IdealTraj[i].Pos[2] - IdealTraj[i - 1].Pos[2]) / (t[i] - t[i - 1]);
-//
-//    if (i>1){
-//        IdealTraj[i-2].Acc[0] = (IdealTraj[i-1].Vel[0] - IdealTraj[i - 2].Vel[0]) / (t[i-1] - t[i - 2]);
-//        IdealTraj[i-2].Acc[1] = (IdealTraj[i-1].Vel[1] - IdealTraj[i - 2].Vel[1]) / (t[i-1] - t[i - 2]);
-//        IdealTraj[i-2].Acc[2] = (IdealTraj[i-1].Vel[2] - IdealTraj[i - 2].Vel[2]) / (t[i-1] - t[i - 2]);
-//    
-//        IdealTraj[i-2].AccNorm = sqrt((IdealTraj[i-2].Acc[0])*(IdealTraj[i-2].Acc[0]) + (IdealTraj[i-2].Acc[1])*(IdealTraj[i-2].Acc[1]) + (IdealTraj[i-2].Acc[2])*(IdealTraj[i-2].Acc[2]));        
-//    }
-//
-//  }
-//
-//  free(t);
-//  free(u);
-//  free(du);
-//  free(ddu);
-//  free(Lac);
-//
-//
-//  return SM_OK;
-//
-//
-//
-//}
+/*
+  Calculate parametric value of x or y given t and the four point
+  coordinates of a cubic bezier curve.
+*/
+Point2D bezier_point(double t, Point2D start, Point2D control_1, Point2D control_2, Point2D end) {
+  Point2D out;
 
+  out.x =  double(
+             start.x * (1.0 - t) * (1.0 - t)  * (1.0 - t)
+    + 3.0 *  control_1.x * (1.0 - t) * (1.0 - t)  * t
+    + 3.0 *  control_2.x * (1.0 - t) * t          * t
+    +              end.x * t         * t          * t   );
+  out.y =  double(
+             start.y * (1.0 - t) * (1.0 - t)  * (1.0 - t)
+    + 3.0 *  control_1.y * (1.0 - t) * (1.0 - t)  * t
+    + 3.0 *  control_2.y * (1.0 - t) * t          * t
+    +              end.y * t         * t          * t   );
+  
+  return out;
+}
+
+/*
+  Approximate length of the Bezier curve which starts at "start" and
+  is defined by "c". According to Computing the Arc Length of Cubic Bezier Curves
+  there is no closed form integral for it.
+*/
+
+double bezier_length (Point2D start, Point2D control_1, Point2D control_2, Point2D end, double step)
+{
+  double t;
+  Point2D dot;
+  Point2D previous_dot;
+  double length = 0.0;
+  for (t = 0; t <= 1.0; t = t+step) {
+    dot = bezier_point (t, start, control_1, control_2, end);
+    if (t > 0) {
+      double x_diff = dot.x - previous_dot.x;
+      double y_diff = dot.y - previous_dot.y;
+      length += sqrt (x_diff * x_diff + y_diff * y_diff);
+    }
+    previous_dot = dot;
+  }
+  return length;
+}
+
+double length_cercle(std::list<Path> &path){
+  double rad = 0.0;
+  double length = 0.0;
+  rad = path.back().subpath.front().cercle.radius;
+  length = 2 * PI * rad;
+  
+  return length;
+}
+
+double length_parabol(std::list<Path> &path){
+  double length;
+  double start_x = path.back().subpath.front().parabol.start_x;
+  double end_x = path.back().subpath.front().parabol.end_x;
+  double a = path.back().subpath.front().parabol.a;
+  length = end_x*sqrt(end_x*end_x + a*a) + a*a*log(end_x+sqrt(end_x*end_x + a*a)) -
+           start_x*sqrt(start_x*start_x + a*a) - a*a*log(start_x+sqrt(start_x*start_x + a*a));
+
+  return length;  
+}
+
+double length_sinus(std::list<Path> &path, std::vector<IndiceTrace> &indice_trace){
+  double amp = path.back().subpath.front().sinus.amplitude;
+  double freq = path.back().subpath.front().sinus.frequency;
+  double phas = path.back().subpath.front().sinus.phase;
+  double length = 0.0;
+  double length_dis = 0.0;
+  double t = 0.0;
+  double tic = 0.0001;
+  int size;
+  double x_post = 0.0;
+  double y_post = 0.0;
+  double x_pre = 0.0;
+  double y_pre = 0.0;
+  IndiceTrace ind_tr;
+  size = (int) (path.back().subpath.front().sinus.length_x / tic);
+  for (int i = 0; i< size; i++ ){
+      x_post = t;
+      y_post = amp * sin(2 * PI * freq * x_post + phas);
+      length_dis = sqrt((x_post - x_pre)*(x_post - x_pre)+(y_post - y_pre)*(y_post - y_pre));
+      length += length_dis;
+      ind_tr.x = x_post;
+      ind_tr.y = y_post;
+      ind_tr.length_accumul = length;
+      x_pre = x_post;
+      y_pre = y_post;
+
+      indice_trace.push_back(ind_tr);
+      t += tic;
+  }
+  return length;
+}
 
 
 SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std::vector<SM_CURVE_DATA> &IdealTraj)
@@ -7613,7 +7438,6 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   int nbPoints;
   unsigned int i = 0;
   int j = 0;
-  int k = 0;
   int TrajType;
   int zoneOut;
   double TotalLength = 0.0;
@@ -7624,37 +7448,60 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   double Time[7];
   double IC[3];
   double J[7];
-
   double *t, *ddu, *du, *u;
   double total_time = 0.0;
-  double La, Lb, dL;
   double *Lac;
-  double aux0, aux1, aux2;
   Point2D lpoint;
+  std::vector<double> dis_pos;
+  std::vector<double> distance_tal;
+  std::vector<IndiceTrace> indice_trace;
 
-double time_p2p = 0.0;
-double dis;
-double len;
-std::vector<double> dis_pos;
-std::vector<double> distance_tal;
-
+  double pos_x = 0.0;
+  double pos_y = 0.0;
+  double para = 0.0;
+  double deriv_x = 0.0;
+  double deriv_y = 0.0;
+  double deriv_norm_courb_para = 0.0;
+  double delta_para = 0.0;
+  double absci = 0.0;
+  double delta_absci = 0.0;
+  double para_bezier = 0.0;
+  std::vector<double> absci_vec;
+  std::vector<double> para_vec;
 
        
  //  --------------------------- Using soft Motion to generate the trajectory along the path 
   Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
   for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
-    if(iter->type == LINE) {
-          
+    if(iter->type == LINE_TH) {          
+      lllength = sqrt((iter->line.end.x - iter->line.start.x)*(iter->line.end.x - iter->line.start.x) + (iter->line.end.y - iter->line.start.y)*(iter->line.end.y - iter->line.start.y));
+      TotalLength += lllength;
+      Lac[i] = TotalLength;
+    }
+    else if(iter->type == LINE){
       lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
       TotalLength += lllength;
       Lac[i] = TotalLength;
     }
-    else if (iter->type == BEZIER3){
-        
+    else if (iter->type == BEZIER3){       
       lllength = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end, step_for_bezier);
       TotalLength += lllength;
       Lac[i] = TotalLength;
-      //cout << " bEZIER3 length " << lllength << endl;
+    }
+    else if (iter->type == SINUS){
+      lllength = length_sinus(path, indice_trace);
+      TotalLength += lllength;
+      Lac[i] = TotalLength;
+    }
+    else if (iter->type == CERCLE){
+      lllength = length_cercle(path);
+      TotalLength += lllength;
+      Lac[i] = TotalLength;
+    }
+    else if(iter->type == PARABOL){
+      lllength = length_parabol(path);
+      TotalLength += lllength;
+      Lac[i] = TotalLength;
     }
     i++;
   }
@@ -7700,13 +7547,7 @@ std::vector<double> distance_tal;
 
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
   std::cout << "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time << std::endl;
-//   if (SM_NB_DISC_MAX < *nbPoints){
-//     //printf("Time to long. Max number of discretization reached");
-//     return SM_ERROR;
-//   }
-
   IdealTraj.resize(nbPoints);
-  //= (SM_CURVE_DATA *) malloc(sizeof(SM_CURVE_DATA) * *nbPoints);
 
   t   = (double *) malloc(sizeof(double) * nbPoints);
   ddu = (double *) malloc(sizeof(double) * nbPoints);
@@ -7721,124 +7562,144 @@ std::vector<double> distance_tal;
     t[i] = IdealTraj[i].t;
   }
 
-  //IdealTraj.at(i).t
-
   sm_AVX_TimeVar(IC, Time, J, 7, t, nbPoints, ddu, du, u);
-
-  // --------------------------- 3D evolution ---------------------------------------------
-
- // IdealTraj[0].Pos[0] = path.back().origin.x;
- // IdealTraj[0].Pos[1] = path.back().origin.y;
-  IdealTraj[0].Pos[0] = 0.0;
-  IdealTraj[0].Pos[1] = 0.0;
-  IdealTraj[0].Pos[2] = 0.0;
-
-  j = 0;
-  i = 0;
-
-  for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
-    k = j;
-    double tt = 0.0;
-    aux0 = 0.0;
-    aux1 = 0.0;
-    aux2 = 0.0;
-
-    while ((u[j] < Lac[i]) && (j < nbPoints)){
-      if (i == 0){
-    La = u[j];
-    Lb = 0.0;
-    dL = La - Lb;
-      }
-      else {
-    La = u[j]     - Lac[i - 1];
-    Lb = Lac[i - 1];
-    dL = La - Lb;
-      }
-
-      if(iter->type == LINE) {
-    IdealTraj[j].Pos[0] = iter->start.x + (La / (Lac[i]-Lb))*(iter->end.x - iter->start.x);
-    IdealTraj[j].Pos[1] = iter->start.y + (La / (Lac[i]-Lb))*(iter->end.y - iter->start.y);
-    IdealTraj[j].Pos[2] = 0.0 ;
-      }
-
-      if(iter->type == BEZIER3) {
-    lpoint = bezier_point( (La / (Lac[i]-Lb)), iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
-    IdealTraj[j].Pos[0] = lpoint.x;
-    IdealTraj[j].Pos[1] = lpoint.y;
-    IdealTraj[j].Pos[2] = 0.0;
-      }
-
-//       if(iter->type == BEZIER3) {
-//         lpoint = bezier_point( tt/total_time, iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end);
-//         IdealTraj[j].Pos[0] = lpoint.x;
-//         IdealTraj[j].Pos[1] = lpoint.y;
-//         IdealTraj[j].Pos[2] = 0.0;
-//       }
-//       tt += tic;
-      j++;
-    }
-    i++;
-  }
-
+  
   for (int i = 0; i < nbPoints; i++){
     IdealTraj[i].u   = u[i];
     IdealTraj[i].du  = du[i];
     IdealTraj[i].ddu  = ddu[i];
   }
 
+  // --------------------------- 3D evolution ---------------------------------------------
 
-    for (int i = 1; i < nbPoints; i++){
-            dis = sqrt(
-                (IdealTraj[i].Pos[0] - IdealTraj[i-1].Pos[0]) * (IdealTraj[i].Pos[0] - IdealTraj[i-1].Pos[0])+ (IdealTraj[i].Pos[1] - IdealTraj[i-1].Pos[1]) * (IdealTraj[i].Pos[1] - IdealTraj[i-1].Pos[1]) );
-            dis_pos.push_back(dis);
-            len += dis;
-            distance_tal.push_back(len);
+  j = 0;
+  i = 0;
+  double x1,x2,x3,x4;
+  double y1,y2,y3,y4;
+  /* This loop calculate the sum of parameters for each sous-path */
+  for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
+    para_bezier = 0.0;
+    while ((u[j] < Lac[i]) && (j < nbPoints)){
+      if(iter->type == BEZIER3) {
+        x1 = iter->start.x;
+        x2 = iter->bezier3[0].x;
+        x3 = iter->bezier3[1].x;
+        x4 = iter->end.x;
+        y1 = iter->start.y;
+        y2 = iter->bezier3[0].y;
+        y3 = iter->bezier3[1].y;
+        y4 = iter->end.y;
+        deriv_x = -3.0*iter->start.x*(1.0-para_bezier)*(1.0-para_bezier) +
+                  3.0*iter->bezier3[0].x*(1.0-para_bezier)*(1.0-para_bezier) - 6*iter->bezier3[0].x*para_bezier*(1.0-para_bezier) +
+                  6.0*iter->bezier3[1].x*(1.0-para_bezier)*para_bezier - 3.0*iter->bezier3[1].x*para_bezier*para_bezier +
+                  3.0*para_bezier*para_bezier*iter->end.x;
+        deriv_y = -3.0*iter->start.y*(1.0-para_bezier)*(1.0-para_bezier) +
+                  3.0*iter->bezier3[0].y*(1.0-para_bezier)*(1.0-para_bezier) - 6*iter->bezier3[0].y*para_bezier*(1.0-para_bezier) +
+                  6.0*iter->bezier3[1].y*(1.0-para_bezier)*para_bezier - 3.0*iter->bezier3[1].y*para_bezier*para_bezier +
+                  3.0*para_bezier*para_bezier*iter->end.y;
+	deriv_norm_courb_para = sqrt(deriv_x * deriv_x + deriv_y * deriv_y);
+	delta_para = IdealTraj[j].du * tic / deriv_norm_courb_para;
+	para_bezier += delta_para;
+      }
+      if(iter->type == LINE){
+        x1 = iter->start.x;
+        x4 = iter->end.x;
+        y1 = iter->start.y;
+        y4 = iter->end.y;
+	deriv_x = iter->end.x - iter->start.x;
+	deriv_y = deriv_x * (iter->end.y - iter->start.y)/(iter->end.x - iter->start.x);
+	deriv_norm_courb_para = sqrt(deriv_x * deriv_x + deriv_y * deriv_y);
+	delta_para = IdealTraj[j].du * tic / deriv_norm_courb_para;
+	para_bezier += delta_para;
+      }
+      j++;
     }
+    para_vec.push_back(para_bezier);
+    i++;
+  }
+  
+  j = 0;
+  i = 0;
 
-  // --------------------------- Acceleration etc ---------------------------------------------
+  for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
+    para = 0.0;
+    while ((u[j] < Lac[i]) && (j < nbPoints)){
+      if (iter->type == BEZIER3){
+        lpoint = bezier_point(para/para_vec[i], iter->start, iter->bezier3[0], iter->bezier3[1], iter->end);
+        pos_x = lpoint.x;
+        pos_y = lpoint.y;
+        deriv_x = -3.0*iter->start.x*(1.0-para)*(1.0-para) +
+                  3.0*iter->bezier3[0].x*(1.0-para)*(1.0-para) - 6*iter->bezier3[0].x*para*(1.0-para) +
+                  6.0*iter->bezier3[1].x*(1.0-para)*para - 3.0*iter->bezier3[1].x*para*para +
+                  3.0*para*para*iter->end.x;
+        deriv_y = -3.0*iter->start.y*(1.0-para)*(1.0-para) +
+                  3.0*iter->bezier3[0].y*(1.0-para)*(1.0-para) - 6*iter->bezier3[0].y*para*(1.0-para) +
+                  6.0*iter->bezier3[1].y*(1.0-para)*para - 3.0*iter->bezier3[1].y*para*para +
+                  3.0*para*para*iter->end.y;        
+      }
+      
+      if(iter->type == LINE) {
+	pos_x = iter->start.x + (para/para_vec[i])*(iter->end.x - iter->start.x);;
+	pos_y = iter->start.y + (pos_x - iter->start.x)*(iter->end.y - iter->start.y)/(iter->end.x - iter->start.x);
+	deriv_x = (iter->end.x - iter->start.x)/para_vec[i];
+	deriv_y = deriv_x * (iter->end.y - iter->start.y)/(iter->end.x - iter->start.x);
+      }
+    
+      if(iter->type == LINE_TH) {
+        pos_x = para;
+        pos_y = iter->line.start.y + (para - iter->line.start.x)*(iter->line.end.y - iter->line.start.y)/(iter->line.end.x - iter->line.start.x);
+        deriv_x = 1.0;
+        deriv_y = (iter->line.end.y - iter->line.start.y)/(iter->line.end.x - iter->line.start.x);
+      }
 
-  IdealTraj[0].du      = 0.0;
-  IdealTraj[0].ddu     = 0.0;
-  IdealTraj[0].AccNorm = 0.0;
+      if(iter->type == CERCLE){
+        pos_x = iter->cercle.radius * sin(2*PI*iter->cercle.sinus_para.frequency*para + PI/2) -  iter->cercle.radius; // bidouille
+        pos_y = iter->cercle.radius * sin(2*PI*iter->cercle.sinus_para.frequency*para);
+        deriv_x = 2*PI*iter->cercle.sinus_para.frequency*iter->cercle.radius *
+                  cos(2*PI*iter->cercle.sinus_para.frequency*para + PI/2);
+        deriv_y = 2*PI*iter->cercle.sinus_para.frequency*iter->cercle.radius *
+                  cos(2*PI*iter->cercle.sinus_para.frequency*para);       
+      }
 
-  IdealTraj[0].Vel[0] = 0.0;
-  IdealTraj[0].Vel[1] = 0.0;
-  IdealTraj[0].Vel[2] = 0.0;
+      if(iter->type == SINUS){
+        pos_x = para;
+        pos_y = iter->sinus.amplitude * 
+                sin(2 * PI * iter->sinus.frequency * pos_x + iter->sinus.phase);
+        deriv_x = 1.0;
+        deriv_y = iter->sinus.amplitude *2 * PI * iter->sinus.frequency * 
+                  cos(2 * PI * iter->sinus.frequency * pos_x + iter->sinus.phase);
+      }
+      
+      if(iter->type == PARABOL){
+        pos_x = para;
+        pos_y = iter->parabol.a * pos_x * pos_x;
+        deriv_x = 1.0;
+        deriv_y = 2 * iter->parabol.a * pos_x;
+      }
 
-  IdealTraj[0].Acc[0] = 0.0;
-  IdealTraj[0].Acc[1] = 0.0;
-  IdealTraj[0].Acc[2] = 0.0;
-
-//   for (int i = 1; i < nbPoints; i++){
-//     time_p2p = (u[i]-u[i-1])/TotalLength;
-//     IdealTraj[i].du  = (IdealTraj[i].u  - IdealTraj[i - 1].u ) / (t[i] - t[i-1]);
-//     IdealTraj[i].ddu = (IdealTraj[i].du - IdealTraj[i - 1].du) / (t[i] - t[i-1]);
-// 
-//     IdealTraj[i].Vel[0] = (IdealTraj[i].Pos[0] - IdealTraj[i - 1].Pos[0]) / time_p2p;
-//     IdealTraj[i].Vel[1] = (IdealTraj[i].Pos[1] - IdealTraj[i - 1].Pos[1]) / time_p2p;
-//     IdealTraj[i].Vel[2] = (IdealTraj[i].Pos[2] - IdealTraj[i - 1].Pos[2]) / time_p2p;
-// 
-//     IdealTraj[i].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i - 1].Vel[0]) / time_p2p;
-//     IdealTraj[i].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i - 1].Vel[1]) / time_p2p;
-//     IdealTraj[i].Acc[2] = (IdealTraj[i].Vel[2] - IdealTraj[i - 1].Vel[2]) / time_p2p;
-// 
-//     IdealTraj[i].AccNorm = sqrt(pow(IdealTraj[i].Acc[0],2.0) + pow(IdealTraj[i].Acc[1],2.0) + pow(IdealTraj[i].Acc[2],2.0));
-// 
-//   }
-
+      /* Calculation of abscis and velocity for a trajectory */
+      deriv_norm_courb_para = sqrt(deriv_x * deriv_x + deriv_y * deriv_y);
+      delta_para = IdealTraj[j].du * tic / deriv_norm_courb_para;
+      delta_absci = delta_para * deriv_norm_courb_para;
+      absci += delta_absci;
+      IdealTraj[j].absci = absci;
+      IdealTraj[j].Pos[0] = pos_x;
+      IdealTraj[j].Pos[1] = pos_y;
+      IdealTraj[j].Vel[0] = deriv_x * IdealTraj[j].du / deriv_norm_courb_para;
+      IdealTraj[j].Vel[1] = deriv_y * IdealTraj[j].du / deriv_norm_courb_para;    
+      absci_vec.push_back(absci);
+      para += delta_para; 
+      j++;
+    }
+    i++;
+  }
+  
   for (int i = 1; i < nbPoints; i++){
-    IdealTraj[i].du  = (IdealTraj[i].u  - IdealTraj[i - 1].u ) / (t[i] - t[i-1]);
-    IdealTraj[i].ddu = (IdealTraj[i].du - IdealTraj[i - 1].du) / (t[i] - t[i-1]);
-
-    IdealTraj[i].Vel[0] = (IdealTraj[i].Pos[0] - IdealTraj[i - 1].Pos[0]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Vel[1] = (IdealTraj[i].Pos[1] - IdealTraj[i - 1].Pos[1]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Vel[2] = (IdealTraj[i].Pos[2] - IdealTraj[i - 1].Pos[2]) / (t[i] - t[i - 1]);
-
-    IdealTraj[i].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i - 1].Vel[0]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i - 1].Vel[1]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Acc[2] = (IdealTraj[i].Vel[2] - IdealTraj[i - 1].Vel[2]) / (t[i] - t[i - 1]);
-
-    IdealTraj[i].AccNorm = sqrt(pow(IdealTraj[i].Acc[0],2.0) + pow(IdealTraj[i].Acc[1],2.0) + pow(IdealTraj[i].Acc[2],2.0));
+        IdealTraj[i-1].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i-1].Vel[0]) / (t[i] - t[i-1]);
+        IdealTraj[i-1].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i-1].Vel[1]) / (t[i] - t[i-1]);
+        IdealTraj[i-1].Acc[2] = (IdealTraj[i].Vel[2] - IdealTraj[i-1].Vel[2]) / (t[i] - t[i-1]);
+    
+        IdealTraj[i-1].AccNorm = sqrt((IdealTraj[i-1].Acc[0])*(IdealTraj[i-1].Acc[0]) + (IdealTraj[i-1].Acc[1])*(IdealTraj[i-1].Acc[1]) + (IdealTraj[i-1].Acc[2])*(IdealTraj[i-1].Acc[2]));        
 
   }
 
@@ -7937,20 +7798,16 @@ fileName.append(argv[1]);
 
 
 SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max){
-
     error.clear();
     double err;
     for (unsigned int i = 0; i< ApproxTraj.size(); i++){
 
         err = sqrt(
-(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].
-        Pos[0 ])+
-(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].
-        Pos[1 ])+
-(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].
-        Pos[2 ]));
+              (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0 ])+
+              (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1 ])+
+              (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2 ]));
+              
         if(err > *val_err_max) {
-        
         errorMax->kc[0].x= IdealTraj[i].Pos[0];
         errorMax->kc[1].x= IdealTraj[i].Pos[1];
         errorMax->kc[2].x= IdealTraj[i].Pos[2];
@@ -7968,14 +7825,6 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
 
 
 SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y){
-
-/*
-    double diff_pos_X = 0.0;
-    double diff_pos_Y = 0.0;
-    double diff_vel_X = 0.0;
-    double diff_vel_Y = 0.0;
-*/
-    
     for (unsigned int j=0;j<IdealTraj.size();j++){
         pos_discr_X.push_back(IdealTraj[j].Pos[0]);
         pos_discr_Y.push_back(IdealTraj[j].Pos[1]);
@@ -7993,24 +7842,17 @@ SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double
 }
 
 SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_x, std::vector<double> &vel_path_y, double sample_time){
-    //double longeur = 0.0;
     double sub_length;
-    //double sample_time = 0.001;// a changer
     double t;
     double pos_x;
     double pos_y;
     double pos_pre_x;
     double pos_pre_y;
     double TotalLength=0.0;
-    //int i = 0;
-    //int step = 0.001;
     Point2D dot;
     Point2D previous_dot;
- //   std::vector<double> pos_x;
- //   std::vector<double> pos_y;
 
     std::list<SubPath>::iterator iter;
-
 
     for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
         if(iter->type == LINE) {
@@ -8018,29 +7860,22 @@ SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_
             double y_diff = (iter->end.y - iter->start.y);
             pos_pre_x = iter->start.x;
             pos_pre_y = iter->start.y;
-            //sub_length = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
-
             for (t = sample_time; t<=1; t = t+sample_time){
                 pos_x = iter->start.x + x_diff * t;
                 pos_y = iter->start.y + y_diff * t;
-
                 vel_path_x.push_back((pos_x-pos_pre_x)/sample_time);
                 vel_path_y.push_back((pos_y-pos_pre_y)/sample_time);
-
                 pos_pre_x = pos_x;
                 pos_pre_y = pos_y;
             }
         }
-
-
+        
         else if (iter->type == BEZIER3){
             sub_length = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end, step_for_bezier);
             TotalLength = sub_length + TotalLength;
 
             for (t = 0.0; t <= 1; t = t+sample_time) {
-                 dot = bezier_point (t, iter->start, iter->bezier3[0], iter->bezier3[1], iter->end);
-//                 double petit_dis = sqrt((dot.x - previous_dot.x)*(dot.x - previous_dot.x)+
-//                                     (dot.y - previous_dot.y)*(dot.y - previous_dot.y));
+                dot = bezier_point (t, iter->start, iter->bezier3[0], iter->bezier3[1], iter->end);
                 if (t > 0) {
                     double x_diff = dot.x - previous_dot.x;
                     vel_path_x.push_back(x_diff/sample_time);
@@ -8123,22 +7958,46 @@ SM_STATUS Path_Length(std::list<Path> &path, double *longeur){
     double TotalLength = 0.0;
     double *Lac;
     Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
+    std::vector<IndiceTrace> indice_trace;
     for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
-        if(iter->type == LINE) {
-            lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + 
-                            (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
-            TotalLength += lllength;
-            Lac[i] = TotalLength;
-            *longeur = Lac[i];
-        }
-    else if (iter->type == BEZIER3){
-        
+      if(iter->type == LINE_TH) {
+        lllength = sqrt((iter->line.end.x - iter->line.start.x)*(iter->line.end.x - iter->line.start.x) + 
+                (iter->line.end.y - iter->line.start.y)*(iter->line.end.y - iter->line.start.y));
+        TotalLength += lllength;
+        Lac[i] = TotalLength;
+        *longeur = Lac[i];
+      }
+      if(iter->type == LINE) {
+        lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + 
+                (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
+        TotalLength += lllength;
+        Lac[i] = TotalLength;
+        *longeur = Lac[i];
+      }
+      else if (iter->type == BEZIER3){
         lllength = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end, step_for_bezier);
         TotalLength += lllength;
         Lac[i] = TotalLength;
         *longeur = Lac[i];
-      //cout << " bEZIER3 length " << lllength << endl;
-        }
+	  }
+      else if (iter->type == SINUS){
+        lllength = length_sinus(path, indice_trace);
+        TotalLength += lllength;
+        Lac[i] = TotalLength;
+        *longeur = Lac[i];
+      }        
+      else if(iter->type == CERCLE){
+        lllength = length_cercle(path);
+        TotalLength += lllength;
+        Lac[i] = TotalLength;
+        *longeur = Lac[i];
+      }
+      else if(iter->type == PARABOL){
+        lllength = length_parabol(path);
+        TotalLength += lllength;
+        Lac[i] = TotalLength;
+        *longeur = Lac[i];      
+      }
     i++;
     }
 return SM_OK;
@@ -8173,3 +8032,4 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
     }
     return SM_OK;
 }
+

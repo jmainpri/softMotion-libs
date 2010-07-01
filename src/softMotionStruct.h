@@ -268,6 +268,7 @@ typedef struct SM_CURVE_DATA{
 	double Acc[3];  // projected acceleration in cartesian coordinate 
          double Jerk[3];
 	double AccNorm; // acceleration norm 
+	double absci;
 }SM_CURVE_DATA;
 
 typedef struct SM_ROT{
@@ -297,15 +298,52 @@ typedef struct Point2D
 typedef enum SubPathType
   {
     LINE,
+    LINE_TH,
     BEZIER3,
+    CERCLE,
+    SINUS,
+    PARABOL,
   } SubPathType;
+  
+  typedef struct SinusParams 
+{
+    Point2D start;
+    double frequency;
+    double amplitude;
+    double phase;
+    double length_x;
+} SinusParams ;
 
+typedef struct CercleParams 
+{
+    Point2D center;
+    double radius;
+    double angleStart;
+    double angleEnd;
+    SinusParams sinus_para;
+} CercleParams ;
+
+typedef struct LineParams
+{
+  Point2D start, end;
+}LineParams;
+
+typedef struct ParabolParams
+{
+  double a;
+  double start_x;
+  double end_x;
+}ParabolParams;
 
 typedef struct SubPath
 {
   SubPathType type;
   Point2D start, end;
   Point2D bezier3[2]; // control point at start and end
+  CercleParams cercle;
+  SinusParams sinus;
+  LineParams line;
+  ParabolParams parabol;
 } SubPath;
 
 typedef struct Path
@@ -332,6 +370,12 @@ typedef struct SubTraj
   double err;
 } SubTraj;
 
+typedef struct IndiceTrace
+{
+  double length_accumul;
+  double x;
+  double y;
+}IndiceTrace;
 
 #endif
 

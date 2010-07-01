@@ -4,7 +4,7 @@
 
 #include <string>
 #include <iostream>
-
+#include <fstream>
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
@@ -39,7 +39,7 @@
 #include <qwt_plot_marker.h>
 #include <qwt_painter.h>
 #include <qwt_symbol.h>
-
+#include <qprogressbar.h>
 #include <QFileDialog>
 #include "../src/time_proto.h"
 #include "../src/softMotion.h"
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   Ui_MainWindow()
 {
+  int type_courbe;
   this->setupUi(this);
 
   setWindowTitle(QApplication::translate("MainWindow", "Soft Motion Planner", 0, QApplication::UnicodeUTF8));
@@ -78,8 +79,6 @@ MainWindow::MainWindow(QWidget *parent) :
   this->doubleSpinBox_Amax->setValue(0.3);
   this->doubleSpinBox_Vmax->setValue(0.02);
   this->doubleSpinBox_SamplingTime->setValue(0.001);
-      
-  this->doubleSpinBox_SamplingTime->setValue(0.001);
 
   /*desired error here*/
   this->Slider_desError->setRange(0,0.01, 0.000001); 
@@ -93,6 +92,13 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
   connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
   //connect(this->pushButton, SIGNAL(clicked(bool)), this, SLOT(computeTraj()) ) ;
+  
+  connect(this->pushButtonGenFile, SIGNAL(clicked(bool)), this, SLOT(genFileTraj()));
+
+  connect(this->pushButtonComputeHauss, SIGNAL(clicked(bool)), this, SLOT(computeHausdorff()) ) ;
+
+  connect(this->checkBox, SIGNAL(clicked(bool)), this, SLOT(setDraw()) ) ;
+  this->checkBox->setChecked(Qt::Checked);   
 
   ////////////////////////////////////////////////////////////
   //////  SoftMotion Planner                    /////////////
@@ -166,18 +172,117 @@ MainWindow::MainWindow(QWidget *parent) :
     
     connect(this->Slider_A0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
     connect(this->Slider_V0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
-    // connect(this->Slider_X0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
 
+    /* interface of asking a path type*/
+    cout<<endl<<"**** Choose a path type please ****"<<endl;
+    cout<<"0--none"<<endl<<"1--droite"<<endl<<"2--circle"<<endl<<"3--sinusoid"<<endl<<"4--parabole"<<endl<<"5--file"<<endl;
+    cin>>type_courbe;
+    switch (type_courbe){
+      case 0:                       break;
+      case 1:   defineFunction_l(); break;
+      case 2:   defineFunction_c(); break;
+      case 3:   defineFunction_s(); break;
+      case 4:   defineFunction_p(); break;
+      case 5:   openFile();         break;
+      default:                      break;
+    }
 
     _nbCurve = 0;
     _fileName = "";
     _isFullScreen = false;
+    
 }
 
 MainWindow::~MainWindow()
 {
 
 }
+
+void MainWindow::genFileTraj(){
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  int incr = int (this->doubleSpinBoxFileSampling->value());
+  FILE *fp = NULL;
+  fp = fopen("output.traj", "w");
+  if(fp==NULL) {
+   std::cerr << " cannont open file to write the trajectory" << std::endl; 
+   return;
+  }
+  for (unsigned int i = 0; i < viewer->curve.back().traj.size(); i += incr){
+    fprintf(fp, "%lf\t", viewer->curve.back().traj[i].Pos[0]);
+    fprintf(fp, "%lf\t", viewer->curve.back().traj[i].Pos[1]);
+    fprintf(fp, "%lf\n", viewer->curve.back().traj[i].Pos[2]);
+  }
+  fclose(fp);
+  QApplication::setOverrideCursor(Qt::ArrowCursor);
+  return;
+}
+
+ void MainWindow::computeHausdorff(){
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+
+    std::vector<double> dis_a_tracer1;
+    std::vector<double> dis_a_tracer2;
+    double sup1 = 0.0;
+    double sup2 = 0.0;
+    double haus_sup1 = 0.0;
+    double haus_sup2 = 0.0;
+    double dis_hausdorff = 0.0;
+    double w = 0.0;
+
+// f1 pour calculer la distance la plus longue entre courbe1 et courbe2
+    for (int i=0; i< (int)viewer->curve.front().traj.size(); i++){
+        std::vector<double> dis1;
+        for (int j=0; j<  (int)viewer->curve.back().traj.size(); j++){
+            w = sqrt(pow((viewer->curve.front().traj[i].Pos[0]-viewer->curve.back().traj[j].Pos[0]),2) +  pow((viewer->curve.front().traj[i].Pos[1]-viewer->curve.back().traj[j].Pos[1]),2) + pow((viewer->curve.front().traj[i].Pos[2]-viewer->curve.back().traj[j].Pos[2]),2));
+            dis1.push_back (w);
+        }
+        double inf1 = dis1[0];
+        for (int k=0; k<(int)viewer->curve.back().traj.size(); k++){
+            if (dis1[k]<inf1) {inf1 = dis1[k];}
+        }
+        dis_a_tracer1.push_back(inf1);
+    }
+    sup1 = dis_a_tracer1[0];
+    for (int m=0; m<(int)viewer->curve.front().traj.size(); m++){
+        if (dis_a_tracer1[m]>(sup1)) {sup1 = dis_a_tracer1[m];}
+    }
+    
+// f2 pour calculer la distance la plus longue entre courbe2 et courbe1
+    for (int i=0; i< (int)viewer->curve.back().traj.size(); i++){
+        std::vector<double> dis2;
+        for (int j=0; j< (int)viewer->curve.front().traj.size(); j++){
+            w = sqrt  (pow((viewer->curve.back().traj[i].Pos[0]-viewer->curve.front().traj[j].Pos[0]),2) + pow((viewer->curve.back().traj[i].Pos[1]-viewer->curve.front().traj[j].Pos[1]),2) + pow((viewer->curve.back().traj[i].Pos[2]-viewer->curve.front().traj[j].Pos[2]),2));
+            dis2.push_back(w);
+        }
+        double inf2 = dis2[0];
+        for (int k=0; k<(int)viewer->curve.front().traj.size(); k++){
+            if (dis2[k]<inf2) {inf2 = dis2[k];}
+        }
+        dis_a_tracer2.push_back(inf2);
+    }
+    sup2 = dis_a_tracer2[0];
+    for (int m=0; m<(int)viewer->curve.back().traj.size() ; m++){
+        if (dis_a_tracer2[m]>(sup2)) {sup2 = dis_a_tracer2[m];}
+    }
+
+// calcul de la distance hausdorff
+    dis_hausdorff = (sup1 > sup2 ? sup1 : sup2);
+    plotHaus(dis_a_tracer1, dis_a_tracer2, haus_sup1, haus_sup2);
+    
+    QApplication::setOverrideCursor(Qt::ArrowCursor);
+    
+   return; 
+}
+
+
+void MainWindow::setDraw() 
+{
+  for(unsigned int i=0 ; i< viewer->curve.size(); i++) {
+    viewer->curve[i].setIsDraw(this->checkBox->isChecked());
+  }
+  return;
+}
+
 
 void MainWindow::changeEvent(QEvent *e)
 {
@@ -210,6 +315,160 @@ void MainWindow::initializeApproxVariables()
 
 }
 
+/**
+ * MainWindow::defineFunction_p
+ * definition of a parabol y = ax^2
+ * @return
+ */
+void MainWindow::defineFunction_p(){
+  Curve curv;
+  SM_LIMITS Lim;
+  Path lpath;
+  SubPath lsubpath;
+  std::string str2;
+  double a = 5.0;
+  double start_x = 0.0;
+  double end_x = 0.02;
+  Lim.maxJerk = this->doubleSpinBox_Jmax->value();
+  Lim.maxAcc  = this->doubleSpinBox_Amax->value();
+  Lim.maxVel  = this->doubleSpinBox_Vmax->value();  
+  lsubpath.parabol.a = a;
+  lsubpath.parabol.start_x = start_x;
+  lsubpath.parabol.end_x = end_x;
+  lsubpath.type = PARABOL;
+  lpath.subpath.push_back(lsubpath);
+  curv.path.push_back(lpath);  
+  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);
+  
+  str2.clear();
+  str2 += "cercle_traj.dat";
+  saveTraj(str2, curv.traj);
+  curv.createPath(str2.c_str());
+  curv.draw();
+  curv.setIsDraw(this->checkBox->isChecked());
+  viewer->curve.push_back(curv);
+  viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
+  viewer->updateGL();
+
+  plotMotionLaw(curv);
+  plotIdealProfile(curv);
+  return;  
+}
+
+/* the definition of a cercle x = acos(2PIft); y = asin(2PIft) */
+void MainWindow::defineFunction_c(){
+  Curve curv;
+  SM_LIMITS Lim;
+  Path lpath;
+  SubPath lsubpath;
+  std::string str2;
+  double a1 = 0.1;
+  double f1 = 20.0;
+  Lim.maxJerk = this->doubleSpinBox_Jmax->value();
+  Lim.maxAcc  = this->doubleSpinBox_Amax->value();
+  Lim.maxVel  = this->doubleSpinBox_Vmax->value();  
+  lsubpath.cercle.center.x = 0.0;
+  lsubpath.cercle.center.y = 0.0;
+  lsubpath.cercle.radius = a1;
+  lsubpath.cercle.sinus_para.frequency = f1;
+  lsubpath.type = CERCLE;
+  lpath.subpath.push_back(lsubpath);
+  curv.path.push_back(lpath);  
+  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);
+  
+  str2.clear();
+  str2 += "cercle_traj.dat";
+  saveTraj(str2, curv.traj);
+  curv.createPath(str2.c_str());
+  curv.draw();
+  curv.setIsDraw(this->checkBox->isChecked());
+  viewer->curve.push_back(curv);
+  viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
+  viewer->updateGL();
+
+  plotMotionLaw(curv);
+  plotIdealProfile(curv);
+  return;  
+}
+
+/* the definition of a line y = y1 + (x-x1) * (y2-y1)/(x2-x1) */
+void MainWindow::defineFunction_l(){
+  Curve curv;
+  SM_LIMITS Lim;
+  Path lpath;
+  SubPath lsubpath;
+  std::string str2;
+  double x1 = 0.0,y1 = 0.0;
+  double x2 = 0.03,y2 = 0.02;
+  Lim.maxJerk = this->doubleSpinBox_Jmax->value();
+  Lim.maxAcc  = this->doubleSpinBox_Amax->value();
+  Lim.maxVel  = this->doubleSpinBox_Vmax->value();  
+  lsubpath.line.start.x = x1;
+  lsubpath.line.start.y = y1;
+  lsubpath.line.end.x = x2;
+  lsubpath.line.end.y = y2;
+  lsubpath.type = LINE_TH;
+  lpath.subpath.push_back(lsubpath);
+  curv.path.push_back(lpath);  
+  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);
+  
+  str2.clear();
+  str2 += "line_traj.dat";
+  saveTraj(str2, curv.traj);
+  curv.createPath(str2.c_str());
+  curv.draw();
+  curv.setIsDraw(this->checkBox->isChecked());
+  viewer->curve.push_back(curv);
+  viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
+  viewer->updateGL();
+
+  plotMotionLaw(curv);
+  plotIdealProfile(curv);
+  return;  
+}
+
+/* the definition of a sinusoid y = asin(2PIft + phi) */
+void MainWindow::defineFunction_s(){
+  Curve curv;
+  SM_LIMITS Lim;
+  double a1 = 0.1;
+  double f1 = 10.0;
+  double phi1 = 0.0;
+  Path lpath;
+  SubPath lsubpath;
+  std::string str2; 
+  Lim.maxJerk = this->doubleSpinBox_Jmax->value();
+  Lim.maxAcc  = this->doubleSpinBox_Amax->value();
+  Lim.maxVel  = this->doubleSpinBox_Vmax->value();
+  lsubpath.sinus.start.x = 0.0;
+  lsubpath.sinus.start.y = 0.0;
+  lsubpath.sinus.phase = phi1;
+  lsubpath.sinus.amplitude = a1;
+  lsubpath.sinus.frequency = f1;
+  lsubpath.type = SINUS;
+  lsubpath.sinus.length_x = 0.2;
+  lpath.subpath.push_back(lsubpath);
+  curv.path.push_back(lpath);
+  constructTrajSvg(curv.path,this->doubleSpinBox_SamplingTime->value(), Lim, curv.traj);
+  
+  str2.clear();
+  str2 += "sinus_traj.dat";
+  saveTraj(str2, curv.traj);
+  curv.createPath(str2.c_str());
+  curv.draw();
+  curv.setIsDraw(this->checkBox->isChecked());
+  viewer->curve.push_back(curv);
+  viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
+  viewer->updateGL();
+
+  plotMotionLaw(curv);
+  plotIdealProfile(curv);
+
+  return;
+}
+
+
+
 void MainWindow::openFile()
 {
   QString fileName = QFileDialog::getOpenFileName(this);
@@ -229,7 +488,6 @@ void MainWindow::openFile()
 
 
     if (parseSvg(this->_fileName.c_str(), curv.path, &curv.width, &curv.height) == SM_ERROR) {
-      cout << " parse ERROR" << endl;
       return;
     }
     cout << " parse is OK" << endl;
@@ -251,7 +509,7 @@ void MainWindow::openFile()
     /* Handle the path */
     curv.createPath(str2.c_str());
     curv.draw();
-    curv.setIsDraw(true);
+    curv.setIsDraw(this->checkBox->isChecked());
     viewer->curve.push_back(curv);
     // cout << " size stack " << viewer->curve.back().path.size()  << " origin " << curv.path.size() << endl;
     viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
@@ -260,7 +518,7 @@ void MainWindow::openFile()
     
     plotMotionLaw(curv);
     plotIdealProfile(curv);
-    
+//     plotResults(curv);
     
   }
 }
@@ -289,6 +547,7 @@ void MainWindow::closeFile()
 
 void MainWindow::computeTraj()
 {
+  QApplication::setOverrideCursor(Qt::WaitCursor);
   SM_LIMITS lim;
   int nbIntervals_local = 0; 
   int segment = 1;
@@ -305,11 +564,9 @@ void MainWindow::computeTraj()
   double pas_inter = 0.03;
   double longeur_path = 0.0;
   double sum_time = 0.0;
-  double haus_sup1 = 0.0;
-  double haus_sup2 = 0.0;
   double val_err_max = 0.0;
   double val_err_max_traj = 0.0;
-  double err_max_def = 0.001;
+  double err_max_def = 0.0;
   double err_max_chaq_seg = 0.0;
 
   Curve curv2;
@@ -329,16 +586,18 @@ void MainWindow::computeTraj()
   std::vector<double> dis_a_tracer2;
 
   std::list<SubTraj>::iterator iter_temp;
+  
   ChronoOn();
 
   for(unsigned int i=0 ; i< viewer->curve.size(); i++) {
-    viewer->curve[i].setIsDraw(false);
+    viewer->curve[i].setIsDraw(this->checkBox->isChecked());
   }
 
   lim.maxJerk = this->doubleSpinBox_Jmax->value();
   lim.maxAcc = this->doubleSpinBox_Amax->value();
   lim.maxVel = this->doubleSpinBox_Vmax->value();
   tic = this->doubleSpinBox_SamplingTime->value();
+  err_max_def = this->doubleSpinBox_DesError->value();
 
   Path_Length(viewer->curve.front().path, &longeur_path);
   nbIntervals_global = int(ceil(longeur_path/pas_inter));
@@ -348,7 +607,8 @@ void MainWindow::computeTraj()
   saveTraj("QtIdealTraj2.dat", viewer->curve.begin()->traj);
 
   viewer->curve.begin()->createPath("QtIdealTraj2.dat");
-  viewer->curve.begin()->setIsDraw(true);
+  
+  viewer->curve.begin()->setIsDraw(this->checkBox->isChecked());
   viewer->updateGL();
 
   curv2.traj.clear();
@@ -483,25 +743,25 @@ void MainWindow::computeTraj()
       count_cond = 0;
       iter_temp_divis = curv_temp_divis.trajList.begin();
       for (iter_divis = curv_divis.trajList.begin(); iter_divis != curv_divis.trajList.end(); iter_divis++){
-	int toto;
-	error.clear();
-	memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
-	memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
-	iter_divis->motion_par_seg.resize(3);
-	Temp_alias.clear();
-	Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
-	sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
-	iter_divis->traj.clear();
-	convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
-	if(iter_temp_divis->traj.size() <= iter_divis->traj.size()) {toto = iter_temp_divis->traj.size();}
-	else {toto = iter_divis->traj.size();}
-	Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &viewer->curve.front().errorMax, error, &val_err_max, toto);
-	if (val_err_max > err_max_chaq_seg){
-	  err_max_chaq_seg = val_err_max;
-	}
-	count_cond ++;
-	iter_temp_divis ++;
-	hh ++;
+        int toto;
+        error.clear();
+        memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
+        memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
+        iter_divis->motion_par_seg.resize(3);
+        Temp_alias.clear();
+        Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
+        sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
+        iter_divis->traj.clear();
+        convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
+        if(iter_temp_divis->traj.size() <= iter_divis->traj.size()) {toto = iter_temp_divis->traj.size();}
+        else {toto = iter_divis->traj.size();}
+        Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &viewer->curve.front().errorMax, error, &val_err_max, toto);
+        if (val_err_max > err_max_chaq_seg){
+          err_max_chaq_seg = val_err_max;
+        }
+        count_cond ++;
+        iter_temp_divis ++;
+        hh ++;
       }
       
       if (err_max_chaq_seg < err_max_def){
@@ -541,17 +801,16 @@ void MainWindow::computeTraj()
   plotResults(curv2); 
   Calcul_Error(viewer->curve.begin()->traj, curv2.traj, &viewer->curve.begin()->errorMax, error_traj, &val_err_max_traj);
   plotErrors(curv2, error_traj, &val_err_max_traj);
-//   Hausdorff(viewer->curve.begin()->traj, curv2.traj, dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
-//   plotHaus(dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
-
   saveTraj("QtApproxTraj.dat", curv2.traj);
   curv2.createPath("QtApproxTraj.dat");
-  curv2.setIsDraw(true);
+  curv2.setIsDraw(this->checkBox->isChecked());
   viewer->curve.push_back(curv2);
   viewer->updateGL();
   ChronoPrint("");
   ChronoTimes(&tu, &ts);
   ChronoOff();
+  QApplication::setOverrideCursor(Qt::ArrowCursor);
+  
   return;
 }
 
@@ -627,38 +886,12 @@ void MainWindow::plotIdealProfile(Curve &curv) {
     yData_px_tra [i] = pos_discr_X[i];
     xData_px_tra [i] = curv.traj[i].t;
   }
-// double length_petit = 0.0;
-// double length_total = 0.0;
-// std::vector<double> length_vec;
-//     for (int i  = 0; i < (int)curv.traj.size();i++){
-//         if (i==0){
-//             length_vec.push_back(0);
-//         }
-//         else{
-//             length_petit = sqrt(
-//                         pow(curv.traj[i].Pos[0]-curv.traj[i-1].Pos[0],2)+
-//                         pow(curv.traj[i].Pos[1]-curv.traj[i-1].Pos[1],2)+
-//                         pow(curv.traj[i].Pos[2]-curv.traj[i-1].Pos[2],2) );
-//             length_total += length_petit;
-//             length_vec.push_back(length_total);
-//         }
-//     }
-//   for (int i  = 0; i < (int)curv.traj.size();i++){
-//     yData_px_tra [i] = length_vec[i];
-//     //       yData_ax_tra [i] = curv.traj[i].AccNorm;
-//     xData_px_tra [i] = curv.traj[i].t;
-//   }
-
   for (int i  = 0; i < (int)curv.traj.size();i++){
     yData_vx_tra [i] = vel_discr_X[i];
-//           yData_vx_tra [i] = sqrt(curv.traj[i].Vel[0] * curv.traj[i].Vel[0] + 
-//                                 curv.traj[i].Vel[1] * curv.traj[i].Vel[1]);
-    //       yData_vx_tra [i] = curv.traj[i].Vel[0];
     xData_vx_tra [i] = curv.traj[i].t;
   }
   for (int i  = 0; i < (int)curv.traj.size();i++){
     yData_ax_tra [i] = acc_discr_X[i];
-    //       yData_ax_tra [i] = curv.traj[i].AccNorm;
     xData_ax_tra [i] = curv.traj[i].t;
   }
 
@@ -710,7 +943,7 @@ void MainWindow::plotIdealProfile(Curve &curv) {
   return;
 }
 
-//     plotGraph(qwtPlot_haussdorff1, xData_haus1, yData_haus1, dis_a_tracer1.size(), "sample_point", "dis_hausdorff1", "");
+
 void MainWindow::plotGraph(QwtPlot *p, double xData[], double yData[], int size, char* xName, char *yName, char *title) {
   QwtPlotCurve *curve_ay_tra = new QwtPlotCurve("plot");
   QwtPlotZoomer *zoom = NULL;
@@ -758,7 +991,7 @@ void MainWindow::plotErrors(Curve &curv2, std::vector<double> &error, double *va
 
 
 void MainWindow::plotResults(Curve &curv2) {
-    
+
   /* computation of the figures velocity, accelaration, and abscicca*/
 
   /* jerk*/
@@ -834,6 +1067,47 @@ void MainWindow::plotResults(Curve &curv2) {
     yData_V_Z [i] = curv2.traj[i].Vel[2];
   }
 
+  /* abscicca_approx*/
+  double length_petit = 0.0;
+  double length_total = 0.0;
+  std::vector<double> length_vec;
+  double *xData_ab_app = NULL, *yData_ab_app  = NULL;
+  xData_ab_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
+  yData_ab_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
+  for (int i  = 0; i < (int)curv2.traj.size();i++){
+    if (i==0){
+        length_vec.push_back(0);
+    }
+    else{
+        length_petit = sqrt(
+                    pow(curv2.traj[i].Pos[0]-curv2.traj[i-1].Pos[0],2)+
+                    pow(curv2.traj[i].Pos[1]-curv2.traj[i-1].Pos[1],2)+
+                    pow(curv2.traj[i].Pos[2]-curv2.traj[i-1].Pos[2],2) );
+        length_total += length_petit;
+        length_vec.push_back(length_total);
+    }
+  }
+  for (int i  = 0; i < (int)curv2.traj.size();i++){
+    yData_ab_app [i] = length_vec[i];
+    xData_ab_app [i] = curv2.traj[i].t;
+  }
+  /* velocity_approx*/
+  double *xData_v_app = NULL, *yData_v_app  = NULL;
+  xData_v_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
+  yData_v_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
+  for (unsigned int i  = 0; i < curv2.traj.size();i++){
+    yData_v_app[i] = sqrt(curv2.traj[i].Vel[0] * curv2.traj[i].Vel[0] + curv2.traj[i].Vel[1] * curv2.traj[i].Vel[1]);
+    xData_v_app[i] = curv2.traj[i].t;
+  }
+  /* accelaration_approx*/
+  double *xData_a_app = NULL, *yData_a_app  = NULL;
+  xData_a_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
+  yData_a_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
+  for (unsigned int i  = 0; i < curv2.traj.size();i++){
+    yData_a_app[i] = sqrt(curv2.traj[i].Acc[0] * curv2.traj[i].Acc[0] + curv2.traj[i].Acc[1] * curv2.traj[i].Acc[1]);
+    xData_a_app[i] = curv2.traj[i].t;
+  }
+
   plotGraph(qwtPlot_JerkXapprox, xData_J_X, yData_J_X, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");
   plotGraph(qwtPlot_JerkYapprox, xData_J_Y, yData_J_Y, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");
   plotGraph(qwtPlot_JerkZapprox, xData_J_Z, yData_J_Z, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");
@@ -846,6 +1120,10 @@ void MainWindow::plotResults(Curve &curv2) {
   plotGraph(qwtPlot_VelYapprox, xData_V_Y, yData_V_Y, curv2.traj.size(), (char *)"time (s)", (char *)"Velocity (m/s)", (char *)"");
   plotGraph(qwtPlot_VelZapprox, xData_V_Z, yData_V_Z, curv2.traj.size(), (char *)"time (s)", (char *)"Velocity (m/s)", (char *)"");
 
+  plotGraph(qwtPlot_TrajPosApprox, xData_ab_app, yData_ab_app, curv2.traj.size(), (char *)"time (s)", (char *)"absicce_approx (m)", (char *)"");
+  plotGraph(qwtPlot_TrajVelApprox, xData_v_app, yData_v_app, curv2.traj.size(), (char *)"time (s)", (char *)"velocity_approx (m/s)", (char *)"");
+  plotGraph(qwtPlot_TrajAccApprox, xData_a_app, yData_a_app, curv2.traj.size(), (char *)"time (s)", (char *)"accelaration_approx (m/s^2)", (char *)"");
+
   qwtPlot_JerkXapprox->replot();
   qwtPlot_JerkYapprox->replot();
   qwtPlot_JerkZapprox->replot();
@@ -855,6 +1133,9 @@ void MainWindow::plotResults(Curve &curv2) {
   qwtPlot_VelXapprox->replot();
   qwtPlot_VelYapprox->replot();
   qwtPlot_VelZapprox->replot();
+  qwtPlot_TrajPosApprox->replot();
+  qwtPlot_TrajVelApprox->replot();
+  qwtPlot_TrajAccApprox->replot();
 
   free(xData_J_X);
   free(yData_J_X);
@@ -876,12 +1157,18 @@ void MainWindow::plotResults(Curve &curv2) {
   free(yData_V_Y);
   free(xData_V_Z);
   free(yData_V_Z);
-    
-  //cout << "plotResults_succes"<<endl;
+
+  free(xData_ab_app);
+  free(yData_ab_app);
+  free(xData_v_app);
+  free(yData_v_app);
+  free(xData_a_app);
+  free(yData_a_app);
+
   return;
 }
 
-void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double *sup1, double *sup2){
+void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double sup1, double sup2){
   double *xData_haus1 = NULL, *yData_haus1  = NULL;
   double *xData_haus2 = NULL, *yData_haus2  = NULL;
   QwtPlotZoomer *zoom1 = NULL, *zoom2 = NULL;
@@ -897,14 +1184,12 @@ void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double
     xData_haus2 [i] = i;
     yData_haus2 [i] = dis_a_tracer2[i];
   }
-  //     plotGraph(qwtPlot_haussdorff1, xData_haus1, yData_haus1, dis_a_tracer1.size(), "sample_point", "dis_hausdorff1", "");
-  //     plotGraph(qwtPlot_haussdorff2, xData_haus2, yData_haus2, dis_a_tracer2.size(), "sample_point", "dis_hausdorff2", "");
 
   QwtPlotCurve *haus1 = new QwtPlotCurve("haus1");
   haus1->setData(xData_haus1,yData_haus1, dis_a_tracer1.size());
   haus1->attach(qwtPlot_haussdorff1);
   QString label_haus_peak1;
-  label_haus_peak1.sprintf("dis_hau_1: %.3g (m)", *sup1);
+  label_haus_peak1.sprintf("dis_hau_1: %.3g (m)", sup1);
   qwtPlot_haussdorff1->setAxisTitle(qwtPlot_haussdorff1->xBottom, label_haus_peak1 );
   qwtPlot_haussdorff1->setAxisTitle(qwtPlot_haussdorff1->yLeft, "dis_hausdorff1" );
   QwtPlotGrid *g1 = new QwtPlotGrid;
@@ -922,7 +1207,7 @@ void MainWindow::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double
   haus2->setData(xData_haus2,yData_haus2, dis_a_tracer2.size());
   haus2->attach(qwtPlot_haussdorff2);
   QString label_haus_peak2;
-  label_haus_peak2.sprintf("dis_hau_2: %.3g (m)", *sup2);
+  label_haus_peak2.sprintf("dis_hau_2: %.3g (m)", sup2);
   qwtPlot_haussdorff2->setAxisTitle(qwtPlot_haussdorff2->xBottom, label_haus_peak2 );
   qwtPlot_haussdorff2->setAxisTitle(qwtPlot_haussdorff2->yLeft, "dis_hausdorff2" );
   QwtPlotGrid *g2 = new QwtPlotGrid;
@@ -1219,86 +1504,59 @@ void MainWindow::computeSoftMotion()
   return;
 }
 
+/* format for the output file */
 
-/*
-  void MainWindow::computeTraj()
-  {
-  SM_LIMITS lim;
-  double tic;
-  int nbIntervals;
-  Curve curv2;
+// void MainWindow::fileOutPut(Curve &curv){
+//   FILE *fp;
+//   fp = fopen("Jerk_OutPut.txt", "w");
+//   fputs(" ************  INITIAL CONDITIONS *********** ", fp);
+//   fprintf(fp, "\n\n");
+//   fputs("X0 = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Pos[0]);
+//   fprintf(fp, "\n");
+//   fputs("Y0 = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Pos[1]);
+//   fprintf(fp, "\n");
+//   fputs("Z0 = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Pos[2]);
+//   
+//   fprintf(fp, "\n\n");
+//   fputs("V0_x = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Vel[0]);
+//   fprintf(fp, "\n");
+//   fputs("V0_y = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Vel[1]);
+//   fprintf(fp, "\n");
+//   fputs("V0_z = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Vel[2]);
+//   
+//   fprintf(fp, "\n\n");
+//   fputs("A0_x = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Acc[0]);
+//   fprintf(fp, "\n");
+//   fputs("A0_y = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Acc[1]);
+//   fprintf(fp, "\n");
+//   fputs("A0_z = ", fp);
+//   fprintf(fp, "%lf\n", curv.traj[0].Acc[2]);
+//   
+//   fprintf(fp, "\n\n");
+//   fputs(" ************  JERK TRACE *********** ", fp);
+//   fprintf(fp, "\n\n");
+//   fputs("AXISIS_X", fp);
+//   fprintf(fp, "\t\t");
+//   fputs("AXISIS_Y", fp);
+//   fprintf(fp, "\t\t");
+//   fputs("AXISIS_Z", fp);
+//   fprintf(fp, "\n\n");
+//   
+//   for(unsigned int i = 0; i < curv.traj.size(); i++){
+//     fprintf(fp, "%lf\t\t", curv.traj[i].Jerk[0]);
+//     fprintf(fp, "%lf\t\t", curv.traj[i].Jerk[1]);
+//     fprintf(fp, "%lf\n", curv.traj[i].Jerk[2]);
+//   }
+//   fclose(fp);
+//   
+//   return;
+// }
 
-  double haus_sup1 = 0.0;
-  double haus_sup2 = 0.0;
-  double val_err_max = 0.0;
-
-
-
-  for(unsigned int i=0 ; i< viewer->curve.size(); i++) {
-  viewer->curve[i].setIsDraw(false);
-  }
-
-  std::vector<SM_COND_DIM> IC;
-  std::vector<SM_COND_DIM> FC;
-  std::vector<double> Timp;
-  std::vector<int> IntervIndex;
-  std::vector<SM_OUTPUT> motion;
-  std::vector<double> error;
-  std::vector<double> dis_a_tracer1;
-  std::vector<double> dis_a_tracer2;
-
-  lim.maxJerk = this->doubleSpinBox_Jmax->value();
-  lim.maxAcc = this->doubleSpinBox_Amax->value();
-  lim.maxVel = this->doubleSpinBox_Vmax->value();
-  tic = this->doubleSpinBox_SamplingTime->value();
-
-  viewer->curve.begin()->traj.clear();
-  cout << "nbcurve " << viewer->curve.size() << endl;
-  cout << "nbpath " << viewer->curve.begin()->path.size() << endl;
-  cout << "construct " << viewer->curve.begin()->path.back().subpath.size() <<" " <<  viewer->curve.begin()->traj.size() << endl;
-
-  constructTrajSvg(viewer->curve.begin()->path,  tic, lim, viewer->curve.begin()->traj);
-  cout << " save " << endl;
-  saveTraj("QtIdealTraj2.dat", viewer->curve.begin()->traj);
-
-  viewer->curve.begin()->createPath("QtIdealTraj2.dat");
-  viewer->curve.begin()->setIsDraw(true);
-  viewer->updateGL();
-  nbIntervals = this->Slider_Interval->value();
-
-  IC.resize(nbIntervals);
-  FC.resize(nbIntervals);
-  Timp.resize(nbIntervals);
-  IntervIndex.resize(nbIntervals + 1);
-
-  if (sm_ComputeCondition(viewer->curve.begin()->traj, viewer->curve.begin()->discPoint, IC, FC, Timp, IntervIndex) != 0){
-  printf("Compute Problem \n");
-  return;
-  }
-
-  motion.resize(viewer->curve.begin()->traj.size());
-  //curv2.traj.resize(viewer->curve.begin()->traj.size());
-    
-  if (sm_SolveWithoutOpt(IC, FC, Timp, motion) != 0){
-  printf("Solve Problem \n");
-  return;
-  }
-  curv2.traj.clear();
-  convertMotionToCurve(motion, tic, nbIntervals, curv2.traj);
-  plotResults(curv2);
-
-  Calcul_Error(viewer->curve.begin()->traj, curv2.traj, &viewer->curve.begin()->errorMax, error, &val_err_max);
-  plotErrors(curv2, error, &val_err_max);
-
-  Hausdorff(viewer->curve.begin()->traj, curv2.traj, dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
-  plotHaus(dis_a_tracer1, dis_a_tracer2, &haus_sup1, &haus_sup2);
-
-  saveTraj("QtApproxTraj.dat", curv2.traj);
-  curv2.createPath("QtApproxTraj.dat");
-  curv2.setIsDraw(true);
-  viewer->curve.push_back(curv2);
-
-  viewer->updateGL();
-  return;
-  }
-*/
