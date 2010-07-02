@@ -41,6 +41,11 @@
 #endif
 
 #include "softMotionConst.h"
+
+/** @file softMotionStruct.h
+ * @brief This file includes structure declarations for softMotion library.
+ */
+
 typedef enum SM_STATUS {
   SM_OK    = 0,
   SM_ERROR = 1
@@ -51,18 +56,33 @@ typedef enum SM_SELECT {
 	SM_OFF = 1
 } SM_SELECT;  /* ON = 0, OFF = 1 */
 
+/** 
+ * @brief Structure of the duration of seven segments of softMotion
+ */
 typedef struct SM_TIMES {
+    /** @brief Time of the Positive Jerk segment for the fisrt part of the motion (a)  */
 	double Tjpa;
+    /** @brief Time of the Constant Acceleration segment for the fisrt part of the motion (a)  */
 	double Taca;
+    /** @brief Time of the Negative Jerk segment for the fisrt part of the motion (a)  */
 	double Tjna;
+    /** @brief Time of the Constant Velocity segment */
 	double Tvc;
+    /** @brief Time of the Negative Jerk segment for the second part of the motion (b)  */
 	double Tjnb;
-	double Tacb;
+    /** @brief Time of the Constant Acceleration segment for the second part of the motion (b)  */
+	double Tacb; 
+	/** @brief Time of the Positve Jerk segment for the fisrt second of the motion (b)  */
 	double Tjpb;
 } SM_TIMES ;
 
+/** 
+ * @brief Structure of the nseg segments of softMotion
+ */
 typedef struct SM_TIMES_DYN {
+    /** @brief number of segments  */
 	int nseg;
+    /** @brief array of time of segments  */
 	double* seg;
 } SM_TIMES_DYN;
 

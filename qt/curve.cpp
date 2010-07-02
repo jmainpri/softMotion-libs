@@ -8,6 +8,9 @@
 #include <fstream>
 #include <string>
 
+/** @file curve.cpp
+ * @brief This file includes the constructor and functions related for class Curve
+ */
 
 using namespace qglviewer;
 using namespace std;

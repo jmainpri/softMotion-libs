@@ -606,6 +606,11 @@ RECURSIVE              = YES
 
 EXCLUDE                =./qt/ui_mainwindow.h \
 		       ../qt/ui_mainwindow.h \
+		       ../src/matrix.h \
+		       ../src/matrixStruct.h \
+		       ../src/time_proto.h \
+		       ../src/debug.h \
+		       ../src/gnuplot_i.hpp
 
 
 

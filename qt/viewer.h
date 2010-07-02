@@ -2,9 +2,23 @@
 #include <qglviewer.h>
 #include "curve.h"
 
+/** @file curve.h
+ * @brief This file includes the declaration of class Viewer
+ */
+
+/** @brief This class represents the viewer of Mainwindow
+ *
+ */
+
 class Viewer :  public QGLViewer
 {
 public :
+/** @brief Constructor
+  *  
+  * The constructor of class Viewer
+  *
+  * @param *parent : NULL 
+  */   
   Viewer(QWidget *parent = NULL);
 //   virtual ~Viewer();
 

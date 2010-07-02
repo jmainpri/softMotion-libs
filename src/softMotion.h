@@ -19,12 +19,7 @@
 */
 
 
-/**
- ** softMotion.h
- **
- ** Date: Mai 2008
- **
- **/
+
 
 
 #ifndef SOFTMOTION_H
@@ -44,6 +39,11 @@
 #include <math.h>
 #include <vector>
 #endif
+
+/** @file softMotion.h
+ * @brief This file includes all declarations for different functions of computing the SoftMotion
+ * sm_VerifyInitialAndFinalConditions etc......
+ */
 
 SM_STATUS sm_VerifyInitialAndFinalConditions(SM_LIMITS* limitsGoto, SM_COND* IC, SM_COND* FC, SM_PARTICULAR_VELOCITY* PartVel, SM_COND* ICm, SM_COND* FCm);
 
@@ -173,16 +173,70 @@ extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj, std:
 extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC,std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<SM_OUTPUT> &motion);
 
 // Functions from Wang
-
+/** @brief motion profile
+  *  
+  * stock the position, velocity and acceleration of trajectories 
+  *
+  * @param &IdealTraj : the ideal trajectory with motion law
+  * @param &vel_discr_X : the discretised velocity in axis X
+  * @param &vel_discr_Y : the discretised velocity in axis Y
+  * @param &acc_discr_X : the discretised acceleration in axis x
+  * @param &acc_discr_Y : the discretised acceleration in axis Y
+  * @param &pos_discr_X : the discretised position in axis X
+  * @param &pos_discr_Y : the discretised position in axis Y
+  * @return SM_OK : the status of SoftMotion
+  */     
 extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y);
-extern SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_x, std::vector<double> &vel_path_y, double  sample_time);
-extern SM_STATUS Courbure(std::list<Path> &path, std::vector<double> &curvature);
-extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
-extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
+ 
+// extern SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_x, std::vector<double> &vel_path_y, double  sample_time);
+// extern SM_STATUS Courbure(std::list<Path> &path, std::vector<double> &curvature);
 
+/** @brief computation of the error
+  *  
+  * calculate the error between ideal and approximated trajectories
+  *
+  * @param &IdealTraj : the ideal trajectory with motion law
+  * @param &ApproxTraj : the approximated trajectory with motion law
+  * @param *errorMax : pointer for the position of the maximum error found
+  * @param &error : vector for stocking all the values of error
+  * @param *val_err_max : pointer of the maximum value of error
+  * @return SM_OK : the status of SoftMotion
+  */    
+extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
+// extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
+
+/** @brief calculation of length
+  *  
+  * calculate total length of 
+  *
+  * @param &IdealTraj : the ideal trajectory with motion law
+  * @param &ApproxTraj : the approximated trajectory with motion law
+  * @param *errorMax : pointer for the position of the maximum error found
+  * @param &error : vector for stocking all the values of error
+  * @param *val_err_max : pointer of the maximum value of error
+  * @return SM_OK : the status of SoftMotion
+  */    
 extern SM_STATUS Path_Length(std::list<Path> &path, double *longeur);
 extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max, int ind);
 
  
 #endif
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

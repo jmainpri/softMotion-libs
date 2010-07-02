@@ -6,6 +6,10 @@
 
 #include <stdio.h>
 
+/** @file viewer.cpp
+ * @brief This file includes the constructor and functions related for class Viewer
+ */
+
 using namespace qglviewer;
 using namespace std;
 

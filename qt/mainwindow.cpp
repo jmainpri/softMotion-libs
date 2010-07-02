@@ -45,6 +45,10 @@
 #include "../src/softMotion.h"
 using namespace std;
 
+/** @file mainwindow.cpp
+ * @brief This file includes all useful functions for creating an interface of SoftMotion
+ */
+
 // the definition of the fonction MainWindow
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -296,10 +300,6 @@ void MainWindow::changeEvent(QEvent *e)
   }
 }
 
-/**
- * 
- * @param str 
- */
 void MainWindow::loadSvgFile(string str)
 {
   Curve curv;
@@ -315,11 +315,6 @@ void MainWindow::initializeApproxVariables()
 
 }
 
-/**
- * MainWindow::defineFunction_p
- * definition of a parabol y = ax^2
- * @return
- */
 void MainWindow::defineFunction_p(){
   Curve curv;
   SM_LIMITS Lim;
@@ -561,7 +556,7 @@ void MainWindow::computeTraj()
   int nbIntervals_global = 0;
   double tu,ts;
   double tic = 0.0;
-  double pas_inter = 0.03;
+  double pas_inter = 0.0;
   double longeur_path = 0.0;
   double sum_time = 0.0;
   double val_err_max = 0.0;
@@ -600,6 +595,7 @@ void MainWindow::computeTraj()
   err_max_def = this->doubleSpinBox_DesError->value();
 
   Path_Length(viewer->curve.front().path, &longeur_path);
+  pas_inter = longeur_path/10;
   nbIntervals_global = int(ceil(longeur_path/pas_inter));
 
   constructTrajSvg(viewer->curve.front().path,  tic, lim, viewer->curve.front().traj);
@@ -1503,60 +1499,3 @@ void MainWindow::computeSoftMotion()
   free(dduFond);
   return;
 }
-
-/* format for the output file */
-
-// void MainWindow::fileOutPut(Curve &curv){
-//   FILE *fp;
-//   fp = fopen("Jerk_OutPut.txt", "w");
-//   fputs(" ************  INITIAL CONDITIONS *********** ", fp);
-//   fprintf(fp, "\n\n");
-//   fputs("X0 = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Pos[0]);
-//   fprintf(fp, "\n");
-//   fputs("Y0 = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Pos[1]);
-//   fprintf(fp, "\n");
-//   fputs("Z0 = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Pos[2]);
-//   
-//   fprintf(fp, "\n\n");
-//   fputs("V0_x = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Vel[0]);
-//   fprintf(fp, "\n");
-//   fputs("V0_y = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Vel[1]);
-//   fprintf(fp, "\n");
-//   fputs("V0_z = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Vel[2]);
-//   
-//   fprintf(fp, "\n\n");
-//   fputs("A0_x = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Acc[0]);
-//   fprintf(fp, "\n");
-//   fputs("A0_y = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Acc[1]);
-//   fprintf(fp, "\n");
-//   fputs("A0_z = ", fp);
-//   fprintf(fp, "%lf\n", curv.traj[0].Acc[2]);
-//   
-//   fprintf(fp, "\n\n");
-//   fputs(" ************  JERK TRACE *********** ", fp);
-//   fprintf(fp, "\n\n");
-//   fputs("AXISIS_X", fp);
-//   fprintf(fp, "\t\t");
-//   fputs("AXISIS_Y", fp);
-//   fprintf(fp, "\t\t");
-//   fputs("AXISIS_Z", fp);
-//   fprintf(fp, "\n\n");
-//   
-//   for(unsigned int i = 0; i < curv.traj.size(); i++){
-//     fprintf(fp, "%lf\t\t", curv.traj[i].Jerk[0]);
-//     fprintf(fp, "%lf\t\t", curv.traj[i].Jerk[1]);
-//     fprintf(fp, "%lf\n", curv.traj[i].Jerk[2]);
-//   }
-//   fclose(fp);
-//   
-//   return;
-// }
-
