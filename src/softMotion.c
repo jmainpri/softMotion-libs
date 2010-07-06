@@ -7821,7 +7821,24 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
 }
 
 
+SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error, double *val_err_max){
+    error.clear();
+    double err;
+    for (unsigned int i = 0; i< ApproxTraj.size(); i++){
 
+        err = sqrt(
+              (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0 ])+
+              (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1 ])+
+              (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2 ]));
+              
+        if(err > *val_err_max) {
+        *val_err_max = err;
+        }
+        error.push_back(err);
+    }
+
+  return SM_OK;
+}
 
 
 SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y){
@@ -8033,3 +8050,20 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
     return SM_OK;
 }
 
+SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *val_err_max, int ind){
+    error.clear();
+    double err;
+    for (int i = 0; i< ind; i++){
+        err = sqrt(
+                (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])+
+                (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])+
+                (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2]));
+
+        if(err > *val_err_max) {
+            *val_err_max = err;
+        }
+    error.push_back(err);
+
+    }
+    return SM_OK;
+}
