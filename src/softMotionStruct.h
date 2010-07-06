@@ -46,18 +46,24 @@
  * @brief This file includes structure declarations for softMotion library.
  */
 
+/** 
+ * @brief Status that return softMotion functions
+ */
 typedef enum SM_STATUS {
   SM_OK    = 0,
   SM_ERROR = 1
 } SM_STATUS;
 
+/** 
+ * @brief Enum ON/OFF
+ */
 typedef enum SM_SELECT {
 	SM_ON  = 0,
 	SM_OFF = 1
 } SM_SELECT;  /* ON = 0, OFF = 1 */
 
 /** 
- * @brief Structure of the duration of seven segments of softMotion
+ * @brief Structure of the duration of seven named segments of softMotion
  */
 typedef struct SM_TIMES {
     /** @brief Time of the Positive Jerk segment for the fisrt part of the motion (a)  */
@@ -86,17 +92,31 @@ typedef struct SM_TIMES_DYN {
 	double* seg;
 } SM_TIMES_DYN;
 
+/** 
+ * @brief Structure of the kinematic constraints for one axis
+ */
 typedef struct SM_LIMITS {
+  /** @brief Maximum jerk value (m/s^3) */
   double maxJerk;
+  /** @brief Maximum acceleration value (m/s^2) */
   double maxAcc;
+  /** @brief Maximum velocity value (m/s) */
   double maxVel;
 } SM_LIMITS;
 
+/** 
+ * @brief Structure of the kinematic constraints for two axis (cartesian and angular)
+ */
 typedef struct SM_POSELIMITS {
+  /** @brief Linear constraints */
   SM_LIMITS linear;
+  /** @brief Angular constraints */
   SM_LIMITS angular;
 } SM_POSELIMITS;
 
+/** 
+ * @brief Structure of the duration of seven unnamed segments of softMotion
+ */
 typedef struct SM_TIMES_GLOBAL {
   double T1;
   double T2;
@@ -107,6 +127,9 @@ typedef struct SM_TIMES_GLOBAL {
   double T7;
 } SM_TIMES_GLOBAL;
 
+/** 
+ * @brief Structure of motion for a quaternion
+ */
 typedef struct SM_AXIS_TIMES {
   SM_TIMES PX;
   SM_TIMES PY;
@@ -117,34 +140,67 @@ typedef struct SM_AXIS_TIMES {
   SM_TIMES QK;
 } SM_AXIS_TIMES;
 
+/** 
+ * @brief Structure of kinematic conditions for one axis
+ */
 typedef struct SM_COND {
-  double a;             /* Acceleration */
-  double v;             /* Velocity     */
-  double x;             /* Distance     */
+  /** @brief Acceleration */
+  double a;    
+  /** @brief Velocity */
+  double v;
+  /** @brief Position */
+  double x;
 } SM_COND;
 
+/** 
+ * @brief Structure of the 4 jerk values for a point to point motion
+ */
 typedef struct SM_JERKS {
-  int sel;              /* Sel = 1   J1=J2=J3=J4    */
-                        /* Sel = 4   J1, J2, J3, J4 */
+  /** @brief select the type of notion
+  *
+  * Sel = 1 -->  J1=J2=J3=J4 
+  * Sel = 4 -->  J1, J2, J3, J4
+  */
+  int sel;
+  /** @brief jerk value of the segement 1 */    
   double J1;
+  /** @brief jerk value of the segement 3 */
   double J2;
+  /** @brief jerk value of the segement 5 */
   double J3;
+  /** @brief jerk value of the segement 7 */
   double J4;
+  /** @brief i forgot  */
   int withOutUseAlignment;
 } SM_JERKS;
 
+/** 
+ * @brief Structure of the particular velocities used to find the critical length and the type of motion
+ */
 typedef struct SM_PARTICULAR_VELOCITY {
+  /** @brief Velocity of the start point at maximun acceleration and with a lower velocity (minus) than the start point */
   double Vsmm;
+  /** @brief Velocity of the start point at maximun acceleration and with a greater velocity (plus) than the start point */
   double Vsmp;
+  /** @brief Velocity of the start point at zero acceleration and with a lower velocity (minus) than the start point */
   double Vs0m;
+  /** @brief Velocity of the start point at zero acceleration and with a greater velocity (plus) than the start point */
   double Vs0p;
+  /** @brief Velocity of the final point at maximum acceleration and with a lower velocity (minus) than the final point */
   double Vfmm;
+  /** @brief Velocity of the final point at maximum acceleration and with a greater velocity (plus) than the final point */
   double Vfmp;
+  /** @brief Velocity of the final point at zero acceleration and with a lower velocity (minus) than the final point */
   double Vf0m;
+  /** @brief Velocity of the final point at zero acceleration and with a greater velocity (plus) than the final point */
   double Vf0p;
+  /** @brief Velocity value reached at zero acceleration on the jerk positive parabola passing through the point with a maximun acceleration/velocity */
   double Vlim;
 } SM_PARTICULAR_VELOCITY;
 
+/** 
+ * @brief Structure for a complete softMotion for SM_NB_DIM axes
+ */
 typedef struct SM_MOTION {
   SM_TIMES TNE; /* use this only for point to point motion in xarm */
   SM_TIMES Times[SM_NB_DIM]; /* en seconde */
@@ -278,16 +334,29 @@ typedef struct SM_LINE_ARC{
 	double Ls;    // length of line or arc
 } SM_LINE_ARC;
 
+/** 
+ * @brief Structure of datas for trajectory
+ */ 
 typedef struct SM_CURVE_DATA{
-	double t;       // time value of the given data
-	double u;       // curvature abcissa
-	double du;      // tangential velocity
-	double ddu;     // tangential acceleration
-	double Pos[3];  // cartesian coordinate
-	double Vel[3];  // projected velocity in cartesian coordinate 
-	double Acc[3];  // projected acceleration in cartesian coordinate 
-         double Jerk[3];
-	double AccNorm; // acceleration norm 
+    /** @brief time value of the given data*/
+	double t;       
+    /** @brief curvature abcissa*/
+	double u;       
+    /** @brief tangential velocity*/
+	double du;
+    /** @brief tangential acceleration*/
+	double ddu;     
+    /** @brief cartesian coordinate*/
+	double Pos[3];  
+    /** @brief projected velocity in cartesian coordinate*/
+	double Vel[3];
+    /** @brief projected acceleration in cartesian coordinate*/
+	double Acc[3];  
+    /** @brief projected Jerk in cartesian coordinate*/
+    double Jerk[3];
+    /** @brief acceleration norm*/
+	double AccNorm;
+    /** @brief length of trajectory*/
 	double absci;
 }SM_CURVE_DATA;
 
@@ -298,106 +367,186 @@ typedef struct SM_ROT{
 	double R[3][3]; //rotation matrix
 }SM_ROT;
 
+/** 
+ * @brief Structure of dimension of conditions
+ */  
 typedef struct SM_COND_DIM{
-	SM_COND Axis[3]; // Initial or final condition in 3 axis
+    /** @brief Initial or final condition in 3 axis*/
+	SM_COND Axis[3]; 
 } SM_COND_DIM;
 
+/** 
+ * @brief Structure of output
+ */  
 typedef struct SM_OUTPUT{
-	double Jerk[3]; // output jerk
-	double Time[3]; // output time
-	SM_COND IC[3]; // output initial condition (at the beginning of the segmnent, before applying Jerk)
+    /** @brief output jerk*/
+	double Jerk[3];
+    /** @brief output time*/
+	double Time[3]; 
+    /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk*/
+	SM_COND IC[3];
 }SM_OUTPUT;
 
 
-#ifdef __cplusplus
+// #ifdef __cplusplus
+/** 
+ * @brief Structure of two dimentional point
+ */  
 typedef struct Point2D
 {
+  /** @brief coordinate in axis X and Y*/
   double x, y;
 } Point2D;
 
+/** 
+ * @brief Structure of Sub-Curve type
+ */  
 typedef enum SubPathType
   {
+    /** @brief type of line */
     LINE,
+    /** @brief type of theoretic line */
     LINE_TH,
+    /** @brief type of bezier curve */
     BEZIER3,
+    /** @brief type of circle */
     CERCLE,
+    /** @brief type of sinusoid */
     SINUS,
+    /** @brief type of parabol */
     PARABOL,
   } SubPathType;
-  
-  typedef struct SinusParams 
+
+/** 
+ * @brief Structure of Sinusoid
+ */  
+typedef struct SinusParams 
 {
+    /** @brief initial point of a sinusoid */
     Point2D start;
+    /** @brief frequency of a sinusoid as in y = a*sin(2*PI*f*t + phi)*/
     double frequency;
+    /** @brief amplitude of a sinusoid as in y = a*sin(2*PI*f*t + phi)*/
     double amplitude;
+    /** @brief phase of a sinusoid as in y = a*sin(2*PI*f*t + phi)*/
     double phase;
+    /** @brief length of a sinusoid which is projected in axis X*/
     double length_x;
 } SinusParams ;
 
+/** 
+ * @brief Structure of Circle
+ */
 typedef struct CercleParams 
 {
+    /** @brief center of a circle*/
     Point2D center;
+    /** @brief radius of a circle*/
     double radius;
-    double angleStart;
-    double angleEnd;
+    /** @brief parameters of circle as in x = a*cos(2*PI*f*t); y = a*sin(2*PI*f*t) */
     SinusParams sinus_para;
 } CercleParams ;
 
+/** 
+ * @brief Structure of lines
+ */
 typedef struct LineParams
 {
+  /** @brief initial and final points of a line*/
   Point2D start, end;
 }LineParams;
 
+/** 
+ * @brief Structure of Parabol
+ */
 typedef struct ParabolParams
 {
+  /** @brief parameter 'a' as in y = ax^2 */
   double a;
+  /** @brief initial coordinate in axis X */
   double start_x;
+  /** @brief final coordinate in axis X */
   double end_x;
 }ParabolParams;
 
+/** 
+ * @brief Structure of Sub-Curves
+ */
 typedef struct SubPath
 {
+  /** @brief curve type */
   SubPathType type;
+  /** @brief initial and final points of the curve */
   Point2D start, end;
-  Point2D bezier3[2]; // control point at start and end
+  /** @brief two control points in the middle*/
+  Point2D bezier3[2];
+  /** @brief theoretic circle */
   CercleParams cercle;
+  /** @brief theoretic sinusoid */
   SinusParams sinus;
+  /** @brief theoretic line*/
   LineParams line;
+  /** @brief theoretic parabol */
   ParabolParams parabol;
 } SubPath;
 
+/** 
+ * @brief Structure of Curves
+ */
 typedef struct Path
 {
+  /** @brief 2-dimension initial point of curve */
   Point2D origin;
+  /** @brief number of sub-curve */
   int nbSubPath;
+  /** @brief length of curves */
   double length;
+  /** @brief list for the sub-curves */
   std::list<SubPath> subpath;
 } Path;
 
-
+/** 
+ * @brief Structure of points in Viewer
+ */
 typedef struct kinPoint 
 {
+  /** @brief coordinate of points */
   SM_COND kc[3];
+  /** @brief time of points */
   double t;
 } kinPoint;
 
+/** 
+ * @brief Structure of sub-trajectory
+ */
 typedef struct SubTraj
 {
+  /** @brief motion data for the sub-trajectory */
   std::vector<SM_CURVE_DATA> traj;
+  /** @brief jerk value, interval time and conditions for three segments */
   std::vector<SM_OUTPUT> motion_par_seg;
+  /** @brief initial condition for three segments */
   std::vector<SM_COND_DIM> IC_par_seg;
+  /** @brief final condition for three segments */
   std::vector<SM_COND_DIM> FC_par_seg;
+  /** @brief error beteween the sub-trajectories */
   double err;
 } SubTraj;
 
+/** 
+ * @brief Structure of index for the point
+ */
 typedef struct IndiceTrace
 {
+  /** @brief discretised length of a curve */
   double length_accumul;
+  /** @brief index of axis X for a point in the curve */
   double x;
+  /** @brief index of axis Y for a point in the curve */
   double y;
 }IndiceTrace;
 
-#endif
+// #endif
 
 
 #endif
