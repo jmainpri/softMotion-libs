@@ -205,20 +205,34 @@ extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector
 extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
 // extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
 
+extern SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error, double *val_err_max);
+
+
 /** @brief calculation of length
   *  
-  * calculate total length of 
+  * calculate the total length of curves
   *
-  * @param &IdealTraj : the ideal trajectory with motion law
-  * @param &ApproxTraj : the approximated trajectory with motion law
-  * @param *errorMax : pointer for the position of the maximum error found
-  * @param &error : vector for stocking all the values of error
-  * @param *val_err_max : pointer of the maximum value of error
+  * @param &path : a curve
+  * @param *longeur : pointer of the length of curves.
   * @return SM_OK : the status of SoftMotion
   */    
 extern SM_STATUS Path_Length(std::list<Path> &path, double *longeur);
+
+/** @brief computation of the error
+  *  
+  * calculate the error between every sub-ideal and approximated trajectories
+  *
+  * @param &IdealTraj : the sub-ideal trajectory with motion law
+  * @param &ApproxTraj : the sub-approximated trajectory with motion law
+  * @param *errorMax : pointer for the position of the maximum error found 
+  * @param &error : vector for stocking all the values of error
+  * @param *val_err_max : pointer of the maximum value of error
+  * @param ind : size of the ideal and approximated trajectories
+  * @return SM_OK : the status of SoftMotion
+  */    
 extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max, int ind);
 
+extern SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *val_err_max, int ind);
  
 #endif
 #endif
