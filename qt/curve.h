@@ -8,7 +8,7 @@
  * @brief This file includes the declaration of class Curve
  */
 
-/** @brief This class represents the trajectory traced in Mainwindow
+/** @brief Class of the trajectory traced in Mainwindow
  *
  */
 
