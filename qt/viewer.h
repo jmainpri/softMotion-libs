@@ -2,11 +2,11 @@
 #include <qglviewer.h>
 #include "curve.h"
 
-/** @file curve.h
+/** @file viewer.h
  * @brief This file includes the declaration of class Viewer
  */
 
-/** @brief This class represents the viewer of Mainwindow
+/** @brief Class of the viewer for the Mainwindow
  *
  */
 
