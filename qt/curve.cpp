@@ -29,11 +29,14 @@ Curve::Curve()
   errorMax.t = 0.0;
 
   _nbKeyFrames = 0;
+#ifdef ENABLE_DISPLAY
   keyFrame_ = NULL;
+#endif
 }
 
 Curve::Curve (const Curve& c)
 {
+#ifdef ENABLE_DISPLAY
   Frame* myFrame = new Frame();
   _isDraw = c._isDraw;
   _currentKF = c._currentKF;
@@ -50,6 +53,7 @@ Curve::Curve (const Curve& c)
   _color_f1 = c._color_f1;
   _color_f2 = c._color_f2;
   _color_f3 = c._color_f3;
+#endif
   path = c.path;
   traj = c.traj;
   trajList = c.trajList;
@@ -58,6 +62,7 @@ Curve::Curve (const Curve& c)
 }
 Curve::~Curve()
 {
+#ifdef ENABLE_DISPLAY
   if (keyFrame_ != NULL)
   {
     for (int i=0; i<_nbKeyFrames; i++)
@@ -65,6 +70,7 @@ Curve::~Curve()
 
     delete[] keyFrame_;
   }
+#endif
 }
 
 Curve& Curve::operator=(const Curve& curv)
@@ -88,6 +94,8 @@ void Curve::createPath(std::string file)
   double index, x, y, z, vx, ax;
   ifstream f (file.c_str());
   string line;
+
+#ifdef ENABLE_DISPLAY
   int nbKeyFrames = 0;
   Frame* myFrame = new Frame();
 
@@ -146,10 +154,12 @@ void Curve::createPath(std::string file)
 
   connect(&kfi_, SIGNAL(interpolated()), SLOT(updateGL()));
 //   kfi_.startInterpolation();
+#endif
 }
 
 void Curve::draw()
 {
+#ifdef ENABLE_DISPLAY
   // Draw interpolated frame
   glPushMatrix();
   glMultMatrixd(kfi_.frame()->matrix());
@@ -170,8 +180,10 @@ void Curve::draw()
   glPopAttrib();
  //kfi_.drawPath(1, 1);
   glColor3f(1.,1.,1.);
+#endif
   return;
 }
+
 
 int Curve::nbKeyFrames()
 {

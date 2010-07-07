@@ -21,45 +21,45 @@ camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
 
 void Viewer::keyPressEvent(QKeyEvent *e)
 {
-  switch (e->key())
-    {
-    case Qt::Key_Left :
-      curve[0].setCurrentKf( (curve[0].currentKf()+curve[0].nbKeyFrames()-1) % curve[0].nbKeyFrames() );
-      curve[0].setManipulatedFrame(curve[0].keyFrame_[curve[0].currentKf()]);
-      updateGL();
-      break;
-    case Qt::Key_Right :
-      curve[0].setCurrentKf( (curve[0].currentKf()+1) % curve[0].nbKeyFrames() );
-      curve[0].setManipulatedFrame(curve[0].keyFrame_[curve[0].currentKf()]);
-      updateGL();
-      break;
-    case Qt::Key_Return :
-       curve[0].kfi_.toggleInterpolation();
-      break;
-    case Qt::Key_Plus :
-      curve[0].kfi_.setInterpolationSpeed(curve[0].kfi_.interpolationSpeed()+0.25);
-
-      break;
-    case Qt::Key_Minus :
-      curve[0].kfi_.setInterpolationSpeed(curve[0].kfi_.interpolationSpeed()-0.25);
-      break;
-    // case Qt::Key_C :
-      // kfi_.setClosedPath(!kfi_.closedPath());
-      // break;
-    case Qt::Key_Space :
-        curve[0].setCurrentKf(0);
-	
-        curve[0].setManipulatedFrame(curve[0].keyFrame_[0]);
-	curve[0].kfi_.setInterpolationSpeed(curve[0].nbKeyFrames()/30.0);
-	curve[0].kfi_.setLoopInterpolation();
-	curve[0].kfi_.startInterpolation();
-      break;
-    default:
-      QGLViewer::keyPressEvent(e);
-    }
+//  switch (e->key())
+//    {
+//    case Qt::Key_Left :
+//      curve[0].setCurrentKf( (curve[0].currentKf()+curve[0].nbKeyFrames()-1) % curve[0].nbKeyFrames() );
+//      curve[0].setManipulatedFrame(curve[0].keyFrame_[curve[0].currentKf()]);
+//      updateGL();
+//      break;
+//    case Qt::Key_Right :
+//      curve[0].setCurrentKf( (curve[0].currentKf()+1) % curve[0].nbKeyFrames() );
+//      curve[0].setManipulatedFrame(curve[0].keyFrame_[curve[0].currentKf()]);
+//      updateGL();
+//      break;
+//    case Qt::Key_Return :
+//       curve[0].kfi_.toggleInterpolation();
+//      break;
+//    case Qt::Key_Plus :
+//      curve[0].kfi_.setInterpolationSpeed(curve[0].kfi_.interpolationSpeed()+0.25);
+//
+//      break;
+//    case Qt::Key_Minus :
+//      curve[0].kfi_.setInterpolationSpeed(curve[0].kfi_.interpolationSpeed()-0.25);
+//      break;
+//    // case Qt::Key_C :
+//      // kfi_.setClosedPath(!kfi_.closedPath());
+//      // break;
+//    case Qt::Key_Space :
+//        curve[0].setCurrentKf(0);
+//	
+//        curve[0].setManipulatedFrame(curve[0].keyFrame_[0]);
+//	curve[0].kfi_.setInterpolationSpeed(curve[0].nbKeyFrames()/30.0);
+//	curve[0].kfi_.setLoopInterpolation();
+//	curve[0].kfi_.startInterpolation();
+//      break;
+//    default:
+//      QGLViewer::keyPressEvent(e);
+//    }
 }
 
-void Viewer::draw()
+void Viewer::draw(std::vector<Curve> curve)
 {
   // Draw interpolated frame
   char text[128];

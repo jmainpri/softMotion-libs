@@ -12,7 +12,10 @@
  *
  */
 
-class Curve : public QGLViewer
+class Curve
+#ifdef ENABLE_DISPLAY
+ : public QGLViewer
+#endif
 {
 public :
 /** @brief Constructor
@@ -61,9 +64,10 @@ public :
   void setIsDraw(bool v);
   double width;
   double height;
-  
+  #ifdef ENABLE_DISPLAY
   qglviewer::ManipulatedFrame** keyFrame_;
   qglviewer::KeyFrameInterpolator kfi_;
+#endif
 
   kinPoint errorMax;
   std::vector<kinPoint> discPoint;

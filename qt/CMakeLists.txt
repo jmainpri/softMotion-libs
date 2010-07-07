@@ -19,7 +19,9 @@
 
 PROJECT (QSoftMotionPlanner C CXX)
 
-file(GLOB source_files main.cpp mainwindow.cpp curve.cpp viewer.cpp)
+file(GLOB source_files main.cpp QSoftMotionPlanner.cpp myPlot.cpp curve.cpp curve_nw.cpp viewer.cpp)
+file(GLOB source_files_light lightQSoftMotionPlanner.cpp mainwindow.cpp mainwindow_nw.cpp curve.cpp curve_nw.cpp viewer.cpp)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
 
 #################################################################
 #### Add here a library to include (custom FindPackage.cmake ####
@@ -113,7 +115,7 @@ ENDMACRO(SMP_QT_GENERATE_UI_HEADERS)
 
 IF(QT_LIBRARY)
 
-SMP_QT_GENERATE_MOC(mainwindow.h)
+SMP_QT_GENERATE_MOC(QSoftMotionPlanner.h)
 SMP_QT_GENERATE_UI_HEADERS(mainwindow.ui)
 
 # generate the UI headers
@@ -166,5 +168,10 @@ ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 #MESSAGE("${SMP_QT_UI_HEADERS}")
 ADD_EXECUTABLE(QSoftMotionPlanner ${source_files} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
 TARGET_LINK_LIBRARIES(QSoftMotionPlanner softMotion ${LIBS} m)
+
+#ADD_EXECUTABLE(lightQSoftMotionPlanner ${source_files_light} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
+#TARGET_LINK_LIBRARIES(lightQSoftMotionPlanner softMotion ${LIBS} m)
+
+
 
 ENDIF(QT_LIBRARY)

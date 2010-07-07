@@ -22,10 +22,10 @@ public :
   Viewer(QWidget *parent = NULL);
 //   virtual ~Viewer();
 
-  std::vector<Curve> curve;
+
  
 protected :
-    virtual void draw();
+    virtual void draw(std::vector<Curve> curve);
     virtual void keyPressEvent(QKeyEvent *e);
 
 private :

@@ -146,7 +146,7 @@ MACRO(SMP_CheckCompilationFlags)
 #  MESSAGE("\n")
 ENDMACRO(SMP_CheckCompilationFlags)
 
-
+SMP_flag(ENABLE_DISPLAY "Sets the Qt interface active" OFF)
 SMP_flag(QT_LIBRARY "Sets QtLibrary compiling mode" OFF)
 SMP_flag(WITH_TCL "Sets the tcl package compiling mode" OFF)
 

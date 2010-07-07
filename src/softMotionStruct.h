@@ -31,14 +31,14 @@
 #ifndef SOFT_MOTION_STRUCT_H
 #define SOFT_MOTION_STRUCT_H
 
-#ifdef __cplusplus
+
 #include <stdio.h>
 #include <string.h>
 #include <list>
 #include <string>
 #include <vector>
 
-#endif
+
 
 #include "softMotionConst.h"
 
