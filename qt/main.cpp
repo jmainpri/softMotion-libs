@@ -24,5 +24,7 @@ int main(int argc, char *argv[])
   w.setDisplay(true);
   w.showMaximized();
   return a.exec();  
+#else
+  // return 0
 #endif
 }

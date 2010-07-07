@@ -22,13 +22,14 @@ public :
   Viewer(QWidget *parent = NULL);
 //   virtual ~Viewer();
 
-
+  std::vector<Curve>  curve;
  
 protected :
-    virtual void draw(std::vector<Curve> curve);
+    virtual void draw();
     virtual void keyPressEvent(QKeyEvent *e);
 
 private :
+
   double _gridSize;
   double _gridStep;
   int _currentKF_;

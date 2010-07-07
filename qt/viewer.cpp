@@ -59,7 +59,7 @@ void Viewer::keyPressEvent(QKeyEvent *e)
 //    }
 }
 
-void Viewer::draw(std::vector<Curve> curve)
+void Viewer::draw()
 {
   // Draw interpolated frame
   char text[128];

@@ -128,13 +128,6 @@ public:
      */         
     void initializeApproxVariables();
 
-    /** @brief open a file with a fileName specified
-     *  
-     * open a  .svg file when display is deactivated
-     */   
-    void openFile(const char * fileName);
-
-
  #ifdef ENABLE_DISPLAY 
 public slots:
 #endif
@@ -204,6 +197,7 @@ private:
     SM_LIMITS _lim;
     double _errMax;
     double _sampling;
+    int _timeStep; 
     std::string _fileName;
     bool _isFullScreen;
     bool _display;

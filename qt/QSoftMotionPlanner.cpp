@@ -192,9 +192,11 @@ QWidget *parent
       connect(this->Slider_A0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_V0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
 
-  
+
   #else
     double Jmax=0.0, Amax=0.0, Vmax=0.0, sampling =0.001, err = 0.001; 
+    int step;
+
     cout<<endl<<"**** Set the Approx and Motion Law Parameters please ****"<<endl;
 	cout << "Jmax : " << endl;
       cin>> Jmax;
@@ -206,12 +208,15 @@ QWidget *parent
       cin>> sampling;
 	cout << "errMax : " << endl;
       cin>> err;
+      cout << "time step for the exported file : "<< endl; 
+     cin>> step;
 
       _lim.maxJerk = Jmax;
       _lim.maxAcc  = Amax;
       _lim.maxVel  = Vmax;
       _sampling = sampling;
       _errMax = err;
+      _timeStep = step;
 
     cout<<endl<<"**** Choose a path type please ****"<<endl;
     cout<<"0--none"<<endl<<"1--droite"<<endl<<"2--circle"<<endl<<"3--sinusoid"<<endl<<"4--parabole"<<endl<<"5--file"<<endl;
@@ -225,8 +230,9 @@ QWidget *parent
     case 5:   
       {
 	cout << "Absolute file path : " << endl;
-      cin>>_fileName;
-      openFile(_fileName.c_str());
+	cin>> _fileName;
+	cout << "open the file " << _fileName << endl;
+	openFile();
       }         
       break;
     default:                      break;
@@ -246,14 +252,18 @@ QSoftMotionPlanner::~QSoftMotionPlanner()
 }
 
 void QSoftMotionPlanner::genFileTraj(){
+#ifdef ENABLE_DISPLAY
   QApplication::setOverrideCursor(Qt::WaitCursor);
-  int incr = _errMax;
+#endif
+  int incr = _timeStep;
   FILE *fp = NULL;
   fp = fopen("output.traj", "w");
   if(fp==NULL) {
     std::cerr << " cannont open file to write the trajectory" << std::endl; 
     return;
   }
+
+  cout << "Number of positions in the file " <<_curve.back().traj.size() << endl;
   for (unsigned int i = 0; i < _curve.back().traj.size(); i += incr){
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[0]);
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[1]);
@@ -392,12 +402,18 @@ void QSoftMotionPlanner::defineFunction_p(){
   _curve.push_back(curv);
 
 #ifdef ENABLE_DISPLAY
+    viewer->curve.push_back(curv);
   viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
   viewer->updateGL();
 
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
+#else 
+
+  computeTraj();
+  genFileTraj();
+
 #endif
   return;  
 }
@@ -430,12 +446,18 @@ void QSoftMotionPlanner::defineFunction_c(){
   _curve.push_back(curv);
 
 #ifdef ENABLE_DISPLAY
+  viewer->curve.push_back(curv);
   viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
   viewer->updateGL();
 
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
+#else 
+
+  computeTraj();
+  genFileTraj();
+
 #endif
   return;  
 }
@@ -468,12 +490,18 @@ void QSoftMotionPlanner::defineFunction_l(){
   _curve.push_back(curv);
 
 #ifdef ENABLE_DISPLAY
+    viewer->curve.push_back(curv);
   viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
   viewer->updateGL();
 
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
+#else 
+
+  computeTraj();
+  genFileTraj();
+
 #endif
   return;  
 }
@@ -508,21 +536,26 @@ void QSoftMotionPlanner::defineFunction_s(){
   _curve.push_back(curv);
 
 #ifdef ENABLE_DISPLAY
+    viewer->curve.push_back(curv);
   viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
   viewer->updateGL();
 
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
+#else 
+
+  computeTraj();
+  genFileTraj();
+
 #endif
   return;
 }
 
 
-
+#ifdef ENABLE_DISPLAY
 void QSoftMotionPlanner::openFile()
 {
-#ifdef ENABLE_DISPLAY
   QString fileName = QFileDialog::getOpenFileName(this);
   std::string str;
   std::string str2;
@@ -568,6 +601,8 @@ void QSoftMotionPlanner::openFile()
     curv.setIsDraw(display());
 
     _curve.push_back(curv);
+
+    viewer->curve.push_back(curv);
     // cout << " size stack " << _curve.back().path.size()  << " origin " << curv.path.size() << endl;
     viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
     // cout << "nbkey " << curv.nbKeyFrames() << endl;
@@ -583,18 +618,17 @@ void QSoftMotionPlanner::openFile()
 
     
   }
-#endif
 }
 
-void QSoftMotionPlanner::openFile(const char *fileName)
+#else
+
+void QSoftMotionPlanner::openFile()
 {
   
   std::string str;
   std::string str2;
   Curve curv;
 
-  _fileName.clear();
-  _fileName.append(fileName);
 
 
     cout << "Open file " << this->_fileName << endl;
@@ -619,12 +653,20 @@ void QSoftMotionPlanner::openFile(const char *fileName)
     curv.createPath(str2.c_str());
     curv.setIsDraw(false);
     curv.draw();
-
+    _curve.push_back(curv);
     cout << " ... Ideal Trajectory Computed " << endl;
+
+
+  computeTraj();
+
+    cout << " ... Approximated Trajectory Computed " << endl;
+  genFileTraj();
+    cout << " ... File exported " << endl;
+
 
 }
 
-
+#endif
 void QSoftMotionPlanner::fullScreen()
 {
 #ifdef ENABLE_DISPLAY 
@@ -929,6 +971,7 @@ void QSoftMotionPlanner::computeTraj()
   curv2.setIsDraw(display());
   _curve.push_back(curv2);
 #ifdef ENABLE_DISPLAY
+  viewer->curve.push_back(curv2);
   viewer->updateGL();
 #endif
   ChronoPrint("");
@@ -1217,3 +1260,5 @@ void QSoftMotionPlanner::computeSoftMotion()
 #endif
   return;
 }
+
+
