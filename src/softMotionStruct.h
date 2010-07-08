@@ -379,12 +379,12 @@ typedef struct SM_COND_DIM{
  * @brief Structure of output
  */  
 typedef struct SM_OUTPUT{
-    /** @brief output jerk*/
-	double Jerk[3];
-    /** @brief output time*/
-	double Time[3]; 
-    /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk*/
-	SM_COND IC[3];
+    /** @brief output jerk for n axes*/
+  std::vector<double> Jerk;
+  /** @brief output time for n axes*/
+  std::vector<double> Time; 
+  /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk for n axes*/
+  std::vector<SM_COND> IC;
 }SM_OUTPUT;
 
 

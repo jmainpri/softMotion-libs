@@ -248,6 +248,7 @@ QWidget *parent
 
 QSoftMotionPlanner::~QSoftMotionPlanner()
 {
+  _curve.clear();
 
 }
 
@@ -396,7 +397,6 @@ void QSoftMotionPlanner::defineFunction_p(){
   str2.clear();
   str2 += "cercle_traj.dat";
   saveTraj(str2, curv.traj);
-  curv.createPath(str2.c_str());
   curv.draw();
   curv.setIsDraw(display());
   _curve.push_back(curv);
@@ -440,7 +440,6 @@ void QSoftMotionPlanner::defineFunction_c(){
   str2.clear();
   str2 += "cercle_traj.dat";
   saveTraj(str2, curv.traj);
-  curv.createPath(str2.c_str());
   curv.draw();
   curv.setIsDraw(display());
   _curve.push_back(curv);
@@ -484,7 +483,6 @@ void QSoftMotionPlanner::defineFunction_l(){
   str2.clear();
   str2 += "line_traj.dat";
   saveTraj(str2, curv.traj);
-  curv.createPath(str2.c_str());
   curv.draw();
   curv.setIsDraw(display());
   _curve.push_back(curv);
@@ -530,7 +528,6 @@ void QSoftMotionPlanner::defineFunction_s(){
   str2.clear();
   str2 += "sinus_traj.dat";
   saveTraj(str2, curv.traj);
-  curv.createPath(str2.c_str());
   curv.draw();
   curv.setIsDraw(display());
   _curve.push_back(curv);
@@ -596,7 +593,6 @@ void QSoftMotionPlanner::openFile()
     saveTraj(str2, curv.traj);
     
     /* Handle the path */
-    curv.createPath(str2.c_str());
     curv.draw();
     curv.setIsDraw(display());
 
@@ -650,8 +646,7 @@ void QSoftMotionPlanner::openFile()
     saveTraj(str2, curv.traj);
     
     /* Handle the path */
-    curv.createPath(str2.c_str());
-    curv.setIsDraw(false);
+     curv.setIsDraw(false);
     curv.draw();
     _curve.push_back(curv);
     cout << " ... Ideal Trajectory Computed " << endl;
@@ -760,8 +755,6 @@ void QSoftMotionPlanner::computeTraj()
 
   saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
 
-  _curve.begin()->createPath("QtIdealTraj2.dat");
-  
   _curve.begin()->setIsDraw(display());
 
 #ifdef ENABLE_DISPLAY
@@ -907,9 +900,13 @@ void QSoftMotionPlanner::computeTraj()
         iter_divis->motion_par_seg.resize(3);
         Temp_alias.clear();
         Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
+
         sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
+
         iter_divis->traj.clear();
+
         convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
+
         if(iter_temp_divis->traj.size() <= iter_divis->traj.size()) {toto = iter_temp_divis->traj.size();}
         else {toto = iter_divis->traj.size();}
         Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &_curve.front().errorMax, error, &val_err_max, toto);
@@ -920,7 +917,7 @@ void QSoftMotionPlanner::computeTraj()
         iter_temp_divis ++;
         hh ++;
       }
-      
+
       if (err_max_chaq_seg < err_max_def){
 	for (iter_divis = curv_divis.trajList.begin(); iter_divis != curv_divis.trajList.end(); iter_divis++){
 	  for (unsigned int i = 0; i< iter_divis->traj.size(); i++){
@@ -950,7 +947,7 @@ void QSoftMotionPlanner::computeTraj()
       }
 
       flag = 1;
-      cout << "err_max_dans_chaq_segment :  " << err_max_chaq_seg << " " << err_max_def << endl; 
+      //cout << "err_max_dans_chaq_segment :  " << err_max_chaq_seg << " " << err_max_def << endl; 
     }while (err_max_chaq_seg > err_max_def);
 
   }
@@ -967,9 +964,11 @@ void QSoftMotionPlanner::computeTraj()
 #endif
 
   saveTraj("QtApproxTraj.dat", curv2.traj);
-  curv2.createPath("QtApproxTraj.dat");
   curv2.setIsDraw(display());
+  curv2.discPoint = _curve.front().discPoint;
+  curv2.errorMax = _curve.front().errorMax;
   _curve.push_back(curv2);
+
 #ifdef ENABLE_DISPLAY
   viewer->curve.push_back(curv2);
   viewer->updateGL();
@@ -993,16 +992,23 @@ void QSoftMotionPlanner::computeSoftMotion()
   int TrajectoryType, TrajectoryTypeFond;
   double dcOut, dcOutFond;
   int zoneOut, zoneOutFond, i;
-  double Time[7];
-  double IC[3];
-  double J[7];
+  std::vector<double> Time;
+  Time.resize(7);
+  std::vector<double>  IC;
+  IC.resize(3);
+  std::vector<double> J;
+  J.resize(7);
   double total_time=0.0;
   int nbPoints=0, nbPointsFond=0;
   double tic = 0.005;
   double tloc = 0.0;
-  double *t=NULL, *ddu=NULL, *du=NULL, *u=NULL;
-  double *tFond=NULL, *dduFond=NULL, *duFond=NULL, *uFond=NULL;
+  std::vector<double> t, u, du, ddu;
+  std::vector<double> tFond, uFond, duFond, dduFond;
+  //  double *t=NULL, *ddu=NULL, *du=NULL, *u=NULL;
+  // double *tFond=NULL, *dduFond=NULL, *duFond=NULL, *uFond=NULL;
     
+
+
 
   /* Sliders of Kinematic cobnstraints */
   lim.maxJerk = this->Slider_Jmax_3->value();
@@ -1063,23 +1069,25 @@ void QSoftMotionPlanner::computeSoftMotion()
     total_time = total_time + Time[i]; // total_time is the time for every 7 segment
   }
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
+
+  ddu.resize(nbPoints);  
+  du.resize(nbPoints);  
+  u.resize(nbPoints); 
+  t.resize(nbPoints);
   
   this->doubleSpinBox_totalTime->setValue(total_time);
 
-  t   = (double *) malloc(sizeof(double) * nbPoints);
-  ddu = (double *) malloc(sizeof(double) * nbPoints);
-  du  = (double *) malloc(sizeof(double) * nbPoints);
-  u   = (double *) malloc(sizeof(double) * nbPoints);
+
 
   for (i = 0; i < nbPoints; i++){
     tloc = i * tic;
     if (tloc >= total_time) {
       tloc =total_time;
     }
-    t[i] = tloc;
+    t.at(i) = tloc;
   }
 
-  sm_AVX_TimeVar(IC, Time, J, 7, t, nbPoints, ddu, du, u);
+  sm_AVX_TimeVar(IC, Time, J, t, ddu, du, u);
 
   /* Conpute background curve */
   ICloc.a = 0.0;
@@ -1132,25 +1140,34 @@ void QSoftMotionPlanner::computeSoftMotion()
   }
   nbPointsFond = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
 
-  tFond   = (double *) malloc(sizeof(double) * nbPointsFond);
-  dduFond = (double *) malloc(sizeof(double) * nbPointsFond);
-  duFond  = (double *) malloc(sizeof(double) * nbPointsFond);
-  uFond   = (double *) malloc(sizeof(double) * nbPointsFond);
 
+  dduFond.resize(nbPointsFond);  
+  duFond.resize(nbPointsFond);  
+  uFond.resize(nbPointsFond); 
+  tFond.resize(nbPointsFond);
+
+
+ 
   for (i = 0; i < nbPointsFond; i++){
     tloc = i * tic;
     if (tloc >= total_time) {
       tloc =total_time;
     }
-    tFond[i] = tloc;
+    tFond.at(i) = tloc;
   }
 
-  sm_AVX_TimeVar(IC, Time, J, 7, tFond, nbPointsFond, dduFond, duFond, uFond);
+  sm_AVX_TimeVar(IC, Time, J, tFond, dduFond, duFond, uFond);
 
   this->qwtPlot_2->clear();
   this->qwtPlot->clear();
   this->qwtPlot->setCanvasBackground(QColor(Qt::white));
   this->qwtPlot_2->setCanvasBackground(QColor(Qt::white));
+
+
+  const QVector<double> qv_t = QVector<double>::fromStdVector(t);
+  const QVector<double> qv_u = QVector<double>::fromStdVector(u);
+  const QVector<double> qv_du = QVector<double>::fromStdVector(du);
+  const QVector<double> qv_ddu = QVector<double>::fromStdVector(ddu);  
 
   QwtPlotCurve *curve_pos = new QwtPlotCurve("Pos--(m)");
   QPen pen_pos = curve_pos->pen();
@@ -1158,7 +1175,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   pen_pos.setWidth(2);
   pen_pos.setStyle(Qt::DashDotLine);
   curve_pos->setPen(pen_pos);
-  curve_pos->setData(t,u, nbPoints);
+  curve_pos->setData(qv_t ,qv_u);
   curve_pos->attach(this->qwtPlot_2);
 
   QwtPlotCurve *curve_vel = new QwtPlotCurve("Vel--(m/s)");
@@ -1166,7 +1183,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   pen_vel.setColor(Qt::darkGreen);
   pen_vel.setWidth(2);
   curve_vel->setPen(pen_vel);
-  curve_vel->setData(t,du, nbPoints);
+  curve_vel->setData(qv_t,qv_du);
   curve_vel->attach(this->qwtPlot_2);
 
   QwtPlotCurve *curve_acc = new QwtPlotCurve("Acc--(m/s^2)");
@@ -1174,7 +1191,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   pen_acc.setColor(Qt::blue);
   pen_acc.setWidth(2);
   curve_acc->setPen(pen_acc);
-  curve_acc->setData(t,ddu, nbPoints);
+  curve_acc->setData(qv_t,qv_ddu);
   curve_acc->attach(this->qwtPlot_2);
 
   QwtLegend *legend_droite = new QwtLegend;
@@ -1194,12 +1211,15 @@ void QSoftMotionPlanner::computeSoftMotion()
   //     }
   this->qwtPlot_2->replot();
 
+  const QVector<double> qv_duFond = QVector<double>::fromStdVector(duFond);
+  const QVector<double> qv_dduFond = QVector<double>::fromStdVector(dduFond);
+
   QwtPlotCurve *curve_velacc = new QwtPlotCurve("Vel_Acc");
   QPen pen_velacc = curve_velacc->pen();
   pen_velacc.setColor(Qt::red);
   pen_velacc.setWidth(2);
   curve_velacc->setPen(pen_velacc);
-  curve_velacc->setData(du,ddu, nbPoints);
+  curve_velacc->setData(qv_du,qv_ddu);
   curve_velacc->attach(this->qwtPlot);
 
   QwtPlotCurve *curve_velaccFond = new QwtPlotCurve("Vel_Acc_Lim");
@@ -1207,7 +1227,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   pen_velaccFond.setColor(Qt::blue);
   pen_velaccFond.setWidth(1);
   curve_velaccFond->setPen(pen_velaccFond);
-  curve_velaccFond->setData(duFond,dduFond, nbPointsFond);
+  curve_velaccFond->setData(qv_duFond,qv_dduFond);
   curve_velaccFond->attach(this->qwtPlot);
 
   /*legend*/
@@ -1248,15 +1268,7 @@ void QSoftMotionPlanner::computeSoftMotion()
 
   this->qwtPlot->replot();
 
-  free(t);
-  free(u);
-  free(du);
-  free(ddu);
-
-  free(tFond);
-  free(uFond);
-  free(duFond);
-  free(dduFond);
+ 
 #endif
   return;
 }

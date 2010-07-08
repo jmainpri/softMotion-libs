@@ -55,19 +55,10 @@ public :
   * draw the trajectoies
   */      
   void draw();
-  
-  void createPath(std::string file);
-  int  nbKeyFrames();
-  int  currentKf();
-  void setCurrentKf(int v);
   bool isDraw();
   void setIsDraw(bool v);
   double width;
   double height;
-  #ifdef ENABLE_DISPLAY
-  qglviewer::ManipulatedFrame** keyFrame_;
-  qglviewer::KeyFrameInterpolator kfi_;
-#endif
 
   kinPoint errorMax;
   std::vector<kinPoint> discPoint;
@@ -83,8 +74,6 @@ private :
   float _color_f1;
   float _color_f2;
   float _color_f3;
-  int _currentKF;
-  int _nbKeyFrames;
   bool _isDraw;
 
 };

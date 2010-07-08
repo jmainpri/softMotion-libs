@@ -156,7 +156,8 @@ extern SM_STATUS sm_CalculPointToPointJerkProfile(double PFrom[SM_NB_DIM], SM_PO
 
 extern SM_STATUS sm_adjustMotionWith3seg( SM_COND IC, SM_COND FC, double Timp, SM_MOTION_MONO *motion);
 
-extern SM_STATUS sm_AVX_TimeVar(double IC[3], double *T, double *J, int nbSeg, double *t, int nbSample, double *a, double *v, double *x);
+extern SM_STATUS sm_AVX_TimeVar(std::vector<double>  IC,  std::vector<double> T, std::vector<double> J, std::vector<double> t, std::vector<double> &a, std::vector<double> &v, std::vector<double> &x);
+
 //===================
 #ifdef __cplusplus
 //extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj, std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<int> &IntervIndex);

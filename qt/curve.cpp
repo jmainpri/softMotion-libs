@@ -27,29 +27,15 @@ Curve::Curve()
     errorMax.kc[i].x = 0.0;
   }
   errorMax.t = 0.0;
+  discPoint.clear();
+  traj.clear();
 
-  _nbKeyFrames = 0;
-#ifdef ENABLE_DISPLAY
-  keyFrame_ = NULL;
-#endif
 }
 
 Curve::Curve (const Curve& c)
 {
 #ifdef ENABLE_DISPLAY
-  Frame* myFrame = new Frame();
   _isDraw = c._isDraw;
-  _currentKF = c._currentKF;
-  _nbKeyFrames = c._nbKeyFrames;
-  keyFrame_ = new ManipulatedFrame*[nbKeyFrames()];
-  kfi_.setFrame(myFrame);
-  kfi_.setLoopInterpolation();
-  for (int i=0; i<c._nbKeyFrames; i++) {
-      keyFrame_[i] = new ManipulatedFrame();
-      keyFrame_[i] = c.keyFrame_[i];
-      kfi_.addKeyFrame(keyFrame_[i]);
-  }
-
   _color_f1 = c._color_f1;
   _color_f2 = c._color_f2;
   _color_f3 = c._color_f3;
@@ -57,25 +43,25 @@ Curve::Curve (const Curve& c)
   path = c.path;
   traj = c.traj;
   trajList = c.trajList;
-  discPoint = c.discPoint;
+   discPoint = c.discPoint;
+ 
   errorMax = c.errorMax;
 }
 Curve::~Curve()
 {
 #ifdef ENABLE_DISPLAY
-  if (keyFrame_ != NULL)
-  {
-    for (int i=0; i<_nbKeyFrames; i++)
-      delete keyFrame_[i];
-
-    delete[] keyFrame_;
-  }
+  discPoint.clear();
+  traj.clear();
+  path.clear();
+  trajList.clear();
 #endif
 }
 
 Curve& Curve::operator=(const Curve& curv)
 {
   static Curve o;
+
+  o.discPoint = curv.discPoint;
 
   return o;
 }
@@ -88,83 +74,37 @@ void Curve::setColor(float f1, float f2, float f3)
   return;
 }
 
-void Curve::createPath(std::string file)
-{
-  int i = 0;
-  double index, x, y, z, vx, ax;
-  ifstream f (file.c_str());
-  string line;
-
-#ifdef ENABLE_DISPLAY
-  int nbKeyFrames = 0;
-  Frame* myFrame = new Frame();
-
-  //   restoreStateFromFile();
-  // myFrame is the Frame that will be interpolated.
-  
-  // Set myFrame as the KeyFrameInterpolator interpolated Frame.
-  kfi_.setFrame(myFrame);
-  kfi_.setLoopInterpolation();
-
-  nbKeyFrames = 0;
-  if (f.is_open())
-  {
-    while (! f.eof() )
-    {
-      getline (f,line);
-      nbKeyFrames ++;
-    }
-    f.close();
-  }
-
-  //  f.seekg(0, std::ios::beg);
-  f.open(file.c_str());
-  this->_nbKeyFrames = nbKeyFrames;
-  keyFrame_ = new ManipulatedFrame*[nbKeyFrames];
-
-  if (f.is_open())
-  {
-    for (i=0; i<nbKeyFrames; i++)     
-    {
-      getline (f,line);
-      sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf",&index, &x, &y, &z, &vx, &ax);
-      keyFrame_[i] = new qglviewer::ManipulatedFrame;
-      keyFrame_[i]->setPosition((double)x, (double)y, 0.0);
-      //keyFrame_[i]->setPosition(cos(i*2*M_PI/(nbKeyFrames-1)), sin(i*2*M_PI/(nbKeyFrames-1)), 0.0);
-      kfi_.addKeyFrame(keyFrame_[i]);
-    }
-    f.close();
-  }
-
-  else cout << "Unable to open file"; 
-  
-  setCurrentKf(0);
-  setManipulatedFrame(keyFrame_[currentKf()]);
-
-  // Enable direct frame manipulation when the mouse hovers.
-  setMouseTracking(false);
-
-  setKeyDescription(Qt::Key_Plus, "Increases interpolation speed");
-  setKeyDescription(Qt::Key_Minus, "Decreases interpolation speed");
-  setKeyDescription(Qt::Key_Left, "Selects previous key frame");
-  setKeyDescription(Qt::Key_Right, "Selects next key frame");
-  setKeyDescription(Qt::Key_Return, "Starts/stops interpolation");
-
-//   help();
-
-  connect(&kfi_, SIGNAL(interpolated()), SLOT(updateGL()));
-//   kfi_.startInterpolation();
-#endif
-}
-
 void Curve::draw()
 {
 #ifdef ENABLE_DISPLAY
   // Draw interpolated frame
-  glPushMatrix();
-  glMultMatrixd(kfi_.frame()->matrix());
-  drawAxis(0.01f);
-  glPopMatrix();
+  //glPushMatrix();
+  //glMultMatrixd(kfi_.frame()->matrix());
+  //drawAxis(0.01f);
+  //glPopMatrix();
+  
+  if(discPoint.size() > 0) {
+	glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT);
+	glDisable(GL_LIGHTING);
+ 
+	glPointSize(5.0);
+	glColor3f(1.0, 1.0, 0.0);
+	glBegin(GL_POINTS);
+	for (unsigned int j = 0; j < discPoint.size(); j++) {
+	  glVertex3f(discPoint[j].kc[0].x,discPoint[j].kc[1].x,0.);
+	}
+	glEnd();
+
+	glPointSize(10.0);
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	glVertex3f(errorMax.kc[0].x,errorMax.kc[1].x,0.);
+	glEnd();
+
+	glPopAttrib();
+
+  }
+
   drawAxis(0.01f);
   glColor3f(_color_f1,_color_f2,_color_f3);
   glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT);
@@ -178,21 +118,10 @@ void Curve::draw()
   }
   glEnd();
   glPopAttrib();
- //kfi_.drawPath(1, 1);
+
   glColor3f(1.,1.,1.);
 #endif
   return;
-}
-
-
-int Curve::nbKeyFrames()
-{
- return _nbKeyFrames;
-}  
-
-int Curve::currentKf()
-{
-  return _currentKF; 
 }
 
 bool Curve::isDraw()
@@ -205,7 +134,3 @@ void Curve::setIsDraw(bool v)
   _isDraw = v;
 }
 
-void Curve::setCurrentKf(int v)
-{
- _currentKF = v;
-}

@@ -5778,7 +5778,7 @@ SM_STATUS sm_adjustMotionWith3seg( SM_COND IC, SM_COND FC, double Timp, SM_MOTIO
 
 //         sm_AVX_TimeVar(ICloc, &Tloc, &Jloc, 1, &Tloc, 1, &aloc, &vloc, &xloc););
 
-SM_STATUS sm_AVX_TimeVar(double IC[3], double *T, double *J, int nbSeg, double *t, int nbSample, double *a, double *v, double *x){
+SM_STATUS sm_AVX_TimeVar( std::vector<double> IC,  std::vector<double> T, std::vector<double> J, std::vector<double> t, std::vector<double> &a, std::vector<double> &v, std::vector<double> &x){
 	
   /* This function computes the position, acceleration, vel at a given time (t array with nbSample elements) given
      -- IC[3]: Array of initial condition in acceleration (IC[0]) velocity (IC[1]) position (IC[2])
@@ -5792,29 +5792,30 @@ SM_STATUS sm_AVX_TimeVar(double IC[3], double *T, double *J, int nbSeg, double *
      -- *x : output array of computed position
   */
 	
-  double *Tac= NULL;
-  double *const0 = NULL;
-  double *const1 = NULL;
-  double *const2 = NULL;
-  double *const3 = NULL;
-  int i, j,n ;
+  std::vector<double> Tac;
+  std::vector<double> const0;
+  std::vector<double> const1;
+  std::vector<double> const2;
+  std::vector<double> const3;
+  unsigned int i, j,n ;
   double auxT;
 
   /*---------------------------Initialize-------------------*/
   // allocate memory for local variable
 		
-  Tac    = (double *) malloc(sizeof(double) * nbSeg);
-  const0 = (double *) malloc(sizeof(double) * nbSeg);
-  const1 = (double *) malloc(sizeof(double) * nbSeg);
-  const2 = (double *) malloc(sizeof(double) * nbSeg);
-  const3 = (double *) malloc(sizeof(double) * nbSeg);
+  Tac.resize(T.size());
+  const0.resize(T.size());
+  const1.resize(T.size());
+  const2.resize(T.size());
+  const3.resize(T.size());
+
   // Initilize accumulate time end segment constant 
-  for (i = 0; i < nbSeg; i++){
-    if (i == 0) *Tac = 0.0;
+  for (i = 0; i < T.size(); i++){
+    if (i == 0) Tac.at(i) = 0.0;
     else {
-      *(Tac + i) = 0.0;
+      Tac.at(i) = 0.0;
       for (j = 0; j < i; j ++){
-	*(Tac + i) = *(Tac + i) + *(T + j);
+	Tac.at(i) = Tac.at(i) + T.at(j);
       }
     }
     const0[i] = 0.0;
@@ -5823,14 +5824,18 @@ SM_STATUS sm_AVX_TimeVar(double IC[3], double *T, double *J, int nbSeg, double *
     const3[i] = 0.0;
   }
   // Initilize acceleration, velocity anh position
-  for (i = 0;  i < nbSample; i++){
-    *(a + i) = 0.0;
-    *(v + i) = 0.0;
-    *(x + i) = 0.0;
+  a.resize(t.size());
+  v.resize(t.size());
+  x.resize(t.size());
+
+  for (i = 0;  i < t.size(); i++){
+    a.at(i) =  0.0;
+    v.at(i) =  0.0;
+    x.at(i) =  0.0;
   }
 	
   /*------------------- Compute end segment constant ---------------------------------*/	
-  for ( n = 0; n < nbSeg; n++){
+  for ( n = 0; n < T.size(); n++){
 		
     for ( i = 0; i < n; i ++) {
       const0[n] = const0[n] + J[i] * T[i];
@@ -5851,271 +5856,25 @@ SM_STATUS sm_AVX_TimeVar(double IC[3], double *T, double *J, int nbSeg, double *
   }
 			
   /*------------------- Compute AVX ---------------------------------*/
-  for (i = 0; i < nbSample; i++){
+  for (i = 0; i < t.size(); i++){
 		
     // Find segment Index
-    n = nbSeg -1;
-    while (*(t + i) < Tac[n]) { n = n - 1;}
+    n = T.size() -1;
+    while (t.at(i) < Tac[n]) { n = n - 1;}
 		
-    auxT = *(t + i) - Tac[n];
+    auxT = t.at(i) - Tac[n];
 		
-    *(a + i) = J[n] * auxT                + IC[0];
-    *(v + i) = J[n] * pow(auxT,2.0) / 2.0 + IC[0] * (*(t + i))                + IC[1];
-    *(x + i) = J[n] * pow(auxT,3.0) / 6.0 + IC[0] * pow((*(t + i)),2.0) / 2.0 + IC[1] * (*(t + i)) + IC[2];
+     a.at(i) = J[n] * auxT                + IC[0];
+     v.at(i) = J[n] * pow(auxT,2.0) / 2.0 + IC[0] * ( t.at(i) )                + IC[1];
+     x.at(i) = J[n] * pow(auxT,3.0) / 6.0 + IC[0] * pow(( t.at(i) ),2.0) / 2.0 + IC[1] * ( t.at(i) ) + IC[2];
 		
-    *(a + i)  = *(a + i) + const0[n] ;
-    *(v + i)  = *(v + i) + const0[n] * auxT              + const1[n];
-    *(x + i)  = *(x + i) + const0[n] * pow(auxT,2.0) / 2 + const1[n] * auxT +  const2[n] + const3[n];
+     a.at(i) = a.at(i) + const0[n] ;
+     v.at(i) = v.at(i) + const0[n] * auxT              + const1[n];
+     x.at(i) = x.at(i) + const0[n] * pow(auxT,2.0) / 2 + const1[n] * auxT +  const2[n] + const3[n];
 		
   }
-	
-  free(Tac);
-  free(const0);
-  free(const1);
-  free(const2);
-  free(const3);
-	
   return SM_OK;
-	
 }
-
-SM_STATUS sm_PathDefine(SM_LINE_ARC PathComp[], SM_ROT Rot[], int nbComp, double PosInit[3], SM_LIMITS Lim, double tic, int *nbPoints, SM_CURVE_DATA IdealTraj[SM_NB_DISC_MAX]) {
-
-  /* This function take a serie of lines and arcs (using Euler spiral parameter)  and convert into a discretized trajectory 
-     -------- PathComp[] : Line & Arc definition
-     -------- Rot[]      : Rotation Information (Rotation matrix)
-     -------- nbComp     : total number of line or arc
-     -------- PosInit    : Stating Position of the path
-     -------- tic        : Time step for discretization (in second)
-     -------- nbPoints   : Output number of sample points (echantillonage)
-     -------- IdealTraj[]: Discretized output information of the input curve
-  */
-
-  int i, j, k;
-  int TrajType;
-  int zoneOut;
-  double TotalLength = 0.0;
-  double dcOut;
-  SM_COND ICloc, FCloc;
-  SM_TIMES TimeSeg;
-	
-  double Time[7];
-  double IC[3];
-  double J[7];
-
-  double *t, *ddu, *du, *u;
-  double total_time = 0.0;
-  double A, La, Lb, dL;
-  double *Lac;
-  double aux0, aux1, aux2;
-	
-  /* --------------------------- Using soft Motion to generate the trajectory along the path -------------*/
-  Lac   = (double *) malloc(sizeof(double) * nbComp);
-	
-  for (i = 0; i < nbComp; i++){
-    TotalLength = TotalLength + PathComp[i].Ls;
-    Lac[i] = TotalLength;
-  }
-
-  ICloc.a = 0.0; 
-  ICloc.v = 0.0; 
-  ICloc.x = 0.0; 
-	
-  FCloc.a = 0.0; 
-  FCloc.v = 0.0; 
-  FCloc.x = TotalLength; 
-	
-  if (sm_ComputeSoftMotionLocal(ICloc, FCloc, Lim, &TimeSeg, &TrajType, &dcOut, &zoneOut) != 0) {
-    return SM_ERROR;
-  }
-	
-  /* --------------------------- Compute u du ddu ---------------------------------------------*/
-	
-  IC[0] = ICloc.a;
-  IC[1] = ICloc.v;
-  IC[2] = ICloc.x;
-	
-  Time[0] = TimeSeg.Tjpa;
-  Time[1] = TimeSeg.Taca;
-  Time[2] = TimeSeg.Tjna;
-  Time[3] = TimeSeg.Tvc;
-  Time[4] = TimeSeg.Tjnb;
-  Time[5] = TimeSeg.Tacb;
-  Time[6] = TimeSeg.Tjpb;
-	
-  J[0] = Lim.maxJerk;
-  J[1] = 0.0;
-  J[2] = - Lim.maxJerk;
-  J[3] = 0.0;
-  J[4] = - Lim.maxJerk;
-  J[5] = 0.0;
-  J[6] = Lim.maxJerk;
-	
-  for (i = 0; i < 7; i++){
-    total_time = total_time + Time[i];
-  }
-
-  *nbPoints = ((int) (total_time/tic)) + 1;
-	
-  if (SM_NB_DISC_MAX < *nbPoints){
-    //printf("Time to long. Max number of discretization reached");
-    return SM_ERROR;
-  }
-	
-  t   = (double *) malloc(sizeof(double) * *nbPoints);
-  ddu = (double *) malloc(sizeof(double) * *nbPoints);
-  du  = (double *) malloc(sizeof(double) * *nbPoints);
-  u   = (double *) malloc(sizeof(double) * *nbPoints);
-	
-  for (i = 0; i < *nbPoints; i++){
-    IdealTraj[i].t = i * tic;
-    if (IdealTraj[i].t >= total_time) {
-      IdealTraj[i].t =total_time;
-    }
-    t[i] = IdealTraj[i].t;
-  }
-	
-  sm_AVX_TimeVar(IC, Time, J, 7, t, *nbPoints, ddu, du, u);
-
-  /* --------------------------- 3D evolution ---------------------------------------------*/
-		
-  IdealTraj[0].Pos[0] = PosInit[0];
-  IdealTraj[0].Pos[1] = PosInit[1];
-  IdealTraj[0].Pos[2] = PosInit[2];
-	
-  j = 0;
-	
-  for (i = 0; i < nbComp; i ++){
-		
-    // Compute 2D clothoid or line
-		
-    A = sqrt((PathComp[i].invRf - PathComp[i].invR0) / (2.0 * PathComp[i].Ls)); // clothoid constant
-		
-    k = j;
-		
-    aux0 = 0.0; 
-    aux1 = 0.0; 
-    aux2 = 0.0; 
-	
-    while ((u[j] < Lac[i]) && (j < *nbPoints - 1)){
-			
-      j++;
-			
-      if (i == 0){
-	La = u[j];
-	Lb = u[j - 1];
-	dL = La - Lb;
-      }
-      else {
-	La = u[j]     - Lac[i - 1];
-	Lb = u[j - 1] - Lac[i - 1];
-	dL = La - Lb;
-      }
-			
-      aux0 = (cos(pow((A * La),2.0) + PathComp[i].invR0 * La) + cos(pow((A * Lb),2.0) + PathComp[i].invR0 * Lb)) * dL / 2.0 + aux0;
-      aux1 = (sin(pow((A * La),2.0) + PathComp[i].invR0 * La) + sin(pow((A * Lb),2.0) + PathComp[i].invR0 * Lb)) * dL / 2.0 + aux1;
-      aux2 = 0.0;
-			
-      // Update 2D clothoid or line in 3D dimension using rotation matrix
-			
-      IdealTraj[j].Pos[0] = aux0 * Rot[i].R[0][0] + aux1 * Rot[i].R[0][1] + aux2 * Rot[i].R[0][2] + IdealTraj[k].Pos[0];
-      IdealTraj[j].Pos[1] = aux0 * Rot[i].R[1][0] + aux1 * Rot[i].R[1][1] + aux2 * Rot[i].R[1][2] + IdealTraj[k].Pos[1];
-      IdealTraj[j].Pos[2] = aux0 * Rot[i].R[2][0] + aux1 * Rot[i].R[2][1] + aux2 * Rot[i].R[2][2] + IdealTraj[k].Pos[2];
-					
-    }
-				
-
-  }
-	
-  for (i = 0; i < *nbPoints; i++){
-    IdealTraj[i].u   = u[i];
-    IdealTraj[i].du  = du[i];
-    IdealTraj[i].ddu  = du[i];
-  }
-	
-  /* --------------------------- Acceleration etc ---------------------------------------------*/
-	
-  IdealTraj[0].du      = 0.0;
-  IdealTraj[0].ddu     = 0.0;
-  IdealTraj[0].AccNorm = 0.0;
-	
-  IdealTraj[0].Vel[0] = 0.0;
-  IdealTraj[0].Vel[1] = 0.0;
-  IdealTraj[0].Vel[2] = 0.0;
-	
-  IdealTraj[0].Acc[0] = 0.0;
-  IdealTraj[0].Acc[1] = 0.0;
-  IdealTraj[0].Acc[2] = 0.0;
-	
-  for (i = 1; i < *nbPoints; i++){
-		
-    IdealTraj[i].du  = (IdealTraj[i].u  - IdealTraj[i - 1].u ) / (t[i] - t[i-1]);
-    IdealTraj[i].ddu = (IdealTraj[i].du - IdealTraj[i - 1].du) / (t[i] - t[i-1]);
-		
-    IdealTraj[i].Vel[0] = (IdealTraj[i].Pos[0] - IdealTraj[i - 1].Pos[0]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Vel[1] = (IdealTraj[i].Pos[1] - IdealTraj[i - 1].Pos[1]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Vel[2] = (IdealTraj[i].Pos[2] - IdealTraj[i - 1].Pos[2]) / (t[i] - t[i - 1]);
-		
-    IdealTraj[i].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i - 1].Vel[0]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i - 1].Vel[1]) / (t[i] - t[i - 1]);
-    IdealTraj[i].Acc[2] = (IdealTraj[i].Vel[2] - IdealTraj[i - 1].Vel[2]) / (t[i] - t[i - 1]);
-		
-    IdealTraj[i].AccNorm = sqrt(pow(IdealTraj[i].Acc[0],2.0) + pow(IdealTraj[i].Acc[1],2.0) + pow(IdealTraj[i].Acc[2],2.0));
-		
-  }
-	
-  free(t);
-  free(u);
-  free(du);
-  free(ddu);
-  free(Lac);
-	
-  return SM_OK;
-
-}
-
-
-
-
-//SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj, std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<int> &IntervIndex){
-//	
-//  /* This function divide the global time in interval, in which 3 Jerk values are computed
-//     -- IdealTraj[]   : Ideal Traj to follow
-//     -- nbPoints      : number of input sample points (echantillons) of IdealTraj
-//     -- nbInterval    : desired number of discretized intervals
-//     -- IC[]          : output array of initial condition at the beginning of interval
-//     -- FC[]          : output array of final condition at the end of interval
-//     -- Timp          : output array of time values of each interval
-//     -- IntervIndex[] : output index of interval extremeties
-//  */
-//	
-//  int i, j, k;
-//	
-//  // Compute the discretization index to have an interpolation evenly distributed in time
-//  IntervIndex[0]           = 0;
-//  IntervIndex[Timp.size()] = IdealTraj.size() - 1;
-//	
-//  for (i = 1; i < Timp.size(); i++){
-//    IntervIndex[i] = i * ( (int) (IdealTraj.size()  / Timp.size() ));
-//  }
-//	
-//  // Assign the IC, FC, Timp
-//  for (i = 0; i < Timp.size(); i++){
-//		
-//    Timp[i] = IdealTraj[IntervIndex[i + 1]].t - IdealTraj[IntervIndex[i]].t;		
-//    for (j = 0; j < 3; j++){
-//			
-//      IC[i].Axis[j].a = IdealTraj[IntervIndex[i]].Acc[j];
-//      IC[i].Axis[j].v = IdealTraj[IntervIndex[i]].Vel[j];
-//      IC[i].Axis[j].x = IdealTraj[IntervIndex[i]].Pos[j];
-//			
-//      FC[i].Axis[j].a = IdealTraj[IntervIndex[i + 1]].Acc[j];
-//      FC[i].Axis[j].v = IdealTraj[IntervIndex[i + 1]].Vel[j];
-//      FC[i].Axis[j].x = IdealTraj[IntervIndex[i + 1]].Pos[j];		
-//    }	
-//  }	
-//  return SM_OK;	
-//}
 
 SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj,std::vector<kinPoint> &discPoint, std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<int>
 &IntervIndex){
@@ -6293,11 +6052,24 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
   */
 	
   double locRHS[3]; //partie droite du system 
-  double ICloc[3];
-  double Tloc,Jloc;
-  double aloc, vloc, xloc;
+  std::vector<double>  ICloc;
+  std::vector<double> Tloc,Jloc;
+  std::vector<double> aloc, vloc, xloc;
   unsigned int i, j;
-	
+
+  ICloc.resize(3);
+  Tloc.resize(1);
+  Jloc.resize(1);
+  aloc.resize(1);
+  vloc.resize(1);
+  xloc.resize(1);
+
+  for(unsigned int k=0; k<motion.size(); k++) {
+    motion.at(k).Jerk.resize(3);
+    motion.at(k).Time.resize(3);
+    motion.at(k).IC.resize(3);
+  }
+
   // Compute jerk and time segment
   for (i = 0; i < IC.size(); i++){
     for (j = 0; j < 3; j++){
@@ -6325,15 +6097,16 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
       }
     }
   }
+
   // Compute motion condition at the beginning of each segment
   for (i = 0; i < 3; i++){
 		
     motion[0].IC[i].a = IC[0].Axis[i].a; 
     motion[0].IC[i].v = IC[0].Axis[i].v; 
     motion[0].IC[i].x = IC[0].Axis[i].x; 
-    if(i==0) {
-      cout << " IC.a " << motion[0].IC[i].a << " IC.v " << motion[0].IC[i].v << " IC.x " << motion[0].IC[i].x << endl;
-    }
+    //if(i==0) {
+    //  cout << " IC.a " << motion[0].IC[i].a << " IC.v " << motion[0].IC[i].v << " IC.x " << motion[0].IC[i].x << endl;
+    //}
   }
 	
   for (i = 1; i < (3 * IC.size()); i++){
@@ -6344,30 +6117,30 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
       ICloc[1] = motion[i - 1].IC[j].v;
       ICloc[2] = motion[i - 1].IC[j].x;
 			
-      Tloc = motion[i-1].Time[j];
-      Jloc = motion[i-1].Jerk[j];
+      Tloc.at(0) = motion[i-1].Time[j];
+      Jloc.at(0) = motion[i-1].Jerk[j];
 			
-      sm_AVX_TimeVar(ICloc, &Tloc, &Jloc, 1, &Tloc, 1, &aloc, &vloc, &xloc);
+      sm_AVX_TimeVar(ICloc, Tloc, Jloc, Tloc, aloc, vloc, xloc);
 			
-      motion[i].IC[j].a = aloc;
-      motion[i].IC[j].v = vloc;
-      motion[i].IC[j].x = xloc;
+      motion[i].IC[j].a = aloc.at(0);
+      motion[i].IC[j].v = vloc.at(0);
+      motion[i].IC[j].x = xloc.at(0);
 
       ICloc[0] = motion[i].IC[j].a;
       ICloc[1] = motion[i].IC[j].v;
       ICloc[2] = motion[i].IC[j].x;
 
-      Tloc = motion[i].Time[j];
-      Jloc = motion[i].Jerk[j];
+      Tloc.at(0) = motion[i].Time[j];
+      Jloc.at(0) = motion[i].Jerk[j];
 
-      sm_AVX_TimeVar(ICloc, &Tloc, &Jloc, 1, &Tloc, 1, &aloc, &vloc, &xloc);
+      sm_AVX_TimeVar(ICloc, Tloc, Jloc, Tloc, aloc, vloc, xloc);
 
 
 			
      if(0){
 	cout << endl << "segement " << i << endl;
 	cout << " IC " << motion[i].IC[j].a << " " << motion[i].IC[j].v << " " << motion[i].IC[j].x << endl;
-	cout << " FC " << aloc << " " << vloc << " " << xloc << endl;
+	cout << " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0) << endl;
 	cout << endl;
 
       }
@@ -6375,7 +6148,7 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
     }
 	
   }
-	
+
   return SM_OK;
 	
 }
@@ -6726,21 +6499,31 @@ SM_STATUS sm_InputScanning(char *fileName, int *nbLineArc, double *tic, int *nbI
 SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,
                                std::vector<SM_CURVE_DATA>  &ApproxTraj) {
   unsigned int i = 0, j = 0;
-  double ICloc[3];
+  std::vector<double> ICloc;
   double t = 0.0;
   ApproxTraj.clear();
-  double Tloc,Jloc[3];
-  double aloc[3], vloc[3], xloc[3];
+  std::vector<double> Tloc,Jloc;
+  std::vector<double> aloc, vloc, xloc;
   int timefile = 0;
   double t0 = 0;
-  double tl = 0;
+  std::vector<double>  tl;
   int interval = 0;
-  Tloc = 0;
+
   double tloctot = 0;
   int limit_Time;
   SM_CURVE_DATA curveData;
+
   bzero(&curveData, sizeof(SM_CURVE_DATA));
-  
+
+  ICloc.resize(3);
+  Tloc.resize(1);
+  Jloc.resize(1);
+  aloc.resize(1);
+  vloc.resize(1);
+  xloc.resize(1);
+  tl.resize(1);
+  Tloc.at(0) = 0;
+
   for (i = 0; i < motion.size(); i++){
     tloctot += motion[i].Time[0];
   }
@@ -6755,24 +6538,22 @@ SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double
       }
 
       for (j = 0; j < 3; j++){
-	    Jloc[j] = motion[interval].Jerk[j];
+	    Jloc[0] = motion[interval].Jerk[j];
 	    ICloc[0] = motion[interval].IC[j].a;
 	    ICloc[1] = motion[interval].IC[j].v;
 	    ICloc[2] = motion[interval].IC[j].x;
-	    tl  = t-t0;
-	    sm_AVX_TimeVar(ICloc, &Tloc, &Jloc[j], 1, &tl, 1, &aloc[j], &vloc[j], &xloc[j]);
+	    tl.at(0)  = t-t0;
+
+	    sm_AVX_TimeVar(ICloc, Tloc, Jloc, tl, aloc, vloc, xloc);
+
+	    curveData.Pos[j]  = xloc.at(0);
+	    curveData.Vel[j]  = vloc.at(0);
+	    curveData.Acc[j]  = aloc.at(0);
       }
 
+
+
       curveData.t = t;
-      curveData.Pos[0]  = xloc[0];
-      curveData.Pos[1]  = xloc[1];
-      curveData.Pos[2]  = xloc[2];
-      curveData.Vel[0]  = vloc[0];
-      curveData.Vel[1]  = vloc[1];
-      curveData.Vel[2]  = vloc[2];
-      curveData.Acc[0]  = aloc[0];
-      curveData.Acc[1]  = aloc[1];
-      curveData.Acc[2]  = aloc[2];
       curveData.Jerk[0]  = motion[interval].Jerk[0];
       curveData.Jerk[1]  = motion[interval].Jerk[1];
       curveData.Jerk[2]  = motion[interval].Jerk[2];
@@ -6990,7 +6771,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	lsubpath.type = LINE;
 	path.back().subpath.push_back(lsubpath);
 	path.back().nbSubPath ++;
-	if(1) {
+	if(0) {
 	  std::cout << "LINE" << std::endl;
 	  std::cout << "start point " << path.back().subpath.back().start.x << " " << path.back().subpath.back().start.y << std::endl;
 	  std::cout << "end   point " << path.back().subpath.back().end.x << " " << path.back().subpath.back().end.y << std::endl;
@@ -7021,7 +6802,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	}
 	path.back().subpath.push_back(lsubpath);
 	path.back().nbSubPath ++;
-	if(1) {
+	if(0) {
 	  std::cout << "BEZIER3" << std::endl;
 	  std::cout << "start  point " << path.back().subpath.back().start.x << " " << path.back().subpath.back().start.y << std::endl;
 	  std::cout << "end    point " << path.back().subpath.back().end.x << " " << path.back().subpath.back().end.y << std::endl;
@@ -7445,12 +7226,16 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   SM_COND ICloc, FCloc;
   SM_TIMES TimeSeg;
 
-  double Time[7];
-  double IC[3];
-  double J[7];
-  double *t, *ddu, *du, *u;
+  std::vector<double> Time;
+  Time.resize(7);
+  std::vector<double> IC;
+  IC.resize(3);
+  std::vector<double> J;
+  J.resize(7);
+  std::vector<double> t, ddu, du, u;
+  //  double *t = NULL, *ddu =  NULL, *du = NULL, *u = NULL;
   double total_time = 0.0;
-  double *Lac;
+   std::vector<double> Lac ;
   Point2D lpoint;
   std::vector<double> dis_pos;
   std::vector<double> distance_tal;
@@ -7471,37 +7256,38 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
        
  //  --------------------------- Using soft Motion to generate the trajectory along the path 
-  Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
+  Lac.resize(path.back().subpath.size());
+
   for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
     if(iter->type == LINE_TH) {          
       lllength = sqrt((iter->line.end.x - iter->line.start.x)*(iter->line.end.x - iter->line.start.x) + (iter->line.end.y - iter->line.start.y)*(iter->line.end.y - iter->line.start.y));
       TotalLength += lllength;
-      Lac[i] = TotalLength;
+      Lac.at(i) = TotalLength;
     }
     else if(iter->type == LINE){
       lllength = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
       TotalLength += lllength;
-      Lac[i] = TotalLength;
+      Lac.at(i) = TotalLength;
     }
     else if (iter->type == BEZIER3){       
       lllength = bezier_length (iter->start, iter->bezier3[0], iter->bezier3[1] , iter->end, step_for_bezier);
       TotalLength += lllength;
-      Lac[i] = TotalLength;
+      Lac.at(i) = TotalLength;
     }
     else if (iter->type == SINUS){
       lllength = length_sinus(path, indice_trace);
       TotalLength += lllength;
-      Lac[i] = TotalLength;
+      Lac.at(i) = TotalLength;
     }
     else if (iter->type == CERCLE){
       lllength = length_cercle(path);
       TotalLength += lllength;
-      Lac[i] = TotalLength;
+      Lac.at(i) = TotalLength;
     }
     else if(iter->type == PARABOL){
       lllength = length_parabol(path);
       TotalLength += lllength;
-      Lac[i] = TotalLength;
+      Lac.at(i) = TotalLength;
     }
     i++;
   }
@@ -7548,22 +7334,21 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
   std::cout << "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time << std::endl;
   IdealTraj.resize(nbPoints);
-
-  t   = (double *) malloc(sizeof(double) * nbPoints);
-  ddu = (double *) malloc(sizeof(double) * nbPoints);
-  du  = (double *) malloc(sizeof(double) * nbPoints);
-  u   = (double *) malloc(sizeof(double) * nbPoints);
+  ddu.resize(nbPoints);  
+  du.resize(nbPoints);  
+  u.resize(nbPoints); 
+  t.resize(nbPoints);
 
   for (i = 0; i < IdealTraj.size(); i++){
     IdealTraj[i].t = i * tic;
     if (IdealTraj[i].t >= total_time) {
       IdealTraj[i].t =total_time;
     }
-    t[i] = IdealTraj[i].t;
+    t.at(i) = IdealTraj[i].t;
   }
 
-  sm_AVX_TimeVar(IC, Time, J, 7, t, nbPoints, ddu, du, u);
-  
+  sm_AVX_TimeVar(IC, Time, J, t, ddu, du, u);
+
   for (int i = 0; i < nbPoints; i++){
     IdealTraj[i].u   = u[i];
     IdealTraj[i].du  = du[i];
@@ -7579,7 +7364,8 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   /* This loop calculate the sum of parameters for each sous-path */
   for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
     para_bezier = 0.0;
-    while ((u[j] < Lac[i]) && (j < nbPoints)){
+   
+    do {
       if(iter->type == BEZIER3) {
         x1 = iter->start.x;
         x2 = iter->bezier3[0].x;
@@ -7613,9 +7399,17 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 	para_bezier += delta_para;
       }
       j++;
-    }
+      if(j >= u.size()) {
+	break;
+      }
+    } while ((u.at(j) < Lac.at(i)));
+
+
     para_vec.push_back(para_bezier);
     i++;
+    if(i >= Lac.size()) {
+	break;
+    }
   }
   
   j = 0;
@@ -7623,7 +7417,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
   for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
     para = 0.0;
-    while ((u[j] < Lac[i]) && (j < nbPoints)){
+    do {
       if (iter->type == BEZIER3){
         lpoint = bezier_point(para/para_vec[i], iter->start, iter->bezier3[0], iter->bezier3[1], iter->end);
         pos_x = lpoint.x;
@@ -7690,10 +7484,17 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
       absci_vec.push_back(absci);
       para += delta_para; 
       j++;
-    }
+      if(j >= u.size()) {
+	break;
+      }
+
+    }  while ((u.at(j) < Lac.at(i)));
     i++;
+    if(i >= Lac.size()) {
+	break;
+    }
   }
-  
+
   for (int i = 1; i < nbPoints; i++){
         IdealTraj[i-1].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i-1].Vel[0]) / (t[i] - t[i-1]);
         IdealTraj[i-1].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i-1].Vel[1]) / (t[i] - t[i-1]);
@@ -7703,12 +7504,6 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
   }
 
-
-  free(t);
-  free(u);
-  free(du);
-  free(ddu);
-  free(Lac);
   return SM_OK;
 }
 
@@ -7973,7 +7768,7 @@ SM_STATUS Path_Length(std::list<Path> &path, double *longeur){
     double lllength = 0.0;
     unsigned int i = 0;
     double TotalLength = 0.0;
-    double *Lac;
+    double *Lac = NULL;
     Lac   = (double *) malloc(sizeof(double) * path.back().subpath.size());
     std::vector<IndiceTrace> indice_trace;
     for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
