@@ -580,7 +580,7 @@ void QSoftMotionPlanner::openFile()
     _lim.maxVel  = this->doubleSpinBox_Vmax->value();
     _sampling = this->doubleSpinBox_SamplingTime->value();
     _errMax =  this->doubleSpinBox_DesError->value();
-
+    _timeStep = this->doubleSpinBoxFileSampling->value();
 
 
     QSoftMotionPlanner::initializeApproxVariables();	
@@ -750,8 +750,6 @@ void QSoftMotionPlanner::computeTraj()
   Path_Length(_curve.front().path, &longeur_path);
   pas_inter = longeur_path/10;
   nbIntervals_global = int(ceil(longeur_path/pas_inter));
-
-  constructTrajSvg(_curve.front().path,  tic, lim, _curve.front().traj);
 
   saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
 
