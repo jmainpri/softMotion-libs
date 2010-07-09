@@ -116,8 +116,8 @@ QWidget *parent
 
     connect(this->pushButtonComputeHauss, SIGNAL(clicked(bool)), this, SLOT(computeHausdorff()) ) ;
 
-    connect(this->checkBox, SIGNAL(clicked(bool)), this, SLOT(setDraw()) ) ;
-    this->checkBox->setChecked(Qt::Checked);   
+   // connect(this->checkBox, SIGNAL(clicked(bool)), this, SLOT(setDraw()) ) ;
+   // this->checkBox->setChecked(Qt::Checked);   
 
     ////////////////////////////////////////////////////////////
     //////  SoftMotion Planner                    /////////////
