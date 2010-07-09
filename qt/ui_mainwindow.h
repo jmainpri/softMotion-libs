@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Wed Jun 30 10:46:43 2010
+** Created: Fri Jul 9 15:13:42 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -14,13 +14,14 @@
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 #include <QtGui/QDoubleSpinBox>
 #include <QtGui/QFormLayout>
 #include <QtGui/QFrame>
 #include <QtGui/QGridLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
+#include <QtGui/QLCDNumber>
 #include <QtGui/QLabel>
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenu>
@@ -31,7 +32,6 @@
 #include <QtGui/QSplitter>
 #include <QtGui/QStatusBar>
 #include <QtGui/QTabWidget>
-#include <QtGui/QTableView>
 #include <QtGui/QToolBar>
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QWidget>
@@ -161,7 +161,9 @@ public:
     QSplitter *splitter;
     QTabWidget *tabWidget;
     QWidget *planner;
-    QVBoxLayout *verticalLayout_13;
+    QGridLayout *gridLayout_21;
+    QGridLayout *gridLayout_20;
+    QGridLayout *gridLayout_6;
     QFrame *frame;
     QVBoxLayout *verticalLayout_10;
     QLabel *label_4;
@@ -183,6 +185,7 @@ public:
     QFormLayout *formLayout_3;
     QDoubleSpinBox *doubleSpinBox_Vmax;
     QwtSlider *Slider_Vmax;
+    QSpacerItem *verticalSpacer_3;
     QFrame *frame_2;
     QVBoxLayout *verticalLayout_11;
     QLabel *label_5;
@@ -196,17 +199,72 @@ public:
     QFormLayout *formLayout_15;
     QDoubleSpinBox *doubleSpinBox_DesError;
     QwtSlider *Slider_desError;
-    QFrame *frame_7;
-    QVBoxLayout *verticalLayout_12;
-    QLabel *label_6;
-    QTableView *tableResults;
+    QSpacerItem *verticalSpacer_2;
+    QFrame *frame_8;
+    QVBoxLayout *verticalLayout_39;
+    QLabel *label_31;
+    QComboBox *comboBox;
+    QWidget *widget_14;
+    QVBoxLayout *verticalLayout_36;
+    QLabel *label_36;
+    QHBoxLayout *horizontalLayout_7;
+    QGridLayout *gridLayout_9;
+    QLabel *label_37;
+    QLabel *label_38;
+    QGridLayout *gridLayout_8;
+    QDoubleSpinBox *doubleSpinBox_xend;
+    QDoubleSpinBox *doubleSpinBox_yend;
+    QWidget *widget_5;
+    QVBoxLayout *verticalLayout_38;
+    QLabel *label_35;
+    QGridLayout *gridLayout_5;
+    QLabel *label_32;
+    QDoubleSpinBox *doubleSpinBox_Jmax_2;
+    QWidget *widget_22;
+    QVBoxLayout *verticalLayout_13;
+    QLabel *label_42;
+    QHBoxLayout *horizontalLayout_6;
+    QGridLayout *gridLayout_12;
+    QLabel *label_45;
+    QLabel *label_44;
+    QLabel *label_41;
+    QGridLayout *gridLayout_11;
+    QDoubleSpinBox *doubleSpinBox_amplitude;
+    QDoubleSpinBox *doubleSpinBox_frequency;
+    QDoubleSpinBox *doubleSpinBox_phase;
+    QWidget *widget_18;
+    QVBoxLayout *verticalLayout_37;
+    QLabel *label_39;
+    QGridLayout *gridLayout_10;
+    QLabel *label_40;
+    QDoubleSpinBox *doubleSpinBox_a;
+    QSpacerItem *verticalSpacer_4;
     QGridLayout *gridLayout_3;
     QPushButton *pushButtonComputeTrajApprox;
     QGridLayout *gridLayout_2;
     QPushButton *pushButtonGenFile;
-    QPushButton *pushButtonComputeHauss;
-    QCheckBox *checkBox;
     QDoubleSpinBox *doubleSpinBoxFileSampling;
+    QLabel *label_49;
+    QPushButton *pushButtonComputeHauss;
+    QPushButton *pushButton_reset;
+    QFrame *frame_7;
+    QVBoxLayout *verticalLayout_12;
+    QLabel *label_6;
+    QHBoxLayout *horizontalLayout_4;
+    QGridLayout *gridLayout_4;
+    QLabel *label_46;
+    QLabel *label_47;
+    QLabel *label_48;
+    QLabel *label_33;
+    QLabel *label_34;
+    QLabel *label_43;
+    QGridLayout *gridLayout_7;
+    QLCDNumber *lcdNumber_Jmax;
+    QLCDNumber *lcdNumber_Amax;
+    QLCDNumber *lcdNumber_Vmax;
+    QLCDNumber *lcdNumber_comptuationTime;
+    QLCDNumber *lcdNumber_trajError;
+    QLCDNumber *lcdNumber_pathError;
     QSpacerItem *verticalSpacer;
     QWidget *Traj;
     QVBoxLayout *verticalLayout_4;
@@ -263,7 +321,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(985, 823);
+        MainWindow->resize(1075, 818);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -297,7 +355,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 965, 774));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 1051, 860));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -350,6 +408,10 @@ public:
         verticalLayout_16->setObjectName(QString::fromUtf8("verticalLayout_16"));
         label_28 = new QLabel(frame_6);
         label_28->setObjectName(QString::fromUtf8("label_28"));
+        QFont font;
+        font.setBold(true);
+        font.setWeight(75);
+        label_28->setFont(font);
         label_28->setAlignment(Qt::AlignCenter);
 
         verticalLayout_16->addWidget(label_28);
@@ -545,12 +607,12 @@ public:
         verticalLayout_24->setObjectName(QString::fromUtf8("verticalLayout_24"));
         label_20 = new QLabel(frame_4);
         label_20->setObjectName(QString::fromUtf8("label_20"));
-        QFont font;
-        font.setBold(true);
-        font.setItalic(false);
-        font.setWeight(75);
-        font.setStrikeOut(false);
-        label_20->setFont(font);
+        QFont font1;
+        font1.setBold(true);
+        font1.setItalic(false);
+        font1.setWeight(75);
+        font1.setStrikeOut(false);
+        label_20->setFont(font1);
 
         verticalLayout_24->addWidget(label_20);
 
@@ -670,7 +732,7 @@ public:
         verticalLayout_28->setObjectName(QString::fromUtf8("verticalLayout_28"));
         label_24 = new QLabel(frame_5);
         label_24->setObjectName(QString::fromUtf8("label_24"));
-        label_24->setFont(font);
+        label_24->setFont(font1);
 
         verticalLayout_28->addWidget(label_24);
 
@@ -791,7 +853,7 @@ public:
         verticalLayout_20->setObjectName(QString::fromUtf8("verticalLayout_20"));
         label_16 = new QLabel(frame_3);
         label_16->setObjectName(QString::fromUtf8("label_16"));
-        label_16->setFont(font);
+        label_16->setFont(font1);
 
         verticalLayout_20->addWidget(label_16);
 
@@ -919,17 +981,23 @@ public:
         sizePolicy5.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
         tabWidget->setSizePolicy(sizePolicy5);
         tabWidget->setBaseSize(QSize(0, 0));
-        QFont font1;
-        font1.setItalic(false);
-        tabWidget->setFont(font1);
+        QFont font2;
+        font2.setItalic(false);
+        tabWidget->setFont(font2);
         tabWidget->setTabPosition(QTabWidget::North);
         tabWidget->setTabShape(QTabWidget::Rounded);
         planner = new QWidget();
         planner->setObjectName(QString::fromUtf8("planner"));
-        verticalLayout_13 = new QVBoxLayout(planner);
-        verticalLayout_13->setSpacing(6);
-        verticalLayout_13->setContentsMargins(11, 11, 11, 11);
-        verticalLayout_13->setObjectName(QString::fromUtf8("verticalLayout_13"));
+        gridLayout_21 = new QGridLayout(planner);
+        gridLayout_21->setSpacing(6);
+        gridLayout_21->setContentsMargins(11, 11, 11, 11);
+        gridLayout_21->setObjectName(QString::fromUtf8("gridLayout_21"));
+        gridLayout_20 = new QGridLayout();
+        gridLayout_20->setSpacing(6);
+        gridLayout_20->setObjectName(QString::fromUtf8("gridLayout_20"));
+        gridLayout_6 = new QGridLayout();
+        gridLayout_6->setSpacing(6);
+        gridLayout_6->setObjectName(QString::fromUtf8("gridLayout_6"));
         frame = new QFrame(planner);
         frame->setObjectName(QString::fromUtf8("frame"));
         sizePolicy4.setHeightForWidth(frame->sizePolicy().hasHeightForWidth());
@@ -943,7 +1011,8 @@ public:
         verticalLayout_10->setObjectName(QString::fromUtf8("verticalLayout_10"));
         label_4 = new QLabel(frame);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setFont(font);
+        label_4->setFont(font1);
+        label_4->setAlignment(Qt::AlignCenter);
 
         verticalLayout_10->addWidget(label_4);
 
@@ -1041,8 +1110,12 @@ public:
 
         verticalLayout_10->addWidget(widget_3);
 
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout_13->addWidget(frame);
+        verticalLayout_10->addItem(verticalSpacer_3);
+
+
+        gridLayout_6->addWidget(frame, 0, 0, 1, 1);
 
         frame_2 = new QFrame(planner);
         frame_2->setObjectName(QString::fromUtf8("frame_2"));
@@ -1054,10 +1127,8 @@ public:
         verticalLayout_11->setObjectName(QString::fromUtf8("verticalLayout_11"));
         label_5 = new QLabel(frame_2);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        QFont font2;
-        font2.setBold(true);
-        font2.setWeight(75);
-        label_5->setFont(font2);
+        label_5->setFont(font);
+        label_5->setAlignment(Qt::AlignCenter);
 
         verticalLayout_11->addWidget(label_5);
 
@@ -1119,8 +1190,282 @@ public:
 
         verticalLayout_11->addLayout(verticalLayout_34);
 
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout_13->addWidget(frame_2);
+        verticalLayout_11->addItem(verticalSpacer_2);
+
+
+        gridLayout_6->addWidget(frame_2, 1, 0, 1, 1);
+
+
+        gridLayout_20->addLayout(gridLayout_6, 0, 0, 1, 1);
+
+        frame_8 = new QFrame(planner);
+        frame_8->setObjectName(QString::fromUtf8("frame_8"));
+        sizePolicy4.setHeightForWidth(frame_8->sizePolicy().hasHeightForWidth());
+        frame_8->setSizePolicy(sizePolicy4);
+        frame_8->setFrameShape(QFrame::Panel);
+        frame_8->setFrameShadow(QFrame::Sunken);
+        frame_8->setLineWidth(1);
+        verticalLayout_39 = new QVBoxLayout(frame_8);
+        verticalLayout_39->setSpacing(6);
+        verticalLayout_39->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_39->setObjectName(QString::fromUtf8("verticalLayout_39"));
+        label_31 = new QLabel(frame_8);
+        label_31->setObjectName(QString::fromUtf8("label_31"));
+        label_31->setFont(font1);
+        label_31->setAlignment(Qt::AlignCenter);
+
+        verticalLayout_39->addWidget(label_31);
+
+        comboBox = new QComboBox(frame_8);
+        comboBox->setObjectName(QString::fromUtf8("comboBox"));
+        comboBox->setInsertPolicy(QComboBox::InsertAlphabetically);
+
+        verticalLayout_39->addWidget(comboBox);
+
+        widget_14 = new QWidget(frame_8);
+        widget_14->setObjectName(QString::fromUtf8("widget_14"));
+        verticalLayout_36 = new QVBoxLayout(widget_14);
+        verticalLayout_36->setSpacing(6);
+        verticalLayout_36->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_36->setObjectName(QString::fromUtf8("verticalLayout_36"));
+        label_36 = new QLabel(widget_14);
+        label_36->setObjectName(QString::fromUtf8("label_36"));
+        label_36->setFont(font);
+
+        verticalLayout_36->addWidget(label_36);
+
+        horizontalLayout_7 = new QHBoxLayout();
+        horizontalLayout_7->setSpacing(6);
+        horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
+        gridLayout_9 = new QGridLayout();
+        gridLayout_9->setSpacing(6);
+        gridLayout_9->setObjectName(QString::fromUtf8("gridLayout_9"));
+        label_37 = new QLabel(widget_14);
+        label_37->setObjectName(QString::fromUtf8("label_37"));
+
+        gridLayout_9->addWidget(label_37, 0, 0, 1, 1);
+
+        label_38 = new QLabel(widget_14);
+        label_38->setObjectName(QString::fromUtf8("label_38"));
+
+        gridLayout_9->addWidget(label_38, 1, 0, 1, 1);
+
+
+        horizontalLayout_7->addLayout(gridLayout_9);
+
+        gridLayout_8 = new QGridLayout();
+        gridLayout_8->setSpacing(6);
+        gridLayout_8->setObjectName(QString::fromUtf8("gridLayout_8"));
+        doubleSpinBox_xend = new QDoubleSpinBox(widget_14);
+        doubleSpinBox_xend->setObjectName(QString::fromUtf8("doubleSpinBox_xend"));
+
+        gridLayout_8->addWidget(doubleSpinBox_xend, 0, 0, 1, 1);
+
+        doubleSpinBox_yend = new QDoubleSpinBox(widget_14);
+        doubleSpinBox_yend->setObjectName(QString::fromUtf8("doubleSpinBox_yend"));
+
+        gridLayout_8->addWidget(doubleSpinBox_yend, 1, 0, 1, 1);
+
+
+        horizontalLayout_7->addLayout(gridLayout_8);
+
+
+        verticalLayout_36->addLayout(horizontalLayout_7);
+
+
+        verticalLayout_39->addWidget(widget_14);
+
+        widget_5 = new QWidget(frame_8);
+        widget_5->setObjectName(QString::fromUtf8("widget_5"));
+        verticalLayout_38 = new QVBoxLayout(widget_5);
+        verticalLayout_38->setSpacing(6);
+        verticalLayout_38->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_38->setObjectName(QString::fromUtf8("verticalLayout_38"));
+        label_35 = new QLabel(widget_5);
+        label_35->setObjectName(QString::fromUtf8("label_35"));
+        label_35->setFont(font);
+
+        verticalLayout_38->addWidget(label_35);
+
+        gridLayout_5 = new QGridLayout();
+        gridLayout_5->setSpacing(6);
+        gridLayout_5->setObjectName(QString::fromUtf8("gridLayout_5"));
+        label_32 = new QLabel(widget_5);
+        label_32->setObjectName(QString::fromUtf8("label_32"));
+
+        gridLayout_5->addWidget(label_32, 0, 0, 1, 1);
+
+        doubleSpinBox_Jmax_2 = new QDoubleSpinBox(widget_5);
+        doubleSpinBox_Jmax_2->setObjectName(QString::fromUtf8("doubleSpinBox_Jmax_2"));
+        doubleSpinBox_Jmax_2->setMaximum(10);
+        doubleSpinBox_Jmax_2->setSingleStep(0.01);
+
+        gridLayout_5->addWidget(doubleSpinBox_Jmax_2, 0, 1, 1, 1);
+
+
+        verticalLayout_38->addLayout(gridLayout_5);
+
+
+        verticalLayout_39->addWidget(widget_5);
+
+        widget_22 = new QWidget(frame_8);
+        widget_22->setObjectName(QString::fromUtf8("widget_22"));
+        verticalLayout_13 = new QVBoxLayout(widget_22);
+        verticalLayout_13->setSpacing(6);
+        verticalLayout_13->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_13->setObjectName(QString::fromUtf8("verticalLayout_13"));
+        label_42 = new QLabel(widget_22);
+        label_42->setObjectName(QString::fromUtf8("label_42"));
+        label_42->setFont(font);
+
+        verticalLayout_13->addWidget(label_42);
+
+        horizontalLayout_6 = new QHBoxLayout();
+        horizontalLayout_6->setSpacing(6);
+        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
+        gridLayout_12 = new QGridLayout();
+        gridLayout_12->setSpacing(6);
+        gridLayout_12->setObjectName(QString::fromUtf8("gridLayout_12"));
+        label_45 = new QLabel(widget_22);
+        label_45->setObjectName(QString::fromUtf8("label_45"));
+
+        gridLayout_12->addWidget(label_45, 0, 0, 1, 1);
+
+        label_44 = new QLabel(widget_22);
+        label_44->setObjectName(QString::fromUtf8("label_44"));
+
+        gridLayout_12->addWidget(label_44, 1, 0, 1, 1);
+
+        label_41 = new QLabel(widget_22);
+        label_41->setObjectName(QString::fromUtf8("label_41"));
+
+        gridLayout_12->addWidget(label_41, 2, 0, 1, 1);
+
+
+        horizontalLayout_6->addLayout(gridLayout_12);
+
+        gridLayout_11 = new QGridLayout();
+        gridLayout_11->setSpacing(6);
+        gridLayout_11->setObjectName(QString::fromUtf8("gridLayout_11"));
+        doubleSpinBox_amplitude = new QDoubleSpinBox(widget_22);
+        doubleSpinBox_amplitude->setObjectName(QString::fromUtf8("doubleSpinBox_amplitude"));
+        doubleSpinBox_amplitude->setMaximum(1);
+        doubleSpinBox_amplitude->setSingleStep(0.01);
+
+        gridLayout_11->addWidget(doubleSpinBox_amplitude, 0, 0, 1, 1);
+
+        doubleSpinBox_frequency = new QDoubleSpinBox(widget_22);
+        doubleSpinBox_frequency->setObjectName(QString::fromUtf8("doubleSpinBox_frequency"));
+        doubleSpinBox_frequency->setMinimum(0);
+        doubleSpinBox_frequency->setMaximum(100);
+
+        gridLayout_11->addWidget(doubleSpinBox_frequency, 1, 0, 1, 1);
+
+        doubleSpinBox_phase = new QDoubleSpinBox(widget_22);
+        doubleSpinBox_phase->setObjectName(QString::fromUtf8("doubleSpinBox_phase"));
+        doubleSpinBox_phase->setMinimum(-3.14);
+        doubleSpinBox_phase->setMaximum(3.14);
+        doubleSpinBox_phase->setSingleStep(0.1);
+
+        gridLayout_11->addWidget(doubleSpinBox_phase, 2, 0, 1, 1);
+
+
+        horizontalLayout_6->addLayout(gridLayout_11);
+
+
+        verticalLayout_13->addLayout(horizontalLayout_6);
+
+
+        verticalLayout_39->addWidget(widget_22);
+
+        widget_18 = new QWidget(frame_8);
+        widget_18->setObjectName(QString::fromUtf8("widget_18"));
+        verticalLayout_37 = new QVBoxLayout(widget_18);
+        verticalLayout_37->setSpacing(6);
+        verticalLayout_37->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_37->setObjectName(QString::fromUtf8("verticalLayout_37"));
+        label_39 = new QLabel(widget_18);
+        label_39->setObjectName(QString::fromUtf8("label_39"));
+        label_39->setFont(font);
+        label_39->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter);
+
+        verticalLayout_37->addWidget(label_39);
+
+        gridLayout_10 = new QGridLayout();
+        gridLayout_10->setSpacing(6);
+        gridLayout_10->setObjectName(QString::fromUtf8("gridLayout_10"));
+        label_40 = new QLabel(widget_18);
+        label_40->setObjectName(QString::fromUtf8("label_40"));
+
+        gridLayout_10->addWidget(label_40, 0, 0, 1, 1);
+
+        doubleSpinBox_a = new QDoubleSpinBox(widget_18);
+        doubleSpinBox_a->setObjectName(QString::fromUtf8("doubleSpinBox_a"));
+
+        gridLayout_10->addWidget(doubleSpinBox_a, 0, 1, 1, 1);
+
+
+        verticalLayout_37->addLayout(gridLayout_10);
+
+
+        verticalLayout_39->addWidget(widget_18);
+
+        verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_39->addItem(verticalSpacer_4);
+
+
+        gridLayout_20->addWidget(frame_8, 0, 1, 1, 1);
+
+        gridLayout_3 = new QGridLayout();
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
+        pushButtonComputeTrajApprox = new QPushButton(planner);
+        pushButtonComputeTrajApprox->setObjectName(QString::fromUtf8("pushButtonComputeTrajApprox"));
+
+        gridLayout_3->addWidget(pushButtonComputeTrajApprox, 1, 1, 1, 1);
+
+        gridLayout_2 = new QGridLayout();
+        gridLayout_2->setSpacing(6);
+        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
+        pushButtonGenFile = new QPushButton(planner);
+        pushButtonGenFile->setObjectName(QString::fromUtf8("pushButtonGenFile"));
+
+        gridLayout_2->addWidget(pushButtonGenFile, 0, 1, 1, 1);
+
+        doubleSpinBoxFileSampling = new QDoubleSpinBox(planner);
+        doubleSpinBoxFileSampling->setObjectName(QString::fromUtf8("doubleSpinBoxFileSampling"));
+        doubleSpinBoxFileSampling->setButtonSymbols(QAbstractSpinBox::UpDownArrows);
+        doubleSpinBoxFileSampling->setDecimals(0);
+        doubleSpinBoxFileSampling->setMinimum(1);
+        doubleSpinBoxFileSampling->setMaximum(1000);
+        doubleSpinBoxFileSampling->setValue(10);
+
+        gridLayout_2->addWidget(doubleSpinBoxFileSampling, 1, 1, 1, 1);
+
+        label_49 = new QLabel(planner);
+        label_49->setObjectName(QString::fromUtf8("label_49"));
+        label_49->setAlignment(Qt::AlignCenter);
+
+        gridLayout_2->addWidget(label_49, 1, 0, 1, 1);
+
+
+        gridLayout_3->addLayout(gridLayout_2, 3, 1, 1, 1);
+
+        pushButtonComputeHauss = new QPushButton(planner);
+        pushButtonComputeHauss->setObjectName(QString::fromUtf8("pushButtonComputeHauss"));
+
+        gridLayout_3->addWidget(pushButtonComputeHauss, 2, 1, 1, 1);
+
+        pushButton_reset = new QPushButton(planner);
+        pushButton_reset->setObjectName(QString::fromUtf8("pushButton_reset"));
+
+        gridLayout_3->addWidget(pushButton_reset, 0, 1, 1, 1);
+
+
+        gridLayout_20->addLayout(gridLayout_3, 1, 0, 1, 1);
 
         frame_7 = new QFrame(planner);
         frame_7->setObjectName(QString::fromUtf8("frame_7"));
@@ -1132,60 +1477,114 @@ public:
         verticalLayout_12->setObjectName(QString::fromUtf8("verticalLayout_12"));
         label_6 = new QLabel(frame_7);
         label_6->setObjectName(QString::fromUtf8("label_6"));
-        label_6->setFont(font2);
+        QFont font3;
+        font3.setBold(true);
+        font3.setWeight(75);
+        font3.setStrikeOut(false);
+        label_6->setFont(font3);
+        label_6->setFrameShadow(QFrame::Plain);
+        label_6->setLineWidth(1);
+        label_6->setAlignment(Qt::AlignCenter);
 
         verticalLayout_12->addWidget(label_6);
 
-        tableResults = new QTableView(frame_7);
-        tableResults->setObjectName(QString::fromUtf8("tableResults"));
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setSpacing(6);
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        gridLayout_4 = new QGridLayout();
+        gridLayout_4->setSpacing(6);
+        gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
+        label_46 = new QLabel(frame_7);
+        label_46->setObjectName(QString::fromUtf8("label_46"));
 
-        verticalLayout_12->addWidget(tableResults);
+        gridLayout_4->addWidget(label_46, 0, 0, 1, 1);
 
+        label_47 = new QLabel(frame_7);
+        label_47->setObjectName(QString::fromUtf8("label_47"));
 
-        verticalLayout_13->addWidget(frame_7);
+        gridLayout_4->addWidget(label_47, 1, 0, 1, 1);
 
-        gridLayout_3 = new QGridLayout();
-        gridLayout_3->setSpacing(6);
-        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        pushButtonComputeTrajApprox = new QPushButton(planner);
-        pushButtonComputeTrajApprox->setObjectName(QString::fromUtf8("pushButtonComputeTrajApprox"));
+        label_48 = new QLabel(frame_7);
+        label_48->setObjectName(QString::fromUtf8("label_48"));
 
-        gridLayout_3->addWidget(pushButtonComputeTrajApprox, 0, 1, 1, 1);
+        gridLayout_4->addWidget(label_48, 2, 0, 1, 1);
 
-        gridLayout_2 = new QGridLayout();
-        gridLayout_2->setSpacing(6);
-        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
-        pushButtonGenFile = new QPushButton(planner);
-        pushButtonGenFile->setObjectName(QString::fromUtf8("pushButtonGenFile"));
+        label_33 = new QLabel(frame_7);
+        label_33->setObjectName(QString::fromUtf8("label_33"));
 
-        gridLayout_2->addWidget(pushButtonGenFile, 0, 1, 1, 1);
+        gridLayout_4->addWidget(label_33, 3, 0, 1, 1);
 
+        label_34 = new QLabel(frame_7);
+        label_34->setObjectName(QString::fromUtf8("label_34"));
 
-        gridLayout_3->addLayout(gridLayout_2, 2, 1, 1, 1);
+        gridLayout_4->addWidget(label_34, 4, 0, 1, 1);
 
-        pushButtonComputeHauss = new QPushButton(planner);
-        pushButtonComputeHauss->setObjectName(QString::fromUtf8("pushButtonComputeHauss"));
+        label_43 = new QLabel(frame_7);
+        label_43->setObjectName(QString::fromUtf8("label_43"));
 
-        gridLayout_3->addWidget(pushButtonComputeHauss, 1, 1, 1, 1);
-
-        checkBox = new QCheckBox(planner);
-        checkBox->setObjectName(QString::fromUtf8("checkBox"));
-
-        gridLayout_3->addWidget(checkBox, 0, 0, 1, 1);
-
-        doubleSpinBoxFileSampling = new QDoubleSpinBox(planner);
-        doubleSpinBoxFileSampling->setObjectName(QString::fromUtf8("doubleSpinBoxFileSampling"));
-        doubleSpinBoxFileSampling->setMaximum(1000);
-        doubleSpinBoxFileSampling->setValue(10);
-
-        gridLayout_3->addWidget(doubleSpinBoxFileSampling, 2, 0, 1, 1);
+        gridLayout_4->addWidget(label_43, 5, 0, 1, 1);
 
 
-        verticalLayout_13->addLayout(gridLayout_3);
+        horizontalLayout_4->addLayout(gridLayout_4);
+
+        gridLayout_7 = new QGridLayout();
+        gridLayout_7->setSpacing(6);
+        gridLayout_7->setObjectName(QString::fromUtf8("gridLayout_7"));
+        lcdNumber_Jmax = new QLCDNumber(frame_7);
+        lcdNumber_Jmax->setObjectName(QString::fromUtf8("lcdNumber_Jmax"));
+        lcdNumber_Jmax->setSegmentStyle(QLCDNumber::Flat);
+
+        gridLayout_7->addWidget(lcdNumber_Jmax, 0, 0, 1, 1);
+
+        lcdNumber_Amax = new QLCDNumber(frame_7);
+        lcdNumber_Amax->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Amax->setSegmentStyle(QLCDNumber::Flat);
+
+        gridLayout_7->addWidget(lcdNumber_Amax, 1, 0, 1, 1);
+
+        lcdNumber_Vmax = new QLCDNumber(frame_7);
+        lcdNumber_Vmax->setObjectName(QString::fromUtf8("lcdNumber_Vmax"));
+        lcdNumber_Vmax->setSegmentStyle(QLCDNumber::Flat);
+
+        gridLayout_7->addWidget(lcdNumber_Vmax, 2, 0, 1, 1);
+
+        lcdNumber_comptuationTime = new QLCDNumber(frame_7);
+        lcdNumber_comptuationTime->setObjectName(QString::fromUtf8("lcdNumber_comptuationTime"));
+        lcdNumber_comptuationTime->setSmallDecimalPoint(false);
+        lcdNumber_comptuationTime->setSegmentStyle(QLCDNumber::Flat);
+
+        gridLayout_7->addWidget(lcdNumber_comptuationTime, 3, 0, 1, 1);
+
+        lcdNumber_trajError = new QLCDNumber(frame_7);
+        lcdNumber_trajError->setObjectName(QString::fromUtf8("lcdNumber_trajError"));
+        lcdNumber_trajError->setSegmentStyle(QLCDNumber::Flat);
+
+        gridLayout_7->addWidget(lcdNumber_trajError, 4, 0, 1, 1);
+
+        lcdNumber_pathError = new QLCDNumber(frame_7);
+        lcdNumber_pathError->setObjectName(QString::fromUtf8("lcdNumber_pathError"));
+        lcdNumber_pathError->setAutoFillBackground(false);
+        lcdNumber_pathError->setFrameShape(QFrame::Box);
+        lcdNumber_pathError->setFrameShadow(QFrame::Raised);
+        lcdNumber_pathError->setSegmentStyle(QLCDNumber::Flat);
+
+        gridLayout_7->addWidget(lcdNumber_pathError, 5, 0, 1, 1);
+
+
+        horizontalLayout_4->addLayout(gridLayout_7);
+
+
+        verticalLayout_12->addLayout(horizontalLayout_4);
+
+
+        gridLayout_20->addWidget(frame_7, 1, 1, 1, 1);
+
+
+        gridLayout_21->addLayout(gridLayout_20, 0, 0, 1, 1);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        verticalLayout_13->addItem(verticalSpacer);
+        gridLayout_21->addItem(verticalSpacer, 1, 0, 1, 1);
 
         tabWidget->addTab(planner, QString());
         Traj = new QWidget();
@@ -1391,7 +1790,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 985, 25));
+        menuBar->setGeometry(QRect(0, 0, 1075, 24));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         menu_Edit = new QMenu(menuBar);
@@ -1475,7 +1874,7 @@ public:
         QObject::connect(Slider_desError, SIGNAL(valueChanged(double)), doubleSpinBox_DesError, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_DesError, SIGNAL(valueChanged(double)), Slider_desError, SLOT(setValue(double)));
 
-        tabWidget_2->setCurrentIndex(1);
+        tabWidget_2->setCurrentIndex(0);
         tabWidget->setCurrentIndex(0);
 
 
@@ -1519,17 +1918,43 @@ public:
         label_19->setText(QApplication::translate("MainWindow", "Xf", 0, QApplication::UnicodeUTF8));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabSoftMotionPlanner), QApplication::translate("MainWindow", "Soft Motion Planner", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("MainWindow", "Trajectory Motion Law", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("MainWindow", "Maximum Jerk", 0, QApplication::UnicodeUTF8));
-        label_2->setText(QApplication::translate("MainWindow", "Maximum Acceleration", 0, QApplication::UnicodeUTF8));
-        label_3->setText(QApplication::translate("MainWindow", "Maximum Velocity", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("MainWindow", "Maximum Jerk (m/s\302\263)", 0, QApplication::UnicodeUTF8));
+        label_2->setText(QApplication::translate("MainWindow", "Maximum Acceleration (m/s\302\262)", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("MainWindow", "Maximum Velocity (m/s)", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("MainWindow", "Trajectory Parameters", 0, QApplication::UnicodeUTF8));
-        label_7->setText(QApplication::translate("MainWindow", "Sampling", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("MainWindow", "Sampling (mm)", 0, QApplication::UnicodeUTF8));
         label_29->setText(QApplication::translate("MainWindow", "Desired Error (mm)", 0, QApplication::UnicodeUTF8));
-        label_6->setText(QApplication::translate("MainWindow", "Approximation Results", 0, QApplication::UnicodeUTF8));
+        label_31->setText(QApplication::translate("MainWindow", "Custom Path", 0, QApplication::UnicodeUTF8));
+        comboBox->clear();
+        comboBox->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "line", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "circle", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "sinusoid", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "parabola", 0, QApplication::UnicodeUTF8)
+        );
+        label_36->setText(QApplication::translate("MainWindow", "Line parameters", 0, QApplication::UnicodeUTF8));
+        label_37->setText(QApplication::translate("MainWindow", "X_end (m)", 0, QApplication::UnicodeUTF8));
+        label_38->setText(QApplication::translate("MainWindow", "Y_end (m)", 0, QApplication::UnicodeUTF8));
+        label_35->setText(QApplication::translate("MainWindow", "Circle parameter", 0, QApplication::UnicodeUTF8));
+        label_32->setText(QApplication::translate("MainWindow", "Radius (m)", 0, QApplication::UnicodeUTF8));
+        label_42->setText(QApplication::translate("MainWindow", "Sinus parameters", 0, QApplication::UnicodeUTF8));
+        label_45->setText(QApplication::translate("MainWindow", "Amplitude (m)", 0, QApplication::UnicodeUTF8));
+        label_44->setText(QApplication::translate("MainWindow", "Frequency (Hz)", 0, QApplication::UnicodeUTF8));
+        label_41->setText(QApplication::translate("MainWindow", "Phase (rad)", 0, QApplication::UnicodeUTF8));
+        label_39->setText(QApplication::translate("MainWindow", "Parabola param. (a.x\302\262)", 0, QApplication::UnicodeUTF8));
+        label_40->setText(QApplication::translate("MainWindow", "a", 0, QApplication::UnicodeUTF8));
         pushButtonComputeTrajApprox->setText(QApplication::translate("MainWindow", "Compute approximated trajectory", 0, QApplication::UnicodeUTF8));
         pushButtonGenFile->setText(QApplication::translate("MainWindow", "Generate Trajectory file", 0, QApplication::UnicodeUTF8));
+        label_49->setText(QApplication::translate("MainWindow", "Sampling time for the exported file (ms)", 0, QApplication::UnicodeUTF8));
         pushButtonComputeHauss->setText(QApplication::translate("MainWindow", "Compute Hausdorff", 0, QApplication::UnicodeUTF8));
-        checkBox->setText(QApplication::translate("MainWindow", "Draw Trajectory", 0, QApplication::UnicodeUTF8));
+        pushButton_reset->setText(QApplication::translate("MainWindow", "Reset", 0, QApplication::UnicodeUTF8));
+        label_6->setText(QApplication::translate("MainWindow", "Approximation Results", 0, QApplication::UnicodeUTF8));
+        label_46->setText(QApplication::translate("MainWindow", "Jmax (m/s\302\263)", 0, QApplication::UnicodeUTF8));
+        label_47->setText(QApplication::translate("MainWindow", "Amax (m/s\302\262)", 0, QApplication::UnicodeUTF8));
+        label_48->setText(QApplication::translate("MainWindow", "Vmax (m/s)", 0, QApplication::UnicodeUTF8));
+        label_33->setText(QApplication::translate("MainWindow", "Computation time (s)", 0, QApplication::UnicodeUTF8));
+        label_34->setText(QApplication::translate("MainWindow", "Trajectory error (mm)", 0, QApplication::UnicodeUTF8));
+        label_43->setText(QApplication::translate("MainWindow", "Path error (mm)", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(planner), QApplication::translate("MainWindow", "Planner", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(Traj), QApplication::translate("MainWindow", "Trajectory", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Traj Approx", 0, QApplication::UnicodeUTF8));
