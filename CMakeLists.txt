@@ -154,6 +154,7 @@ SMP_CheckCompilationFlags()
 
 
 add_subdirectory(src)
+add_subdirectory(pkgconfig)
 IF(WITH_TCL)
 add_subdirectory(tclsrc)
 add_subdirectory(tcl)
