@@ -42,9 +42,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-100</y>
          <width>1055</width>
-         <height>856</height>
+         <height>880</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -1499,14 +1499,14 @@
                           <item row="4" column="0">
                            <widget class="QLabel" name="label_34">
                             <property name="text">
-                             <string>Trajectory error (mm)</string>
+                             <string>Trajectory error (m)</string>
                             </property>
                            </widget>
                           </item>
                           <item row="5" column="0">
                            <widget class="QLabel" name="label_43">
                             <property name="text">
-                             <string>Path error (mm)</string>
+                             <string>Path error (m)</string>
                             </property>
                            </widget>
                           </item>
@@ -1515,56 +1515,71 @@
                         <item>
                          <layout class="QGridLayout" name="gridLayout_7">
                           <item row="0" column="0">
-                           <widget class="QLCDNumber" name="lcdNumber_Jmax">
-                            <property name="segmentStyle">
-                             <enum>QLCDNumber::Flat</enum>
+                           <widget class="QDoubleSpinBox" name="lcdNumber_Jmax">
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::NoButtons</enum>
+                            </property>
+                            <property name="decimals">
+                             <number>8</number>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.100000000000000</double>
                             </property>
                            </widget>
                           </item>
                           <item row="1" column="0">
-                           <widget class="QLCDNumber" name="lcdNumber_Amax">
-                            <property name="segmentStyle">
-                             <enum>QLCDNumber::Flat</enum>
+                           <widget class="QDoubleSpinBox" name="lcdNumber_Amax">
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::NoButtons</enum>
+                            </property>
+                            <property name="decimals">
+                             <number>8</number>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.100000000000000</double>
                             </property>
                            </widget>
                           </item>
                           <item row="2" column="0">
-                           <widget class="QLCDNumber" name="lcdNumber_Vmax">
-                            <property name="segmentStyle">
-                             <enum>QLCDNumber::Flat</enum>
+                           <widget class="QDoubleSpinBox" name="lcdNumber_Vmax">
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::NoButtons</enum>
+                            </property>
+                            <property name="decimals">
+                             <number>8</number>
+                            </property>
+                            <property name="singleStep">
+                             <double>0.010000000000000</double>
                             </property>
                            </widget>
                           </item>
                           <item row="3" column="0">
-                           <widget class="QLCDNumber" name="lcdNumber_comptuationTime">
-                            <property name="smallDecimalPoint">
-                             <bool>false</bool>
+                           <widget class="QDoubleSpinBox" name="lcdNumber_comptuationTime">
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::NoButtons</enum>
                             </property>
-                            <property name="segmentStyle">
-                             <enum>QLCDNumber::Flat</enum>
+                            <property name="decimals">
+                             <number>8</number>
                             </property>
                            </widget>
                           </item>
                           <item row="4" column="0">
-                           <widget class="QLCDNumber" name="lcdNumber_trajError">
-                            <property name="segmentStyle">
-                             <enum>QLCDNumber::Flat</enum>
+                           <widget class="QDoubleSpinBox" name="lcdNumber_trajError">
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::NoButtons</enum>
+                            </property>
+                            <property name="decimals">
+                             <number>8</number>
                             </property>
                            </widget>
                           </item>
                           <item row="5" column="0">
-                           <widget class="QLCDNumber" name="lcdNumber_pathError">
-                            <property name="autoFillBackground">
-                             <bool>false</bool>
+                           <widget class="QDoubleSpinBox" name="lcdNumber_pathError">
+                            <property name="buttonSymbols">
+                             <enum>QAbstractSpinBox::NoButtons</enum>
                             </property>
-                            <property name="frameShape">
-                             <enum>QFrame::Box</enum>
-                            </property>
-                            <property name="frameShadow">
-                             <enum>QFrame::Raised</enum>
-                            </property>
-                            <property name="segmentStyle">
-                             <enum>QLCDNumber::Flat</enum>
+                            <property name="decimals">
+                             <number>8</number>
                             </property>
                            </widget>
                           </item>

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Sat Jul 10 15:04:38 2010
+** Created: Wed Jul 21 11:06:37 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -21,7 +21,6 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QHeaderView>
-#include <QtGui/QLCDNumber>
 #include <QtGui/QLabel>
 #include <QtGui/QMainWindow>
 #include <QtGui/QMenu>
@@ -259,12 +258,12 @@ public:
     QLabel *label_34;
     QLabel *label_43;
     QGridLayout *gridLayout_7;
-    QLCDNumber *lcdNumber_Jmax;
-    QLCDNumber *lcdNumber_Amax;
-    QLCDNumber *lcdNumber_Vmax;
-    QLCDNumber *lcdNumber_comptuationTime;
-    QLCDNumber *lcdNumber_trajError;
-    QLCDNumber *lcdNumber_pathError;
+    QDoubleSpinBox *lcdNumber_Jmax;
+    QDoubleSpinBox *lcdNumber_Amax;
+    QDoubleSpinBox *lcdNumber_Vmax;
+    QDoubleSpinBox *lcdNumber_comptuationTime;
+    QDoubleSpinBox *lcdNumber_trajError;
+    QDoubleSpinBox *lcdNumber_pathError;
     QSpacerItem *verticalSpacer;
     QWidget *Traj;
     QVBoxLayout *verticalLayout_4;
@@ -355,7 +354,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 1055, 856));
+        scrollAreaWidgetContents->setGeometry(QRect(0, -100, 1055, 880));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -1530,43 +1529,48 @@ public:
         gridLayout_7 = new QGridLayout();
         gridLayout_7->setSpacing(6);
         gridLayout_7->setObjectName(QString::fromUtf8("gridLayout_7"));
-        lcdNumber_Jmax = new QLCDNumber(frame_7);
+        lcdNumber_Jmax = new QDoubleSpinBox(frame_7);
         lcdNumber_Jmax->setObjectName(QString::fromUtf8("lcdNumber_Jmax"));
-        lcdNumber_Jmax->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_Jmax->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Jmax->setDecimals(8);
+        lcdNumber_Jmax->setSingleStep(0.1);
 
         gridLayout_7->addWidget(lcdNumber_Jmax, 0, 0, 1, 1);
 
-        lcdNumber_Amax = new QLCDNumber(frame_7);
+        lcdNumber_Amax = new QDoubleSpinBox(frame_7);
         lcdNumber_Amax->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
-        lcdNumber_Amax->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_Amax->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Amax->setDecimals(8);
+        lcdNumber_Amax->setSingleStep(0.1);
 
         gridLayout_7->addWidget(lcdNumber_Amax, 1, 0, 1, 1);
 
-        lcdNumber_Vmax = new QLCDNumber(frame_7);
+        lcdNumber_Vmax = new QDoubleSpinBox(frame_7);
         lcdNumber_Vmax->setObjectName(QString::fromUtf8("lcdNumber_Vmax"));
-        lcdNumber_Vmax->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_Vmax->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Vmax->setDecimals(8);
+        lcdNumber_Vmax->setSingleStep(0.01);
 
         gridLayout_7->addWidget(lcdNumber_Vmax, 2, 0, 1, 1);
 
-        lcdNumber_comptuationTime = new QLCDNumber(frame_7);
+        lcdNumber_comptuationTime = new QDoubleSpinBox(frame_7);
         lcdNumber_comptuationTime->setObjectName(QString::fromUtf8("lcdNumber_comptuationTime"));
-        lcdNumber_comptuationTime->setSmallDecimalPoint(false);
-        lcdNumber_comptuationTime->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_comptuationTime->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_comptuationTime->setDecimals(8);
 
         gridLayout_7->addWidget(lcdNumber_comptuationTime, 3, 0, 1, 1);
 
-        lcdNumber_trajError = new QLCDNumber(frame_7);
+        lcdNumber_trajError = new QDoubleSpinBox(frame_7);
         lcdNumber_trajError->setObjectName(QString::fromUtf8("lcdNumber_trajError"));
-        lcdNumber_trajError->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_trajError->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_trajError->setDecimals(8);
 
         gridLayout_7->addWidget(lcdNumber_trajError, 4, 0, 1, 1);
 
-        lcdNumber_pathError = new QLCDNumber(frame_7);
+        lcdNumber_pathError = new QDoubleSpinBox(frame_7);
         lcdNumber_pathError->setObjectName(QString::fromUtf8("lcdNumber_pathError"));
-        lcdNumber_pathError->setAutoFillBackground(false);
-        lcdNumber_pathError->setFrameShape(QFrame::Box);
-        lcdNumber_pathError->setFrameShadow(QFrame::Raised);
-        lcdNumber_pathError->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_pathError->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_pathError->setDecimals(8);
 
         gridLayout_7->addWidget(lcdNumber_pathError, 5, 0, 1, 1);
 
@@ -1954,8 +1958,8 @@ public:
         label_47->setText(QApplication::translate("MainWindow", "Amax (m/s\302\262)", 0, QApplication::UnicodeUTF8));
         label_48->setText(QApplication::translate("MainWindow", "Vmax (m/s)", 0, QApplication::UnicodeUTF8));
         label_33->setText(QApplication::translate("MainWindow", "Computation time (s)", 0, QApplication::UnicodeUTF8));
-        label_34->setText(QApplication::translate("MainWindow", "Trajectory error (mm)", 0, QApplication::UnicodeUTF8));
-        label_43->setText(QApplication::translate("MainWindow", "Path error (mm)", 0, QApplication::UnicodeUTF8));
+        label_34->setText(QApplication::translate("MainWindow", "Trajectory error (m)", 0, QApplication::UnicodeUTF8));
+        label_43->setText(QApplication::translate("MainWindow", "Path error (m)", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(planner), QApplication::translate("MainWindow", "Planner", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(Traj), QApplication::translate("MainWindow", "Trajectory", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Traj Approx", 0, QApplication::UnicodeUTF8));

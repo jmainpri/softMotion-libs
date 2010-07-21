@@ -1081,8 +1081,8 @@ void QSoftMotionPlanner::computeTraj()
   Calcul_Error(_curve.begin()->traj, curv2.traj, &_curve.begin()->errorMax, error_traj, &val_err_max_traj);
 
 #ifdef ENABLE_DISPLAY
-  lcdNumber_comptuationTime->display(curv2.traj[curv2.traj.size()-1].t);
-  lcdNumber_trajError->display(val_err_max_traj);
+  lcdNumber_comptuationTime->setValue(curv2.traj[curv2.traj.size()-1].t);
+  lcdNumber_trajError->setValue(val_err_max_traj);
 #endif
 
 #ifdef ENABLE_DISPLAY
