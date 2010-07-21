@@ -7218,7 +7218,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   double lllength = 0.0;
   int nbPoints;
   unsigned int i = 0;
-  int j = 0;
+  unsigned int j = 0;
   int TrajType;
   int zoneOut;
   double TotalLength = 0.0;
@@ -7815,11 +7815,10 @@ SM_STATUS Path_Length(std::list<Path> &path, double *longeur){
 return SM_OK;
 }
 
-
-SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max, int ind){
+SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max){
     error.clear();
     double err;
-    for (int i = 0; i< ind; i++){
+    for (unsigned int i = 0; i< IdealTraj.size(); i++){
         err = sqrt(
                 (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])+
                 (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])+

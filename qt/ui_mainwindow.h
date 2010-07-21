@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Fri Jul 9 15:13:42 2010
+** Created: Sat Jul 10 15:04:38 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -219,7 +219,7 @@ public:
     QLabel *label_35;
     QGridLayout *gridLayout_5;
     QLabel *label_32;
-    QDoubleSpinBox *doubleSpinBox_Jmax_2;
+    QDoubleSpinBox *doubleSpinBox_Radius;
     QWidget *widget_22;
     QVBoxLayout *verticalLayout_13;
     QLabel *label_42;
@@ -355,7 +355,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 1051, 860));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 1055, 856));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -1297,12 +1297,12 @@ public:
 
         gridLayout_5->addWidget(label_32, 0, 0, 1, 1);
 
-        doubleSpinBox_Jmax_2 = new QDoubleSpinBox(widget_5);
-        doubleSpinBox_Jmax_2->setObjectName(QString::fromUtf8("doubleSpinBox_Jmax_2"));
-        doubleSpinBox_Jmax_2->setMaximum(10);
-        doubleSpinBox_Jmax_2->setSingleStep(0.01);
+        doubleSpinBox_Radius = new QDoubleSpinBox(widget_5);
+        doubleSpinBox_Radius->setObjectName(QString::fromUtf8("doubleSpinBox_Radius"));
+        doubleSpinBox_Radius->setMaximum(10);
+        doubleSpinBox_Radius->setSingleStep(0.01);
 
-        gridLayout_5->addWidget(doubleSpinBox_Jmax_2, 0, 1, 1, 1);
+        gridLayout_5->addWidget(doubleSpinBox_Radius, 0, 1, 1, 1);
 
 
         verticalLayout_38->addLayout(gridLayout_5);
@@ -1790,7 +1790,7 @@ public:
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1075, 24));
+        menuBar->setGeometry(QRect(0, 0, 1075, 25));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         menu_Edit = new QMenu(menuBar);
@@ -1874,7 +1874,7 @@ public:
         QObject::connect(Slider_desError, SIGNAL(valueChanged(double)), doubleSpinBox_DesError, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_DesError, SIGNAL(valueChanged(double)), Slider_desError, SLOT(setValue(double)));
 
-        tabWidget_2->setCurrentIndex(0);
+        tabWidget_2->setCurrentIndex(1);
         tabWidget->setCurrentIndex(0);
 
 
@@ -1927,6 +1927,7 @@ public:
         label_31->setText(QApplication::translate("MainWindow", "Custom Path", 0, QApplication::UnicodeUTF8));
         comboBox->clear();
         comboBox->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "none", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "line", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "circle", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "sinusoid", 0, QApplication::UnicodeUTF8)

@@ -43,8 +43,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1051</width>
-         <height>860</height>
+         <width>1055</width>
+         <height>856</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_17">
@@ -63,7 +63,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>1</number>
           </property>
           <widget class="QWidget" name="tabSoftMotionPlanner">
            <attribute name="title">
@@ -1114,6 +1114,11 @@
                         </property>
                         <item>
                          <property name="text">
+                          <string>none</string>
+                         </property>
+                        </item>
+                        <item>
+                         <property name="text">
                           <string>line</string>
                          </property>
                         </item>
@@ -1211,7 +1216,7 @@
                             </widget>
                            </item>
                            <item row="0" column="1">
-                            <widget class="QDoubleSpinBox" name="doubleSpinBox_Jmax_2">
+                            <widget class="QDoubleSpinBox" name="doubleSpinBox_Radius">
                              <property name="maximum">
                               <double>10.000000000000000</double>
                              </property>
@@ -1762,7 +1767,7 @@
      <x>0</x>
      <y>0</y>
      <width>1075</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
