@@ -550,19 +550,6 @@ typedef struct IndiceTrace
   double y;
 }IndiceTrace;
 
-typedef struct Traj
-{
-  std::vector<SM_CURVE_DATA> traj;
-
-} Traj;
-
-typedef struct TrajVec
-{
-  std::vector<Traj> trajvec;
-} TrajVec;
-// #endif
-
-
 #endif
 
 

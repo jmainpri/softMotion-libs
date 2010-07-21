@@ -87,6 +87,8 @@ public:
       _display = val;
     }
 
+    void maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel);
+
     bool display() {
       return _display;
     }

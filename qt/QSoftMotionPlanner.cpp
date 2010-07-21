@@ -198,6 +198,7 @@ QWidget *parent
 
 
   #else
+    int type_courbe = 0;
     double Jmax=0.0, Amax=0.0, Vmax=0.0, sampling =0.001, err = 0.001;
     int step;
 
@@ -256,6 +257,7 @@ QSoftMotionPlanner::~QSoftMotionPlanner()
 
 }
 
+#ifdef ENABLE_DISPLAY
 void QSoftMotionPlanner::choose_curve(){
   int curve_num;
   _lim.maxJerk = this->doubleSpinBox_Jmax->value();
@@ -280,6 +282,7 @@ void QSoftMotionPlanner::choose_curve(){
 
   return;
 }
+#endif
 
 void QSoftMotionPlanner::genFileTraj(){
 #ifdef ENABLE_DISPLAY
@@ -314,8 +317,6 @@ void QSoftMotionPlanner::computeHausdorff(){
   std::vector<double> dis_a_tracer2;
   double sup1 = 0.0;
   double sup2 = 0.0;
-  double haus_sup1 = 0.0;
-  double haus_sup2 = 0.0;
   double dis_hausdorff = 0.0;
   double w = 0.0;
 
@@ -359,7 +360,8 @@ void QSoftMotionPlanner::computeHausdorff(){
   dis_hausdorff = (sup1 > sup2 ? sup1 : sup2);
   cout << "Hausdorff distance = " << dis_hausdorff << endl;
 #ifdef ENABLE_DISPLAY
-  _plot.plotHaus(dis_a_tracer1, dis_a_tracer2, haus_sup1, haus_sup2, qwtPlot_haussdorff1, qwtPlot_haussdorff2);
+  _plot.plotHaus(dis_a_tracer1, dis_a_tracer2, sup1, sup2, qwtPlot_haussdorff1, qwtPlot_haussdorff2);
+  lcdNumber_pathError->setValue(dis_hausdorff);
   QApplication::setOverrideCursor(Qt::ArrowCursor);
 #endif
   return;
@@ -636,13 +638,9 @@ void QSoftMotionPlanner::openFile()
     /* Handle the path */
     curv.draw();
     curv.setIsDraw(display());
-
     _curve.push_back(curv);
-
     viewer->curve.push_back(curv);
-    // cout << " size stack " << _curve.back().path.size()  << " origin " << curv.path.size() << endl;
     viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
-    // cout << "nbkey " << curv.nbKeyFrames() << endl;
     viewer->updateGL();
 
     _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
@@ -719,7 +717,6 @@ void QSoftMotionPlanner::fullScreen()
 
 void QSoftMotionPlanner::closeFile()
 {
-
   this->_curve.clear();
 #ifdef ENABLE_DISPLAY
   this->viewer->updateGL();
@@ -732,8 +729,8 @@ void QSoftMotionPlanner::computeTraj()
 {
 #ifdef ENABLE_DISPLAY
     QApplication::setOverrideCursor(Qt::WaitCursor);
-
 #endif
+
   SM_LIMITS lim;
   int nbIntervals_local = 0;
   int kkk = 0;
@@ -750,13 +747,15 @@ void QSoftMotionPlanner::computeTraj()
   double val_err_max_traj = 0.0;
   double err_max_def = 0.0;
   double err_max_chaq_seg = 0.0;
+  double max_acc = 0.0;
+  double max_vel = 0.0;
+  double max_jerk = 0.0;
 
   Curve curv2;
   Curve curv_temp;
   Curve curv_divis;
   Curve curv_temp_divis;
   Curve curv_list_ideal;
-  TrajVec traj_vec;
   Curve curv_stock;
   Curve curv_stock1;
   Curve curv_stock2;
@@ -779,9 +778,7 @@ void QSoftMotionPlanner::computeTraj()
   ChronoOn();
 
   for(unsigned int i=0 ; i< _curve.size(); i++) {
-
     _curve[i].setIsDraw(display());
-
   }
 
   lim.maxJerk = _lim.maxJerk;
@@ -791,11 +788,7 @@ void QSoftMotionPlanner::computeTraj()
   err_max_def = _errMax;
 
   Path_Length(_curve.front().path, &longeur_path);
-//   pas_inter = longeur_path/10;
-//   nbIntervals_global = int(ceil(longeur_path/pas_inter));
-
   saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
-
   _curve.begin()->setIsDraw(display());
   time_total = (_curve.front().traj.size()-1) * tic;
 
@@ -883,8 +876,6 @@ void QSoftMotionPlanner::computeTraj()
       iter_temp_cond ++;
     }
 
-//     cout << "break point 0---nombre de boucle : "<< curv_temp_cond.trajList.size()<< endl;
-
     iter_temp_divis = curv_temp_divis.trajList.begin();
     curv_divis.trajList.resize(nbIntervals_local);
     iter_divis = curv_divis.trajList.begin();
@@ -920,8 +911,6 @@ void QSoftMotionPlanner::computeTraj()
 	if (val_err_max > err_max_chaq_seg){
 	  err_max_chaq_seg = val_err_max;
 	}
-
-// 	cout<<"break point 1---erreur : " << val_err_max << endl;
 
 	if (err_max_chaq_seg > err_max_def){
 	  for (int i = 0; i < 2; i++){
@@ -968,7 +957,6 @@ void QSoftMotionPlanner::computeTraj()
 	else{
       iter_stock->point_depart = iter_temp_divis->point_depart;
 	  size_segment = iter_divis->traj.size();
-      cout<<"iter_stock->point_depart : "<<iter_stock->point_depart<<endl;
 	  for (int k = 0; k < size_segment; k++){
 	    curv_donne.t = iter_divis->traj[k].t;
 
@@ -1072,6 +1060,8 @@ void QSoftMotionPlanner::computeTraj()
     }
   }while(flag_sum != 0);
 
+  maxProfile(curv2.traj, &max_jerk, &max_acc, &max_vel);
+
 #ifdef ENABLE_DISPLAY
   _plot.plotResults(curv2, qwtPlot_JerkXapprox, qwtPlot_JerkYapprox, qwtPlot_JerkZapprox,
 		    qwtPlot_AccXapprox, qwtPlot_AccYapprox, qwtPlot_AccZapprox,
@@ -1081,8 +1071,10 @@ void QSoftMotionPlanner::computeTraj()
   Calcul_Error(_curve.begin()->traj, curv2.traj, &_curve.begin()->errorMax, error_traj, &val_err_max_traj);
 
 #ifdef ENABLE_DISPLAY
-  lcdNumber_comptuationTime->setValue(curv2.traj[curv2.traj.size()-1].t);
   lcdNumber_trajError->setValue(val_err_max_traj);
+  lcdNumber_Jmax->setValue(max_jerk);
+  lcdNumber_Amax->setValue(max_acc);
+  lcdNumber_Vmax->setValue(max_vel);
 #endif
 
 #ifdef ENABLE_DISPLAY
@@ -1101,6 +1093,9 @@ void QSoftMotionPlanner::computeTraj()
 #endif
   ChronoPrint("");
   ChronoTimes(&tu, &ts);
+#ifdef ENABLE_DISPLAY
+  lcdNumber_comptuationTime->setValue(ts);
+#endif
   ChronoOff();
 #ifdef ENABLE_DISPLAY
   QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -1108,9 +1103,45 @@ void QSoftMotionPlanner::computeTraj()
   return;
 }
 
-// void QSoftMotionPlanner::maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj){
-//
-// }
+void QSoftMotionPlanner::maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel){
+  double v = 0.0;
+  double a = 0.0;
+  double j = 0.0;
+  std::vector<double> vel_norm_vec;
+  std::vector<double> acc_norm_vec;
+  std::vector<double> jerk_norm_vec;
+  for(unsigned int i = 0; i < ApproxTraj.size(); i++){
+    v = sqrt(
+        ApproxTraj[i].Vel[0] * ApproxTraj[i].Vel[0] +
+        ApproxTraj[i].Vel[1] * ApproxTraj[i].Vel[1] +
+        ApproxTraj[i].Vel[2] * ApproxTraj[i].Vel[2]
+        );
+    a = sqrt(
+        ApproxTraj[i].Acc[0] * ApproxTraj[i].Acc[0] +
+        ApproxTraj[i].Acc[1] * ApproxTraj[i].Acc[1] +
+        ApproxTraj[i].Acc[2] * ApproxTraj[i].Acc[2]
+        );
+    j = sqrt(
+        ApproxTraj[i].Jerk[0] * ApproxTraj[i].Jerk[0] +
+        ApproxTraj[i].Jerk[1] * ApproxTraj[i].Jerk[1] +
+        ApproxTraj[i].Jerk[2] * ApproxTraj[i].Jerk[2]
+        );
+    jerk_norm_vec.push_back(j);
+    acc_norm_vec.push_back(a);
+    vel_norm_vec.push_back(v);
+  }
+
+  *max_vel = vel_norm_vec[0];
+  *max_acc = acc_norm_vec[0];
+  *max_jerk = jerk_norm_vec[0];
+  for(unsigned int i = 0; i < ApproxTraj.size(); i++){
+    if(*max_vel < vel_norm_vec[i])     { *max_vel = vel_norm_vec[i]; }
+    if(*max_acc < acc_norm_vec[i])     { *max_acc = acc_norm_vec[i]; }
+    if(*max_jerk < jerk_norm_vec[i])   { *max_jerk = jerk_norm_vec[i]; }
+  }
+
+  return;
+}
 
 void QSoftMotionPlanner::computeSoftMotion()
 {
