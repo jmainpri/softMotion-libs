@@ -231,7 +231,7 @@ extern SM_STATUS Path_Length(std::list<Path> &path, double *longeur);
   * @param ind : size of the ideal and approximated trajectories
   * @return SM_OK : the status of SoftMotion
   */    
-extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max, int ind);
+extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
 
 extern SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *val_err_max, int ind);
  

@@ -6,6 +6,7 @@
 #include "ui_mainwindow.h"
 
 
+
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
 #include <QtGui/QApplication>
@@ -57,16 +58,15 @@ using namespace std;
 
 // the definition of the fonction QSoftMotionPlanner
 QSoftMotionPlanner::QSoftMotionPlanner(
-#ifdef ENABLE_DISPLAY 
+#ifdef ENABLE_DISPLAY
 QWidget *parent
 #endif
-) 
+)
 #ifdef ENABLE_DISPLAY
 : QMainWindow(parent),
   Ui_MainWindow()
 #endif
 {
-  int type_courbe;
 
 
 #ifdef ENABLE_DISPLAY
@@ -91,7 +91,7 @@ QWidget *parent
 
     this->Slider_SamplingTime->setRange(0.0001,0.01,0.0001);
     this->doubleSpinBox_SamplingTime->setRange(0.0001,0.01);
-    this->doubleSpinBox_SamplingTime->setSingleStep(0.001);	
+    this->doubleSpinBox_SamplingTime->setSingleStep(0.001);
     this->doubleSpinBox_SamplingTime->setDecimals(4);
 
     this->doubleSpinBox_Jmax->setValue(0.9);
@@ -100,29 +100,33 @@ QWidget *parent
     this->doubleSpinBox_SamplingTime->setValue(0.001);
 
     /*desired error here*/
-    this->Slider_desError->setRange(0,0.01, 0.000001); 
+    this->Slider_desError->setRange(0,0.01, 0.000001);
     this->doubleSpinBox_DesError->setRange(0,0.01);
     this->doubleSpinBox_DesError->setDecimals(6);
     this->doubleSpinBox_DesError->setSingleStep(0.000001);
     this->doubleSpinBox_DesError->setValue(0.001);
 
-    
+    /*coordinates*/
+    this->doubleSpinBox_xend->setValue(0.1);
+    this->doubleSpinBox_yend->setValue(0.15);
+    this->doubleSpinBox_Radius->setValue(0.1);
+    this->doubleSpinBox_amplitude->setValue(0.1);
+    this->doubleSpinBox_frequency->setValue(10.0);
+    this->doubleSpinBox_phase->setValue(0.0);
+    this->doubleSpinBox_a->setValue(5.0);
+
+
     connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
     connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
     connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
-    //connect(this->pushButton, SIGNAL(clicked(bool)), this, SLOT(computeTraj()) ) ;
-  
     connect(this->pushButtonGenFile, SIGNAL(clicked(bool)), this, SLOT(genFileTraj()));
-
     connect(this->pushButtonComputeHauss, SIGNAL(clicked(bool)), this, SLOT(computeHausdorff()) ) ;
-
-   // connect(this->checkBox, SIGNAL(clicked(bool)), this, SLOT(setDraw()) ) ;
-   // this->checkBox->setChecked(Qt::Checked);   
+    connect(this->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(choose_curve()));
 
     ////////////////////////////////////////////////////////////
     //////  SoftMotion Planner                    /////////////
     ///////////////////////////////////////////////////////////
-    
+
       this->Slider_Jmax_3->setRange(0,60,0.001);
       this->doubleSpinBox_Jmax_3->setSingleStep(0.1);
       this->doubleSpinBox_Jmax_3->setRange(0,60);
@@ -184,17 +188,18 @@ QWidget *parent
       connect(this->Slider_Jmax_3, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_Amax_3, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_Vmax_3, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
-    
+
       connect(this->Slider_Af, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_Vf, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_Xf, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
-    
+
       connect(this->Slider_A0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_V0, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
 
 
   #else
-    double Jmax=0.0, Amax=0.0, Vmax=0.0, sampling =0.001, err = 0.001; 
+    int type_courbe = 0;
+    double Jmax=0.0, Amax=0.0, Vmax=0.0, sampling =0.001, err = 0.001;
     int step;
 
     cout<<endl<<"**** Set the Approx and Motion Law Parameters please ****"<<endl;
@@ -208,7 +213,7 @@ QWidget *parent
       cin>> sampling;
 	cout << "errMax : " << endl;
       cin>> err;
-      cout << "time step for the exported file : "<< endl; 
+      cout << "time step for the exported file : "<< endl;
      cin>> step;
 
       _lim.maxJerk = Jmax;
@@ -227,23 +232,23 @@ QWidget *parent
     case 2:   defineFunction_c(); break;
     case 3:   defineFunction_s(); break;
     case 4:   defineFunction_p(); break;
-    case 5:   
+    case 5:
       {
 	cout << "Absolute file path : " << endl;
 	cin>> _fileName;
 	cout << "open the file " << _fileName << endl;
 	openFile();
-      }         
+      }
       break;
     default:                      break;
     }
-    
+
   #endif
   _nbCurve = 0;
   _fileName = "";
   _isFullScreen = false;
   _curve.clear();
-    
+
 }
 
 QSoftMotionPlanner::~QSoftMotionPlanner()
@@ -251,6 +256,33 @@ QSoftMotionPlanner::~QSoftMotionPlanner()
   _curve.clear();
 
 }
+
+#ifdef ENABLE_DISPLAY
+void QSoftMotionPlanner::choose_curve(){
+  int curve_num;
+  _lim.maxJerk = this->doubleSpinBox_Jmax->value();
+  _lim.maxAcc  = this->doubleSpinBox_Amax->value();
+  _lim.maxVel  = this->doubleSpinBox_Vmax->value();
+  _sampling = this->doubleSpinBox_SamplingTime->value();
+  _errMax =  this->doubleSpinBox_DesError->value();
+  _timeStep = this->doubleSpinBoxFileSampling->value();
+  curve_num = this->comboBox->currentIndex();
+
+  switch(curve_num){
+    case 0: 			break;
+    case 1: defineFunction_l();	break;
+    case 2: defineFunction_c(); break;
+    case 3: defineFunction_s(); break;
+    case 4: defineFunction_p(); break;
+    default:			break;
+  }
+  if (this->comboBox->currentIndex() == 1){
+    defineFunction_l();
+  }
+
+  return;
+}
+#endif
 
 void QSoftMotionPlanner::genFileTraj(){
 #ifdef ENABLE_DISPLAY
@@ -260,7 +292,7 @@ void QSoftMotionPlanner::genFileTraj(){
   FILE *fp = NULL;
   fp = fopen("output.traj", "w");
   if(fp==NULL) {
-    std::cerr << " cannont open file to write the trajectory" << std::endl; 
+    std::cerr << " cannont open file to write the trajectory" << std::endl;
     return;
   }
 
@@ -285,8 +317,6 @@ void QSoftMotionPlanner::computeHausdorff(){
   std::vector<double> dis_a_tracer2;
   double sup1 = 0.0;
   double sup2 = 0.0;
-  double haus_sup1 = 0.0;
-  double haus_sup2 = 0.0;
   double dis_hausdorff = 0.0;
   double w = 0.0;
 
@@ -307,7 +337,7 @@ void QSoftMotionPlanner::computeHausdorff(){
   for (int m=0; m<(int)_curve.front().traj.size(); m++){
     if (dis_a_tracer1[m]>(sup1)) {sup1 = dis_a_tracer1[m];}
   }
-    
+
   // f2 pour calculer la distance la plus longue entre courbe2 et courbe1
   for (int i=0; i< (int)_curve.back().traj.size(); i++){
     std::vector<double> dis2;
@@ -330,14 +360,15 @@ void QSoftMotionPlanner::computeHausdorff(){
   dis_hausdorff = (sup1 > sup2 ? sup1 : sup2);
   cout << "Hausdorff distance = " << dis_hausdorff << endl;
 #ifdef ENABLE_DISPLAY
-  _plot.plotHaus(dis_a_tracer1, dis_a_tracer2, haus_sup1, haus_sup2, qwtPlot_haussdorff1, qwtPlot_haussdorff2);
+  _plot.plotHaus(dis_a_tracer1, dis_a_tracer2, sup1, sup2, qwtPlot_haussdorff1, qwtPlot_haussdorff2);
+  lcdNumber_pathError->setValue(dis_hausdorff);
   QApplication::setOverrideCursor(Qt::ArrowCursor);
 #endif
-  return; 
+  return;
 }
 
 
-void QSoftMotionPlanner::setDraw() 
+void QSoftMotionPlanner::setDraw()
 {
   for(unsigned int i=0 ; i< _curve.size(); i++) {
     _curve[i].setIsDraw(display());
@@ -378,11 +409,14 @@ void QSoftMotionPlanner::initializeApproxVariables()
 
 void QSoftMotionPlanner::defineFunction_p(){
   Curve curv;
-  SM_LIMITS Lim;
   Path lpath;
   SubPath lsubpath;
   std::string str2;
+  #ifdef ENABLE_DISPLAY
+  double a = this->doubleSpinBox_a->value();
+  #else
   double a = 5.0;
+  #endif
   double start_x = 0.0;
   double end_x = 0.02;
 
@@ -391,9 +425,9 @@ void QSoftMotionPlanner::defineFunction_p(){
   lsubpath.parabol.end_x = end_x;
   lsubpath.type = PARABOL;
   lpath.subpath.push_back(lsubpath);
-  curv.path.push_back(lpath);  
+  curv.path.push_back(lpath);
   constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
-  
+
   str2.clear();
   str2 += "cercle_traj.dat";
   saveTraj(str2, curv.traj);
@@ -409,34 +443,36 @@ void QSoftMotionPlanner::defineFunction_p(){
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
-#else 
+#else
 
   computeTraj();
   genFileTraj();
 
 #endif
-  return;  
+  return;
 }
 
 /* the definition of a cercle x = acos(2PIft); y = asin(2PIft) */
 void QSoftMotionPlanner::defineFunction_c(){
   Curve curv;
-  SM_LIMITS Lim;
   Path lpath;
   SubPath lsubpath;
   std::string str2;
+  #ifdef ENABLE_DISPLAY
+  double a1 = this->doubleSpinBox_Radius->value();
+  #else
   double a1 = 0.1;
+  #endif
   double f1 = 20.0;
-
   lsubpath.cercle.center.x = 0.0;
   lsubpath.cercle.center.y = 0.0;
   lsubpath.cercle.radius = a1;
   lsubpath.cercle.sinus_para.frequency = f1;
   lsubpath.type = CERCLE;
   lpath.subpath.push_back(lsubpath);
-  curv.path.push_back(lpath);  
+  curv.path.push_back(lpath);
   constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
-  
+
   str2.clear();
   str2 += "cercle_traj.dat";
   saveTraj(str2, curv.traj);
@@ -452,34 +488,37 @@ void QSoftMotionPlanner::defineFunction_c(){
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
-#else 
+#else
 
   computeTraj();
   genFileTraj();
 
 #endif
-  return;  
+  return;
 }
 
 /* the definition of a line y = y1 + (x-x1) * (y2-y1)/(x2-x1) */
 void QSoftMotionPlanner::defineFunction_l(){
   Curve curv;
-
   Path lpath;
   SubPath lsubpath;
   std::string str2;
   double x1 = 0.0,y1 = 0.0;
+  #ifdef ENABLE_DISPLAY
+  double x2 = this->doubleSpinBox_xend->value();
+  double y2 = this->doubleSpinBox_yend->value();
+  #else
   double x2 = 0.03,y2 = 0.02;
-
+  #endif
   lsubpath.line.start.x = x1;
   lsubpath.line.start.y = y1;
   lsubpath.line.end.x = x2;
   lsubpath.line.end.y = y2;
   lsubpath.type = LINE_TH;
   lpath.subpath.push_back(lsubpath);
-  curv.path.push_back(lpath);  
+  curv.path.push_back(lpath);
   constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
-  
+
   str2.clear();
   str2 += "line_traj.dat";
   saveTraj(str2, curv.traj);
@@ -495,25 +534,30 @@ void QSoftMotionPlanner::defineFunction_l(){
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
-#else 
+#else
 
   computeTraj();
   genFileTraj();
 
 #endif
-  return;  
+  return;
 }
 
 /* the definition of a sinusoid y = asin(2PIft + phi) */
 void QSoftMotionPlanner::defineFunction_s(){
   Curve curv;
-  double a1 = 0.1;
-  double f1 = 10.0;
-  double phi1 = 0.0;
   Path lpath;
   SubPath lsubpath;
   std::string str2;
- 
+  #ifdef ENABLE_DISPLAY
+  double a1 = this->doubleSpinBox_amplitude->value();
+  double f1 = this->doubleSpinBox_frequency->value();
+  double phi1 = this->doubleSpinBox_phase->value();
+  #else
+  double a1 = 0.1;
+  double f1 = 10.0;
+  double phi1 = 0.0;
+  #endif
   lsubpath.sinus.start.x = 0.0;
   lsubpath.sinus.start.y = 0.0;
   lsubpath.sinus.phase = phi1;
@@ -524,7 +568,7 @@ void QSoftMotionPlanner::defineFunction_s(){
   lpath.subpath.push_back(lsubpath);
   curv.path.push_back(lpath);
   constructTrajSvg(curv.path,_sampling, _lim, curv.traj);
-  
+
   str2.clear();
   str2 += "sinus_traj.dat";
   saveTraj(str2, curv.traj);
@@ -540,7 +584,7 @@ void QSoftMotionPlanner::defineFunction_s(){
   _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
   _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
-#else 
+#else
 
   computeTraj();
   genFileTraj();
@@ -580,39 +624,34 @@ void QSoftMotionPlanner::openFile()
     _lim.maxVel  = this->doubleSpinBox_Vmax->value();
     _sampling = this->doubleSpinBox_SamplingTime->value();
     _errMax =  this->doubleSpinBox_DesError->value();
+    _timeStep = this->doubleSpinBoxFileSampling->value();
 
-
-
-    QSoftMotionPlanner::initializeApproxVariables();	
+    QSoftMotionPlanner::initializeApproxVariables();
     /* computation of the trajectory*/
 
     constructTrajSvg(curv.path,_sampling, _lim, curv.traj);
-    
+
     str2.clear();
     str2 += "QtIdealTraj.dat";
     saveTraj(str2, curv.traj);
-    
+
     /* Handle the path */
     curv.draw();
     curv.setIsDraw(display());
-
     _curve.push_back(curv);
-
     viewer->curve.push_back(curv);
-    // cout << " size stack " << _curve.back().path.size()  << " origin " << curv.path.size() << endl;
     viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
-    // cout << "nbkey " << curv.nbKeyFrames() << endl;
     viewer->updateGL();
-    
+
     _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
     _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
 			   qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
-    //     _plot.plotResults(curv, qwtPlot_JerkYapprox, qwtPlot_JerkZapprox, 
+    //     _plot.plotResults(curv, qwtPlot_JerkYapprox, qwtPlot_JerkZapprox,
     //		       qwtPlot_AccXapprox, qwtPlot_AccYapprox, qwtPlot_AccZapprox,
     //			qwtPlot_VelXapprox, qwtPlot_VelYapprox, qwtPlot_VelZapprox,
     //		       qwtPlot_TrajPosApprox, qwtPlot_TrajVelApprox, qwtPlot_TrajAccApprox);
 
-    
+
   }
 }
 
@@ -620,7 +659,7 @@ void QSoftMotionPlanner::openFile()
 
 void QSoftMotionPlanner::openFile()
 {
-  
+
   std::string str;
   std::string str2;
   Curve curv;
@@ -637,14 +676,14 @@ void QSoftMotionPlanner::openFile()
     }
     cout << "... file parsed " << endl;
 
-    QSoftMotionPlanner::initializeApproxVariables();	
+    QSoftMotionPlanner::initializeApproxVariables();
     /* computation of the trajectory*/
     constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
-    
+
     str2.clear();
     str2 += "QtIdealTraj.dat";
     saveTraj(str2, curv.traj);
-    
+
     /* Handle the path */
      curv.setIsDraw(false);
     curv.draw();
@@ -658,17 +697,16 @@ void QSoftMotionPlanner::openFile()
   genFileTraj();
     cout << " ... File exported " << endl;
 
-
 }
 
 #endif
 void QSoftMotionPlanner::fullScreen()
 {
-#ifdef ENABLE_DISPLAY 
+#ifdef ENABLE_DISPLAY
   if(this->_isFullScreen == false){
     this->showFullScreen();
     this->_isFullScreen = true;
-  } 
+  }
   else {
     this->_isFullScreen = false;
     this->showMaximized();
@@ -679,7 +717,6 @@ void QSoftMotionPlanner::fullScreen()
 
 void QSoftMotionPlanner::closeFile()
 {
-
   this->_curve.clear();
 #ifdef ENABLE_DISPLAY
   this->viewer->updateGL();
@@ -692,33 +729,37 @@ void QSoftMotionPlanner::computeTraj()
 {
 #ifdef ENABLE_DISPLAY
     QApplication::setOverrideCursor(Qt::WaitCursor);
-
 #endif
+
   SM_LIMITS lim;
-  int nbIntervals_local = 0; 
-  int segment = 1;
-  int segment_local = 1;
-  int kk = 0;
-  int flag = 0;
-  int segment_temp_divis = 1;
+  int nbIntervals_local = 0;
   int kkk = 0;
   int hh = 0;
-  int count_cond = 0;
-  int nbIntervals_global = 0;
+  int nouveau_temp_divis = 0;
+  int size_segment = 0;
+  int flag_sum = 0;
+  int starting_point_each_seg = 0;
   double tu,ts;
   double tic = 0.0;
-  double pas_inter = 0.0;
+  double time_total = 0.0;
   double longeur_path = 0.0;
-  double sum_time = 0.0;
   double val_err_max = 0.0;
   double val_err_max_traj = 0.0;
   double err_max_def = 0.0;
   double err_max_chaq_seg = 0.0;
+  double max_acc = 0.0;
+  double max_vel = 0.0;
+  double max_jerk = 0.0;
 
   Curve curv2;
   Curve curv_temp;
   Curve curv_divis;
   Curve curv_temp_divis;
+  Curve curv_list_ideal;
+  Curve curv_stock;
+  Curve curv_stock1;
+  Curve curv_stock2;
+  Curve curv_temp_cond;
 
   std::vector<SM_COND_DIM> IC;
   std::vector<SM_COND_DIM> FC;
@@ -732,13 +773,12 @@ void QSoftMotionPlanner::computeTraj()
   std::vector<double> dis_a_tracer2;
 
   std::list<SubTraj>::iterator iter_temp;
-  
+  std::list<SubTraj>::iterator iter_stock;
+  std::list<SubTraj>::iterator iter_list_ideal;
   ChronoOn();
 
   for(unsigned int i=0 ; i< _curve.size(); i++) {
-  
     _curve[i].setIsDraw(display());
-  
   }
 
   lim.maxJerk = _lim.maxJerk;
@@ -748,216 +788,294 @@ void QSoftMotionPlanner::computeTraj()
   err_max_def = _errMax;
 
   Path_Length(_curve.front().path, &longeur_path);
-  pas_inter = longeur_path/10;
-  nbIntervals_global = int(ceil(longeur_path/pas_inter));
-
-  constructTrajSvg(_curve.front().path,  tic, lim, _curve.front().traj);
-
   saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
-
   _curve.begin()->setIsDraw(display());
+  time_total = (_curve.front().traj.size()-1) * tic;
 
 #ifdef ENABLE_DISPLAY
     viewer->updateGL();
 #endif
 
   curv2.traj.clear();
-  IC.resize(nbIntervals_global);
-  FC.resize(nbIntervals_global);
-  Timp.resize(nbIntervals_global);
-  IntervIndex_global.resize(nbIntervals_global + 1);
+  curv2.traj.resize(_curve.front().traj.size());
+  nbIntervals_local = 1;
+  error.clear();
+  val_err_max = 0.0;
+  SM_CURVE_DATA curv_donne;
+  std::vector<double> Temp_alias(1);
+  curv_temp_divis.trajList.resize(nbIntervals_local);
+  curv_temp_divis.trajList.front().traj.resize(_curve.front().traj.size());
+  curv_temp_cond.trajList.resize(1);
+  std::list<SubTraj>::iterator iter_temp_cond;
+  std::list<SubTraj>::iterator iter_temp_divis;
 
-  if(sm_ComputeCondition(_curve.front().traj, _curve.front().discPoint, IC, FC, Timp, IntervIndex_global)!=0){
-    printf("QSoftMotionPlanner::computeTraj() ERROR in sm_ComputeCondition()\n");
-    return;
-  }
+  for (iter_temp_divis = curv_temp_divis.trajList.begin(); iter_temp_divis != curv_temp_divis.trajList.end(); iter_temp_divis ++){
+    iter_temp_divis->point_depart = 0;
+    for(unsigned int kk = 0; kk < _curve.front().traj.size(); kk ++){
+      iter_temp_divis->traj[kk].t = _curve.front().traj[kk].t;
 
-  curv_temp.trajList.resize(nbIntervals_global);
+      iter_temp_divis->traj[kk].Pos[0] = _curve.front().traj[kk].Pos[0];
+      iter_temp_divis->traj[kk].Pos[1] = _curve.front().traj[kk].Pos[1];
+      iter_temp_divis->traj[kk].Pos[2] = _curve.front().traj[kk].Pos[2];
 
-  for(iter_temp=curv_temp.trajList.begin(); iter_temp != curv_temp.trajList.end(); iter_temp++){
-    if (iter_temp==curv_temp.trajList.begin()){
-      iter_temp->traj.resize(IntervIndex_global[segment] - IntervIndex_global[segment-1] +1);
-    }
-    else iter_temp->traj.resize(IntervIndex_global[segment] - IntervIndex_global[segment-1]);
-    segment ++;
-  }
+      iter_temp_divis->traj[kk].Vel[0] = _curve.front().traj[kk].Vel[0];
+      iter_temp_divis->traj[kk].Vel[1] = _curve.front().traj[kk].Vel[1];
+      iter_temp_divis->traj[kk].Vel[2] = _curve.front().traj[kk].Vel[2];
 
-  segment = 1; 
-  kk = 0;
-  for(iter_temp=curv_temp.trajList.begin(); iter_temp != curv_temp.trajList.end(); iter_temp++){
-    for (unsigned int k=0; k < iter_temp->traj.size(); k++){
-      iter_temp->traj[k].t = _curve.front().traj[kk].t;
-    
-      iter_temp->traj[k].Pos[0] = _curve.front().traj[kk].Pos[0];
-      iter_temp->traj[k].Pos[1] = _curve.front().traj[kk].Pos[1];
-      iter_temp->traj[k].Pos[2] = _curve.front().traj[kk].Pos[2];
-    
-      iter_temp->traj[k].Vel[0] = _curve.front().traj[kk].Vel[0];
-      iter_temp->traj[k].Vel[1] = _curve.front().traj[kk].Vel[1];
-      iter_temp->traj[k].Vel[2] = _curve.front().traj[kk].Vel[2];
-    
-      iter_temp->traj[k].Acc[0] = _curve.front().traj[kk].Acc[0];
-      iter_temp->traj[k].Acc[1] = _curve.front().traj[kk].Acc[1];
-      iter_temp->traj[k].Acc[2] = _curve.front().traj[kk].Acc[2];
-    
-      iter_temp->traj[k].u = _curve.front().traj[kk].u;
-      iter_temp->traj[k].du = _curve.front().traj[kk].du;
-      iter_temp->traj[k].ddu = _curve.front().traj[kk].ddu;
-      iter_temp->traj[k].AccNorm = _curve.front().traj[kk].AccNorm;
-    
-      kk ++;
+      iter_temp_divis->traj[kk].Acc[0] = _curve.front().traj[kk].Acc[0];
+      iter_temp_divis->traj[kk].Acc[1] = _curve.front().traj[kk].Acc[1];
+      iter_temp_divis->traj[kk].Acc[2] = _curve.front().traj[kk].Acc[2];
+
+      iter_temp_divis->traj[kk].u = _curve.front().traj[kk].u;
+      iter_temp_divis->traj[kk].du = _curve.front().traj[kk].du;
+      iter_temp_divis->traj[kk].ddu = _curve.front().traj[kk].ddu;
+      iter_temp_divis->traj[kk].AccNorm = _curve.front().traj[kk].AccNorm;
     }
   }
 
-  for(iter_temp=curv_temp.trajList.begin(); iter_temp != curv_temp.trajList.end(); iter_temp++) {
-    flag = 0;
-    nbIntervals_local = 1;
-    error.clear();
-    IC.clear();
-    FC.clear();
-    val_err_max = 0.0;
-    SM_CURVE_DATA curv_donne;
-    std::vector<double> Temp_alias(1);
-       
-    do{
-      if(flag == 1){
-	nbIntervals_local = nbIntervals_local * 2;
-	error.clear();
-	IC.clear();
-	FC.clear();
-	IntervIndex.clear();
-	val_err_max = 0.0;
+  do{
+
+    flag_sum = 0;
+    nouveau_temp_divis = 0;
+    std::list<SubTraj>::iterator iter_divis;
+    curv_stock.trajList.resize(nbIntervals_local*2);
+    curv_temp_cond.trajList.resize(curv_temp_divis.trajList.size());
+    for(iter_stock = curv_stock.trajList.begin(); iter_stock != curv_stock.trajList.end(); iter_stock ++){
+      iter_stock->traj.clear();
+      iter_stock->flag_traj = 100;
+    }
+    for(iter_temp_cond = curv_temp_cond.trajList.begin(); iter_temp_cond != curv_temp_cond.trajList.end(); iter_temp_cond ++){
+      iter_temp_cond->traj.clear();
+    }
+    iter_stock = curv_stock.trajList.begin();
+    iter_temp_cond=curv_temp_cond.trajList.begin();
+
+    for (iter_temp_divis = curv_temp_divis.trajList.begin(); iter_temp_divis != curv_temp_divis.trajList.end(); iter_temp_divis ++){
+      for(unsigned int kk = 0; kk < iter_temp_divis->traj.size(); kk ++){
+	curv_donne.t = iter_temp_divis->traj[kk].t;
+
+	curv_donne.Pos[0] = iter_temp_divis->traj[kk].Pos[0];
+	curv_donne.Pos[1] = iter_temp_divis->traj[kk].Pos[1];
+	curv_donne.Pos[2] = iter_temp_divis->traj[kk].Pos[2];
+
+	curv_donne.Vel[0] = iter_temp_divis->traj[kk].Vel[0];
+	curv_donne.Vel[1] = iter_temp_divis->traj[kk].Vel[1];
+	curv_donne.Vel[2] = iter_temp_divis->traj[kk].Vel[2];
+
+	curv_donne.Acc[0] = iter_temp_divis->traj[kk].Acc[0];
+	curv_donne.Acc[1] = iter_temp_divis->traj[kk].Acc[1];
+	curv_donne.Acc[2] = iter_temp_divis->traj[kk].Acc[2];
+
+	curv_donne.u = iter_temp_divis->traj[kk].u;
+	curv_donne.du = iter_temp_divis->traj[kk].du;
+	curv_donne.ddu = iter_temp_divis->traj[kk].ddu;
+	curv_donne.AccNorm = iter_temp_divis->traj[kk].AccNorm;
+
+	iter_temp_cond->traj.push_back(curv_donne);
       }
+      iter_temp_cond ++;
+    }
 
-      IC.resize(nbIntervals_local);
-      FC.resize(nbIntervals_local);
-      Timp.resize(nbIntervals_local);
-      IntervIndex.resize(nbIntervals_local + 1);
-      segment_local = 1;
-      segment_temp_divis = 1;
+    iter_temp_divis = curv_temp_divis.trajList.begin();
+    curv_divis.trajList.resize(nbIntervals_local);
+    iter_divis = curv_divis.trajList.begin();
+    for(iter_temp_cond=curv_temp_cond.trajList.begin(); iter_temp_cond != curv_temp_cond.trajList.end(); iter_temp_cond++){
       kkk = 0;
-      std::vector<SM_COND_DIM> IC_seg(1);
-      std::vector<SM_COND_DIM> FC_seg(1);
-      hh = 0;
+      error.clear();
+      val_err_max = 0.0;
       err_max_chaq_seg = 0.0;
+      IC.resize(1);
+      FC.resize(1);
+      Timp.resize(1);
+      IntervIndex.resize(2);
 
-      if (sm_ComputeCondition(iter_temp->traj, _curve.front().discPoint, IC, FC, Timp, IntervIndex) != 0){
-	printf("Compute Problem \n");
+      if (sm_ComputeCondition(iter_temp_cond->traj, _curve.front().discPoint, IC, FC, Timp, IntervIndex) != 0){
+	printf("Compute Problem \n");   // ici discpoint marche pas !
 	return;
       }
 
-      curv_divis.trajList.resize(nbIntervals_local);
-      std::list<SubTraj>::iterator iter_divis;
-      curv_temp_divis.trajList.resize(nbIntervals_local);
-      std::list<SubTraj>::iterator iter_temp_divis;
-      iter_temp_divis=curv_temp_divis.trajList.begin();
 
-      if (flag == 0) {
-	iter_temp_divis->traj.resize(iter_temp->traj.size());
-      }
-      else{
-	for(iter_temp_divis=curv_temp_divis.trajList.begin(); iter_temp_divis != curv_temp_divis.trajList.end(); iter_temp_divis++){
-	  if (iter_temp_divis==curv_temp_divis.trajList.begin()){
-	    iter_temp_divis->traj.resize(IntervIndex[segment_local] - IntervIndex[segment_local-1] +1);
-	  }
-	  else iter_temp_divis->traj.resize(IntervIndex[segment_local] - IntervIndex[segment_local-1] );
-	  segment_local++;
+      std::vector<SM_COND_DIM> IC_seg(1);
+      std::vector<SM_COND_DIM> FC_seg(1);
+
+	error.clear();
+	memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
+	memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
+	iter_divis->motion_par_seg.resize(3);
+	Temp_alias.clear();
+	Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
+	sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
+	iter_divis->traj.clear();
+	convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
+	Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &_curve.front().errorMax, error, &val_err_max);
+	if (val_err_max > err_max_chaq_seg){
+	  err_max_chaq_seg = val_err_max;
 	}
-      }
 
-      for(iter_temp_divis=curv_temp_divis.trajList.begin(); iter_temp_divis != curv_temp_divis.trajList.end(); iter_temp_divis++){
-	for (unsigned int k=0; k< iter_temp_divis->traj.size(); k++) {
-	  iter_temp_divis->traj[k].t = iter_temp->traj[kkk].t;
-	  
-	  iter_temp_divis->traj[k].Pos[0] = iter_temp->traj[kkk].Pos[0];
-	  iter_temp_divis->traj[k].Pos[1] = iter_temp->traj[kkk].Pos[1];
-	  iter_temp_divis->traj[k].Pos[2] = iter_temp->traj[kkk].Pos[2];
-        
-	  iter_temp_divis->traj[k].Vel[0] = iter_temp->traj[kkk].Vel[0];
-	  iter_temp_divis->traj[k].Vel[1] = iter_temp->traj[kkk].Vel[1];
-	  iter_temp_divis->traj[k].Vel[2] = iter_temp->traj[kkk].Vel[2];
-	  
-	  iter_temp_divis->traj[k].Acc[0] = iter_temp->traj[kkk].Acc[0];
-	  iter_temp_divis->traj[k].Acc[1] = iter_temp->traj[kkk].Acc[1];
-	  iter_temp_divis->traj[k].Acc[2] = iter_temp->traj[kkk].Acc[2];
-	  
-	  iter_temp_divis->traj[k].u = iter_temp->traj[kkk].u;
-	  iter_temp_divis->traj[k].du = iter_temp->traj[kkk].du;
-	  iter_temp_divis->traj[k].ddu = iter_temp->traj[kkk].ddu;
-	  iter_temp_divis->traj[k].AccNorm = iter_temp->traj[kkk].AccNorm;
-	  
-	  kkk ++;
-	}
-      }
-      
-      count_cond = 0;
-      iter_temp_divis = curv_temp_divis.trajList.begin();
-      for (iter_divis = curv_divis.trajList.begin(); iter_divis != curv_divis.trajList.end(); iter_divis++){
-        int toto;
-        error.clear();
-        memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
-        memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
-        iter_divis->motion_par_seg.resize(3);
-        Temp_alias.clear();
-        Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
-
-        sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
-
-        iter_divis->traj.clear();
-
-        convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
-
-        if(iter_temp_divis->traj.size() <= iter_divis->traj.size()) {toto = iter_temp_divis->traj.size();}
-        else {toto = iter_divis->traj.size();}
-        Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &_curve.front().errorMax, error, &val_err_max, toto);
-        if (val_err_max > err_max_chaq_seg){
-          err_max_chaq_seg = val_err_max;
+	if (err_max_chaq_seg > err_max_def){
+	  for (int i = 0; i < 2; i++){
+        if(i == 0){
+          size_segment = int(iter_temp_divis->traj.size()/2);
+          iter_stock->point_depart = iter_temp_divis->point_depart;
         }
-        count_cond ++;
-        iter_temp_divis ++;
-        hh ++;
-      }
+        else{
+          iter_stock->point_depart = iter_temp_divis->point_depart + size_segment;
+          size_segment = iter_temp_divis->traj.size() - size_segment;
+        }
+	    for (int k=0; k< size_segment; k++) {
+	      curv_donne.t = iter_temp_divis->traj[kkk].t;
 
-      if (err_max_chaq_seg < err_max_def){
-	for (iter_divis = curv_divis.trajList.begin(); iter_divis != curv_divis.trajList.end(); iter_divis++){
-	  for (unsigned int i = 0; i< iter_divis->traj.size(); i++){
-	    iter_divis->traj[i].t = sum_time;
-	    curv_donne.t = iter_divis->traj[i].t;
-	    
-	    curv_donne.Pos[0] = iter_divis->traj[i].Pos[0];
-	    curv_donne.Pos[1] = iter_divis->traj[i].Pos[1];
-	    curv_donne.Pos[2] = iter_divis->traj[i].Pos[2];
-	    
-	    curv_donne.Vel[0] = iter_divis->traj[i].Vel[0];
-	    curv_donne.Vel[1] = iter_divis->traj[i].Vel[1];
-	    curv_donne.Vel[2] = iter_divis->traj[i].Vel[2];
-		    
-	    curv_donne.Acc[0] = iter_divis->traj[i].Acc[0];
-	    curv_donne.Acc[1] = iter_divis->traj[i].Acc[1];
-	    curv_donne.Acc[2] = iter_divis->traj[i].Acc[2];
+	      curv_donne.Pos[0] = iter_temp_divis->traj[kkk].Pos[0];
+	      curv_donne.Pos[1] = iter_temp_divis->traj[kkk].Pos[1];
+	      curv_donne.Pos[2] = iter_temp_divis->traj[kkk].Pos[2];
 
-	    curv_donne.Jerk[0] = iter_divis->traj[i].Jerk[0];
-	    curv_donne.Jerk[1] = iter_divis->traj[i].Jerk[1];
-	    curv_donne.Jerk[2] = iter_divis->traj[i].Jerk[2];
-    
-	    curv2.traj.push_back(curv_donne);
-	    sum_time = sum_time + tic;
+	      curv_donne.Vel[0] = iter_temp_divis->traj[kkk].Vel[0];
+	      curv_donne.Vel[1] = iter_temp_divis->traj[kkk].Vel[1];
+	      curv_donne.Vel[2] = iter_temp_divis->traj[kkk].Vel[2];
+
+	      curv_donne.Acc[0] = iter_temp_divis->traj[kkk].Acc[0];
+	      curv_donne.Acc[1] = iter_temp_divis->traj[kkk].Acc[1];
+	      curv_donne.Acc[2] = iter_temp_divis->traj[kkk].Acc[2];
+
+          curv_donne.Jerk[0] = iter_temp_divis->traj[k].Jerk[0];
+          curv_donne.Jerk[1] = iter_temp_divis->traj[k].Jerk[1];
+          curv_donne.Jerk[2] = iter_temp_divis->traj[k].Jerk[2];
+
+	      curv_donne.u = iter_temp_divis->traj[kkk].u;
+	      curv_donne.du = iter_temp_divis->traj[kkk].du;
+	      curv_donne.ddu = iter_temp_divis->traj[kkk].ddu;
+	      curv_donne.AccNorm = iter_temp_divis->traj[kkk].AccNorm;
+
+	      iter_stock->traj.push_back(curv_donne);
+	      kkk ++;
+	    }
+	    iter_stock->flag_traj = 1;
+	    iter_stock++;
+	    nouveau_temp_divis ++;
 	  }
 	}
+	else{
+      iter_stock->point_depart = iter_temp_divis->point_depart;
+	  size_segment = iter_divis->traj.size();
+	  for (int k = 0; k < size_segment; k++){
+	    curv_donne.t = iter_divis->traj[k].t;
+
+	    curv_donne.Pos[0] = iter_divis->traj[k].Pos[0];
+	    curv_donne.Pos[1] = iter_divis->traj[k].Pos[1];
+	    curv_donne.Pos[2] = iter_divis->traj[k].Pos[2];
+
+	    curv_donne.Vel[0] = iter_divis->traj[k].Vel[0];
+	    curv_donne.Vel[1] = iter_divis->traj[k].Vel[1];
+	    curv_donne.Vel[2] = iter_divis->traj[k].Vel[2];
+
+	    curv_donne.Acc[0] = iter_divis->traj[k].Acc[0];
+	    curv_donne.Acc[1] = iter_divis->traj[k].Acc[1];
+	    curv_donne.Acc[2] = iter_divis->traj[k].Acc[2];
+
+        curv_donne.Jerk[0] = iter_divis->traj[k].Jerk[0];
+        curv_donne.Jerk[1] = iter_divis->traj[k].Jerk[1];
+        curv_donne.Jerk[2] = iter_divis->traj[k].Jerk[2];
+
+	    curv_donne.u = iter_divis->traj[k].u;
+	    curv_donne.du = iter_divis->traj[k].du;
+	    curv_donne.ddu = iter_divis->traj[k].ddu;
+	    curv_donne.AccNorm = iter_divis->traj[k].AccNorm;
+
+	    iter_stock->traj.push_back(curv_donne);
+	  }
+	  iter_stock->flag_traj = 0;
+	  iter_stock++;
+	}
+//       }
+      iter_divis++;
+      iter_temp_divis ++;
+    }
+
+    flag_sum = 0;
+    nbIntervals_local = nouveau_temp_divis;
+    curv_temp_divis.trajList.resize(nbIntervals_local);
+    for(iter_temp_divis = curv_temp_divis.trajList.begin(); iter_temp_divis != curv_temp_divis.trajList.end(); iter_temp_divis ++){
+      iter_temp_divis->traj.clear();
+    }
+    iter_temp_divis = curv_temp_divis.trajList.begin();
+    for (iter_stock = curv_stock.trajList.begin(); iter_stock != curv_stock.trajList.end(); iter_stock++){
+      if (iter_stock->flag_traj == 1){
+        iter_temp_divis->point_depart = iter_stock->point_depart;
+        for (unsigned int k = 0; k < iter_stock->traj.size(); k++) {
+          curv_donne.t = iter_stock->traj[k].t;
+
+          curv_donne.Pos[0] = iter_stock->traj[k].Pos[0];
+          curv_donne.Pos[1] = iter_stock->traj[k].Pos[1];
+          curv_donne.Pos[2] = iter_stock->traj[k].Pos[2];
+
+          curv_donne.Vel[0] = iter_stock->traj[k].Vel[0];
+          curv_donne.Vel[1] = iter_stock->traj[k].Vel[1];
+          curv_donne.Vel[2] = iter_stock->traj[k].Vel[2];
+
+          curv_donne.Acc[0] = iter_stock->traj[k].Acc[0];
+          curv_donne.Acc[1] = iter_stock->traj[k].Acc[1];
+          curv_donne.Acc[2] = iter_stock->traj[k].Acc[2];
+
+          curv_donne.Jerk[0] = iter_stock->traj[k].Jerk[0];
+          curv_donne.Jerk[1] = iter_stock->traj[k].Jerk[1];
+          curv_donne.Jerk[2] = iter_stock->traj[k].Jerk[2];
+
+          curv_donne.u = iter_stock->traj[k].u;
+          curv_donne.du = iter_stock->traj[k].du;
+          curv_donne.ddu = iter_stock->traj[k].ddu;
+          curv_donne.AccNorm = iter_stock->traj[k].AccNorm;
+
+          iter_temp_divis->traj.push_back(curv_donne);
+        }
+        iter_temp_divis ++;
+        flag_sum ++;
       }
+      else if (iter_stock->flag_traj == 0){
+        starting_point_each_seg = iter_stock->point_depart;
+        for (unsigned int k = starting_point_each_seg; k < (iter_stock->traj.size() + starting_point_each_seg); k++) {
+          curv2.traj[k].t = k * tic;
 
-      flag = 1;
-      //cout << "err_max_dans_chaq_segment :  " << err_max_chaq_seg << " " << err_max_def << endl; 
-    }while (err_max_chaq_seg > err_max_def);
+          curv2.traj[k].Pos[0] = iter_stock->traj[k-starting_point_each_seg].Pos[0];
+          curv2.traj[k].Pos[1] = iter_stock->traj[k-starting_point_each_seg].Pos[1];
+          curv2.traj[k].Pos[2] = iter_stock->traj[k-starting_point_each_seg].Pos[2];
 
-  }
+          curv2.traj[k].Vel[0] = iter_stock->traj[k-starting_point_each_seg].Vel[0];
+          curv2.traj[k].Vel[1] = iter_stock->traj[k-starting_point_each_seg].Vel[1];
+          curv2.traj[k].Vel[2] = iter_stock->traj[k-starting_point_each_seg].Vel[2];
+
+          curv2.traj[k].Acc[0] = iter_stock->traj[k-starting_point_each_seg].Acc[0];
+          curv2.traj[k].Acc[1] = iter_stock->traj[k-starting_point_each_seg].Acc[1];
+          curv2.traj[k].Acc[2] = iter_stock->traj[k-starting_point_each_seg].Acc[2];
+
+          curv2.traj[k].Jerk[0] = iter_stock->traj[k-starting_point_each_seg].Jerk[0];
+          curv2.traj[k].Jerk[1] = iter_stock->traj[k-starting_point_each_seg].Jerk[1];
+          curv2.traj[k].Jerk[2] = iter_stock->traj[k-starting_point_each_seg].Jerk[2];
+
+          curv2.traj[k].u = iter_stock->traj[k-starting_point_each_seg].u;
+          curv2.traj[k].du = iter_stock->traj[k-starting_point_each_seg].du;
+          curv2.traj[k].ddu = iter_stock->traj[k-starting_point_each_seg].ddu;
+          curv2.traj[k].AccNorm = iter_stock->traj[k-starting_point_each_seg].AccNorm;
+        }
+      }
+    }
+  }while(flag_sum != 0);
+
+  maxProfile(curv2.traj, &max_jerk, &max_acc, &max_vel);
+
 #ifdef ENABLE_DISPLAY
-  _plot.plotResults(curv2, qwtPlot_JerkXapprox, qwtPlot_JerkYapprox, qwtPlot_JerkZapprox, 
+  _plot.plotResults(curv2, qwtPlot_JerkXapprox, qwtPlot_JerkYapprox, qwtPlot_JerkZapprox,
 		    qwtPlot_AccXapprox, qwtPlot_AccYapprox, qwtPlot_AccZapprox,
 		    qwtPlot_VelXapprox, qwtPlot_VelYapprox, qwtPlot_VelZapprox,
-		    qwtPlot_TrajPosApprox, qwtPlot_TrajVelApprox, qwtPlot_TrajAccApprox); 
+		    qwtPlot_TrajPosApprox, qwtPlot_TrajVelApprox, qwtPlot_TrajAccApprox);
 #endif
   Calcul_Error(_curve.begin()->traj, curv2.traj, &_curve.begin()->errorMax, error_traj, &val_err_max_traj);
+
+#ifdef ENABLE_DISPLAY
+  lcdNumber_trajError->setValue(val_err_max_traj);
+  lcdNumber_Jmax->setValue(max_jerk);
+  lcdNumber_Amax->setValue(max_acc);
+  lcdNumber_Vmax->setValue(max_vel);
+#endif
 
 #ifdef ENABLE_DISPLAY
   _plot.plotErrors(curv2, error_traj, &val_err_max_traj,qwtPlot_errortraj);
@@ -975,6 +1093,9 @@ void QSoftMotionPlanner::computeTraj()
 #endif
   ChronoPrint("");
   ChronoTimes(&tu, &ts);
+#ifdef ENABLE_DISPLAY
+  lcdNumber_comptuationTime->setValue(ts);
+#endif
   ChronoOff();
 #ifdef ENABLE_DISPLAY
   QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -982,6 +1103,45 @@ void QSoftMotionPlanner::computeTraj()
   return;
 }
 
+void QSoftMotionPlanner::maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel){
+  double v = 0.0;
+  double a = 0.0;
+  double j = 0.0;
+  std::vector<double> vel_norm_vec;
+  std::vector<double> acc_norm_vec;
+  std::vector<double> jerk_norm_vec;
+  for(unsigned int i = 0; i < ApproxTraj.size(); i++){
+    v = sqrt(
+        ApproxTraj[i].Vel[0] * ApproxTraj[i].Vel[0] +
+        ApproxTraj[i].Vel[1] * ApproxTraj[i].Vel[1] +
+        ApproxTraj[i].Vel[2] * ApproxTraj[i].Vel[2]
+        );
+    a = sqrt(
+        ApproxTraj[i].Acc[0] * ApproxTraj[i].Acc[0] +
+        ApproxTraj[i].Acc[1] * ApproxTraj[i].Acc[1] +
+        ApproxTraj[i].Acc[2] * ApproxTraj[i].Acc[2]
+        );
+    j = sqrt(
+        ApproxTraj[i].Jerk[0] * ApproxTraj[i].Jerk[0] +
+        ApproxTraj[i].Jerk[1] * ApproxTraj[i].Jerk[1] +
+        ApproxTraj[i].Jerk[2] * ApproxTraj[i].Jerk[2]
+        );
+    jerk_norm_vec.push_back(j);
+    acc_norm_vec.push_back(a);
+    vel_norm_vec.push_back(v);
+  }
+
+  *max_vel = vel_norm_vec[0];
+  *max_acc = acc_norm_vec[0];
+  *max_jerk = jerk_norm_vec[0];
+  for(unsigned int i = 0; i < ApproxTraj.size(); i++){
+    if(*max_vel < vel_norm_vec[i])     { *max_vel = vel_norm_vec[i]; }
+    if(*max_acc < acc_norm_vec[i])     { *max_acc = acc_norm_vec[i]; }
+    if(*max_jerk < jerk_norm_vec[i])   { *max_jerk = jerk_norm_vec[i]; }
+  }
+
+  return;
+}
 
 void QSoftMotionPlanner::computeSoftMotion()
 {
@@ -1006,7 +1166,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   std::vector<double> tFond, uFond, duFond, dduFond;
   //  double *t=NULL, *ddu=NULL, *du=NULL, *u=NULL;
   // double *tFond=NULL, *dduFond=NULL, *duFond=NULL, *uFond=NULL;
-    
+
 
 
 
@@ -1070,11 +1230,11 @@ void QSoftMotionPlanner::computeSoftMotion()
   }
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
 
-  ddu.resize(nbPoints);  
-  du.resize(nbPoints);  
-  u.resize(nbPoints); 
+  ddu.resize(nbPoints);
+  du.resize(nbPoints);
+  u.resize(nbPoints);
   t.resize(nbPoints);
-  
+
   this->doubleSpinBox_totalTime->setValue(total_time);
 
 
@@ -1102,7 +1262,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   lim.maxAcc = this->Slider_Amax_3->value();
   lim.maxVel = this->Slider_Vmax_3->value();
 
-  
+
 
   if(sm_ComputeSoftMotionLocal(ICloc, FCloc, lim, &TimeSegFond, &TrajectoryTypeFond, &dcOutFond, &zoneOutFond)!=0){
     this->qwtPlot_2->clear();
@@ -1135,19 +1295,19 @@ void QSoftMotionPlanner::computeSoftMotion()
   total_time = 0.0;
 
   for (i = 0; i < 7; i++){
-  
+
     total_time = total_time + Time[i]; // total_time is the time for every 7 segment
   }
   nbPointsFond = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
 
 
-  dduFond.resize(nbPointsFond);  
-  duFond.resize(nbPointsFond);  
-  uFond.resize(nbPointsFond); 
+  dduFond.resize(nbPointsFond);
+  duFond.resize(nbPointsFond);
+  uFond.resize(nbPointsFond);
   tFond.resize(nbPointsFond);
 
 
- 
+
   for (i = 0; i < nbPointsFond; i++){
     tloc = i * tic;
     if (tloc >= total_time) {
@@ -1167,7 +1327,7 @@ void QSoftMotionPlanner::computeSoftMotion()
   const QVector<double> qv_t = QVector<double>::fromStdVector(t);
   const QVector<double> qv_u = QVector<double>::fromStdVector(u);
   const QVector<double> qv_du = QVector<double>::fromStdVector(du);
-  const QVector<double> qv_ddu = QVector<double>::fromStdVector(ddu);  
+  const QVector<double> qv_ddu = QVector<double>::fromStdVector(ddu);
 
   QwtPlotCurve *curve_pos = new QwtPlotCurve("Pos--(m)");
   QPen pen_pos = curve_pos->pen();
@@ -1268,7 +1428,7 @@ void QSoftMotionPlanner::computeSoftMotion()
 
   this->qwtPlot->replot();
 
- 
+
 #endif
   return;
 }

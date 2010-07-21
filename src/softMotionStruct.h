@@ -28,6 +28,7 @@
 
 ----------------------------------------------------------------------*/
 
+
 #ifndef SOFT_MOTION_STRUCT_H
 #define SOFT_MOTION_STRUCT_H
 
@@ -46,7 +47,7 @@
  * @brief This file includes structure declarations for softMotion library.
  */
 
-/** 
+/**
  * @brief Status that return softMotion functions
  */
 typedef enum SM_STATUS {
@@ -54,7 +55,7 @@ typedef enum SM_STATUS {
   SM_ERROR = 1
 } SM_STATUS;
 
-/** 
+/**
  * @brief Enum ON/OFF
  */
 typedef enum SM_SELECT {
@@ -62,7 +63,7 @@ typedef enum SM_SELECT {
 	SM_OFF = 1
 } SM_SELECT;  /* ON = 0, OFF = 1 */
 
-/** 
+/**
  * @brief Structure of the duration of seven named segments of softMotion
  */
 typedef struct SM_TIMES {
@@ -77,12 +78,12 @@ typedef struct SM_TIMES {
     /** @brief Time of the Negative Jerk segment for the second part of the motion (b)  */
 	double Tjnb;
     /** @brief Time of the Constant Acceleration segment for the second part of the motion (b)  */
-	double Tacb; 
+	double Tacb;
 	/** @brief Time of the Positve Jerk segment for the fisrt second of the motion (b)  */
 	double Tjpb;
 } SM_TIMES ;
 
-/** 
+/**
  * @brief Structure of the nseg segments of softMotion
  */
 typedef struct SM_TIMES_DYN {
@@ -92,7 +93,7 @@ typedef struct SM_TIMES_DYN {
 	double* seg;
 } SM_TIMES_DYN;
 
-/** 
+/**
  * @brief Structure of the kinematic constraints for one axis
  */
 typedef struct SM_LIMITS {
@@ -104,7 +105,7 @@ typedef struct SM_LIMITS {
   double maxVel;
 } SM_LIMITS;
 
-/** 
+/**
  * @brief Structure of the kinematic constraints for two axis (cartesian and angular)
  */
 typedef struct SM_POSELIMITS {
@@ -114,7 +115,7 @@ typedef struct SM_POSELIMITS {
   SM_LIMITS angular;
 } SM_POSELIMITS;
 
-/** 
+/**
  * @brief Structure of the duration of seven unnamed segments of softMotion
  */
 typedef struct SM_TIMES_GLOBAL {
@@ -127,7 +128,7 @@ typedef struct SM_TIMES_GLOBAL {
   double T7;
 } SM_TIMES_GLOBAL;
 
-/** 
+/**
  * @brief Structure of motion for a quaternion
  */
 typedef struct SM_AXIS_TIMES {
@@ -140,29 +141,29 @@ typedef struct SM_AXIS_TIMES {
   SM_TIMES QK;
 } SM_AXIS_TIMES;
 
-/** 
+/**
  * @brief Structure of kinematic conditions for one axis
  */
 typedef struct SM_COND {
   /** @brief Acceleration */
-  double a;    
+  double a;
   /** @brief Velocity */
   double v;
   /** @brief Position */
   double x;
 } SM_COND;
 
-/** 
+/**
  * @brief Structure of the 4 jerk values for a point to point motion
  */
 typedef struct SM_JERKS {
   /** @brief select the type of notion
   *
-  * Sel = 1 -->  J1=J2=J3=J4 
+  * Sel = 1 -->  J1=J2=J3=J4
   * Sel = 4 -->  J1, J2, J3, J4
   */
   int sel;
-  /** @brief jerk value of the segement 1 */    
+  /** @brief jerk value of the segement 1 */
   double J1;
   /** @brief jerk value of the segement 3 */
   double J2;
@@ -174,7 +175,7 @@ typedef struct SM_JERKS {
   int withOutUseAlignment;
 } SM_JERKS;
 
-/** 
+/**
  * @brief Structure of the particular velocities used to find the critical length and the type of motion
  */
 typedef struct SM_PARTICULAR_VELOCITY {
@@ -198,7 +199,7 @@ typedef struct SM_PARTICULAR_VELOCITY {
   double Vlim;
 } SM_PARTICULAR_VELOCITY;
 
-/** 
+/**
  * @brief Structure for a complete softMotion for SM_NB_DIM axes
  */
 typedef struct SM_MOTION {
@@ -298,6 +299,7 @@ typedef struct SM_TIMES_ADJUSTED_MOTION {
 } SM_TIMES_ADJUSTED_MOTION;
 
 typedef struct SM_SEGMENT {
+#include "softMotionStruct.h"
 	int type; /* 1 to 7 */
 	double time;
 	int timeM;
@@ -334,24 +336,24 @@ typedef struct SM_LINE_ARC{
 	double Ls;    // length of line or arc
 } SM_LINE_ARC;
 
-/** 
+/**
  * @brief Structure of datas for trajectory
- */ 
+ */
 typedef struct SM_CURVE_DATA{
     /** @brief time value of the given data*/
-	double t;       
+	double t;
     /** @brief curvature abcissa*/
-	double u;       
+	double u;
     /** @brief tangential velocity*/
 	double du;
     /** @brief tangential acceleration*/
-	double ddu;     
+	double ddu;
     /** @brief cartesian coordinate*/
-	double Pos[3];  
+	double Pos[3];
     /** @brief projected velocity in cartesian coordinate*/
 	double Vel[3];
     /** @brief projected acceleration in cartesian coordinate*/
-	double Acc[3];  
+	double Acc[3];
     /** @brief projected Jerk in cartesian coordinate*/
     double Jerk[3];
     /** @brief acceleration norm*/
@@ -367,40 +369,40 @@ typedef struct SM_ROT{
 	double R[3][3]; //rotation matrix
 }SM_ROT;
 
-/** 
+/**
  * @brief Structure of dimension of conditions
- */  
+ */
 typedef struct SM_COND_DIM{
     /** @brief Initial or final condition in 3 axis*/
-	SM_COND Axis[3]; 
+	SM_COND Axis[3];
 } SM_COND_DIM;
 
-/** 
+/**
  * @brief Structure of output
- */  
+ */
 typedef struct SM_OUTPUT{
     /** @brief output jerk for n axes*/
   std::vector<double> Jerk;
   /** @brief output time for n axes*/
-  std::vector<double> Time; 
+  std::vector<double> Time;
   /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk for n axes*/
   std::vector<SM_COND> IC;
 }SM_OUTPUT;
 
 
 // #ifdef __cplusplus
-/** 
+/**
  * @brief Structure of two dimentional point
- */  
+ */
 typedef struct Point2D
 {
   /** @brief coordinate in axis X and Y*/
   double x, y;
 } Point2D;
 
-/** 
+/**
  * @brief Structure of Sub-Curve type
- */  
+ */
 typedef enum SubPathType
   {
     /** @brief type of line */
@@ -417,10 +419,10 @@ typedef enum SubPathType
     PARABOL,
   } SubPathType;
 
-/** 
+/**
  * @brief Structure of Sinusoid
- */  
-typedef struct SinusParams 
+ */
+typedef struct SinusParams
 {
     /** @brief initial point of a sinusoid */
     Point2D start;
@@ -434,10 +436,10 @@ typedef struct SinusParams
     double length_x;
 } SinusParams ;
 
-/** 
+/**
  * @brief Structure of Circle
  */
-typedef struct CercleParams 
+typedef struct CercleParams
 {
     /** @brief center of a circle*/
     Point2D center;
@@ -447,7 +449,7 @@ typedef struct CercleParams
     SinusParams sinus_para;
 } CercleParams ;
 
-/** 
+/**
  * @brief Structure of lines
  */
 typedef struct LineParams
@@ -456,7 +458,7 @@ typedef struct LineParams
   Point2D start, end;
 }LineParams;
 
-/** 
+/**
  * @brief Structure of Parabol
  */
 typedef struct ParabolParams
@@ -469,7 +471,7 @@ typedef struct ParabolParams
   double end_x;
 }ParabolParams;
 
-/** 
+/**
  * @brief Structure of Sub-Curves
  */
 typedef struct SubPath
@@ -490,7 +492,7 @@ typedef struct SubPath
   ParabolParams parabol;
 } SubPath;
 
-/** 
+/**
  * @brief Structure of Curves
  */
 typedef struct Path
@@ -505,10 +507,10 @@ typedef struct Path
   std::list<SubPath> subpath;
 } Path;
 
-/** 
+/**
  * @brief Structure of points in Viewer
  */
-typedef struct kinPoint 
+typedef struct kinPoint
 {
   /** @brief coordinate of points */
   SM_COND kc[3];
@@ -516,7 +518,7 @@ typedef struct kinPoint
   double t;
 } kinPoint;
 
-/** 
+/**
  * @brief Structure of sub-trajectory
  */
 typedef struct SubTraj
@@ -531,9 +533,11 @@ typedef struct SubTraj
   std::vector<SM_COND_DIM> FC_par_seg;
   /** @brief error beteween the sub-trajectories */
   double err;
+  int flag_traj;
+  int point_depart;
 } SubTraj;
 
-/** 
+/**
  * @brief Structure of index for the point
  */
 typedef struct IndiceTrace
@@ -546,7 +550,14 @@ typedef struct IndiceTrace
   double y;
 }IndiceTrace;
 
-// #endif
-
-
 #endif
+
+
+
+
+
+
+
+
+
+
