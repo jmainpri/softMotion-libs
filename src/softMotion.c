@@ -5611,7 +5611,10 @@ SM_STATUS sm_ComputeSoftMotionPointToPoint_gen(int nbAxis,double* J_max, double 
     if(isnan(jerk[i].J1)) {
       printf("isinf(jerk[i].J1)\n");
     }
-    sm_SM_TIMES_copy_into(&TNE_sec, &(motion[i].Times));
+
+    sm_SM_TIMES_copy_into(&Times, &(motion[i].Times));
+    //sm_SM_TIMES_copy_into(&TNE_sec, &(motion[i].Times));
+
     sm_SM_TIMES_copy_into(&TNE, &(motion[i].TimesM));
     sm_SM_TIMES_copy_into(&Acc[i], &(motion[i].Acc));
     sm_SM_TIMES_copy_into(&Vel[i], &(motion[i].Vel));
