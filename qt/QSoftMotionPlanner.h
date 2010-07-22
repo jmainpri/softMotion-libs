@@ -189,15 +189,27 @@ public slots:
      */
     void setDraw();
 
- protected:
- #ifdef ENABLE_DISPLAY
+    /** @brief Reset the planner
+     *
+     * clear all computed and loaded trajectories
+     */
+    void resetPlanner();
+
+    /** @brief Clear all graphs
+     *
+     *  clear all the graphs in the qt interface
+     */
+#ifdef ENABLE_DISPLAY
+    void clearPlot();
+#endif
+
+      protected:
+#ifdef ENABLE_DISPLAY
     void changeEvent(QEvent *e);
 #endif
- private:
-    MyPlot _plot;
 
 private:
-
+    MyPlot _plot;
     int _nbCurve;
     std::vector<Curve> _curve;
     SM_LIMITS _lim;

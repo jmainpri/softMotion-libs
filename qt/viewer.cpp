@@ -65,7 +65,16 @@ void Viewer::draw()
   char text[128];
   _gridSize = 0.1;
   _gridStep = 4;
+//   cout << "zNear " << camera()->zNear() << endl;
+  //camera()->setZNearCoefficient(0.00001);
 
+//   camera()->setSceneRadius(camera()->sceneRadius()/2.0);
+
+
+//   camera()->setZNearCoefficient(0.00000001);
+//   cout << "zNear2 " << camera()->zNear() << endl;
+
+//camera()->setFieldOfView(3.0);
   drawGrid(0.1,4);
   setTextIsEnabled(true);
   for(double i = -_gridSize; i<=_gridSize;i = i+(_gridSize/(_gridStep /2))){

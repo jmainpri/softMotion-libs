@@ -100,11 +100,11 @@ QWidget *parent
     this->doubleSpinBox_SamplingTime->setValue(0.001);
 
     /*desired error here*/
-    this->Slider_desError->setRange(0,0.01, 0.000001);
-    this->doubleSpinBox_DesError->setRange(0,0.01);
+    this->Slider_desError->setRange(0,0.1, 0.000001);
+    this->doubleSpinBox_DesError->setRange(0,0.1);
     this->doubleSpinBox_DesError->setDecimals(6);
     this->doubleSpinBox_DesError->setSingleStep(0.000001);
-    this->doubleSpinBox_DesError->setValue(0.001);
+    this->doubleSpinBox_DesError->setValue(0.0001);
 
     /*coordinates*/
     this->doubleSpinBox_xend->setValue(0.1);
@@ -115,14 +115,41 @@ QWidget *parent
     this->doubleSpinBox_phase->setValue(0.0);
     this->doubleSpinBox_a->setValue(5.0);
 
+//     connect(this->doubleSpinBox_xend, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_yend, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_Radius, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_amplitude, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_frequency, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_phase, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_a, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_DesError, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_SamplingTime, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_Jmax, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_Amax, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+//     connect(this->doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
+// 
+//     connect(this->doubleSpinBox_xend, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_yend, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_Radius, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_amplitude, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_frequency, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_phase, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_a, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_DesError, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_SamplingTime, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_Jmax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_Amax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
+//     connect(this->doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 
     connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
     connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
     connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
     connect(this->pushButtonGenFile, SIGNAL(clicked(bool)), this, SLOT(genFileTraj()));
     connect(this->pushButtonComputeHauss, SIGNAL(clicked(bool)), this, SLOT(computeHausdorff()) ) ;
+    connect(this->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(resetPlanner()));
     connect(this->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(choose_curve()));
-
+    connect(this->pushButton_reset, SIGNAL(clicked(bool)), this, SLOT(resetPlanner()));
+    
     ////////////////////////////////////////////////////////////
     //////  SoftMotion Planner                    /////////////
     ///////////////////////////////////////////////////////////
@@ -145,7 +172,7 @@ QWidget *parent
       this->doubleSpinBox_Vmax_3->setSingleStep(0.01);
       this->doubleSpinBox_Vmax_3->setRange(0.0001,2);
       this->doubleSpinBox_Vmax_3->setDecimals(4);
-      this->Slider_Vmax_3->setValue(0.3);
+      this->Slider_Vmax_3->setValue(0.15);
       this->doubleSpinBox_Vmax_3->setValue(0.15);
 
 
@@ -183,7 +210,6 @@ QWidget *parent
       this->doubleSpinBox_Xf->setDecimals(4);
       this->Slider_Xf->setValue(0.1);
       this->doubleSpinBox_Xf->setValue(0.1);
-
 
       connect(this->Slider_Jmax_3, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
       connect(this->Slider_Amax_3, SIGNAL(valueChanged(double)), this, SLOT(computeSoftMotion()));
@@ -253,8 +279,7 @@ QWidget *parent
 
 QSoftMotionPlanner::~QSoftMotionPlanner()
 {
-  _curve.clear();
-
+  resetPlanner();
 }
 
 #ifdef ENABLE_DISPLAY
@@ -279,10 +304,63 @@ void QSoftMotionPlanner::choose_curve(){
   if (this->comboBox->currentIndex() == 1){
     defineFunction_l();
   }
-
+  viewer->camera()->setSceneCenter(qglviewer::Vec(0,0,0));
+  viewer->camera()->setSceneRadius(0.2);
+  viewer->camera()->showEntireScene() ;
+  this->viewer->updateGL();
   return;
 }
 #endif
+
+
+void QSoftMotionPlanner::resetPlanner(){
+  _curve.clear();
+  _nbCurve = 0;
+  _fileName.clear();
+
+  #ifdef ENABLE_DISPLAY
+  clearPlot();
+  this->viewer->curve.clear();
+  this->viewer->updateGL();
+
+  lcdNumber_Jmax->setValue(0.0);
+  lcdNumber_Amax->setValue(0.0);
+  lcdNumber_Vmax->setValue(0.0);
+  lcdNumber_comptuationTime->setValue(0.0);
+  lcdNumber_trajError->setValue(0.0);
+  lcdNumber_pathError->setValue(0.0);
+
+//   this->Slider_Jmax_3->setValue(0.9);
+//   this->doubleSpinBox_Jmax_3->setValue(0.9);
+//   this->Slider_Amax_3->setValue(0.3);
+//   this->doubleSpinBox_Amax_3->setValue(0.3);
+//   this->Slider_Vmax_3->setValue(0.15);
+//   this->doubleSpinBox_Vmax_3->setValue(0.15);
+//   this->Slider_A0->setValue(0.0);
+//   this->doubleSpinBox_A0->setValue(0.0);
+//   this->Slider_V0->setValue(0.0);
+//   this->doubleSpinBox_V0->setValue(0.0);
+//   this->Slider_Af->setValue(0.0);
+//   this->doubleSpinBox_Af->setValue(0.0);
+//   this->Slider_Vf->setValue(0.0);
+//   this->doubleSpinBox_Vf->setValue(0.0);
+//   this->Slider_Xf->setValue(0.1);
+//   this->doubleSpinBox_Xf->setValue(0.1);
+//       
+//     this->doubleSpinBox_xend->setValue(0.1);
+//     this->doubleSpinBox_yend->setValue(0.15);
+//     this->doubleSpinBox_Radius->setValue(0.1);
+//     this->doubleSpinBox_amplitude->setValue(0.1);
+//     this->doubleSpinBox_frequency->setValue(10.0);
+//     this->doubleSpinBox_phase->setValue(0.0);
+//     this->doubleSpinBox_a->setValue(5.0);
+//     this->doubleSpinBox_DesError->setValue(0.0001);
+//     this->doubleSpinBox_SamplingTime->setValue(0.001);
+//       
+  #endif
+
+  return;
+}
 
 void QSoftMotionPlanner::genFileTraj(){
 #ifdef ENABLE_DISPLAY
@@ -739,7 +817,7 @@ void QSoftMotionPlanner::computeTraj()
   int size_segment = 0;
   int flag_sum = 0;
   int starting_point_each_seg = 0;
-  double tu,ts;
+  double tu = 0.0,ts = 0.0;
   double tic = 0.0;
   double time_total = 0.0;
   double longeur_path = 0.0;
@@ -1091,11 +1169,11 @@ void QSoftMotionPlanner::computeTraj()
   viewer->curve.push_back(curv2);
   viewer->updateGL();
 #endif
-  ChronoPrint("");
   ChronoTimes(&tu, &ts);
 #ifdef ENABLE_DISPLAY
-  lcdNumber_comptuationTime->setValue(ts);
-#endif
+  lcdNumber_comptuationTime->setValue(tu);
+ ChronoPrint("");
+  #endif
   ChronoOff();
 #ifdef ENABLE_DISPLAY
   QApplication::setOverrideCursor(Qt::ArrowCursor);
@@ -1433,4 +1511,66 @@ void QSoftMotionPlanner::computeSoftMotion()
   return;
 }
 
+#ifdef ENABLE_DISPLAY
+void QSoftMotionPlanner::clearPlot(){
+    qwtPlot_TrajJerk->clear();
+    qwtPlot_TrajJerk->replot();
+    qwtPlot_TrajAcc->clear();
+    qwtPlot_TrajAcc->replot();
+    qwtPlot_TrajVel->clear();
+    qwtPlot_TrajVel->replot();
+
+    qwtPlot_TrajAccApprox->clear();
+    qwtPlot_TrajAccApprox->replot();
+    qwtPlot_TrajVelApprox->clear();
+    qwtPlot_TrajVelApprox->replot();
+    qwtPlot_TrajPosApprox->clear();
+    qwtPlot_TrajPosApprox->replot();
+
+    qwtPlot_JerkXapprox->clear();
+    qwtPlot_JerkXapprox->replot();
+    qwtPlot_AccXapprox->clear();
+    qwtPlot_AccXapprox->replot();
+    qwtPlot_VelXapprox->clear();
+    qwtPlot_VelXapprox->replot();
+
+    qwtPlot_JerkYapprox->clear();
+    qwtPlot_JerkYapprox->replot();
+    qwtPlot_AccYapprox->clear();
+    qwtPlot_AccYapprox->replot();
+    qwtPlot_VelYapprox->clear();
+    qwtPlot_VelYapprox->replot();
+
+    qwtPlot_JerkZapprox->clear();
+    qwtPlot_JerkZapprox->replot();
+    qwtPlot_AccZapprox->clear();
+    qwtPlot_AccZapprox->replot();
+    qwtPlot_VelZapprox->clear();
+    qwtPlot_VelZapprox->replot();
+
+    qwtPlot_AccXideal->clear();
+    qwtPlot_AccXideal->replot();
+    qwtPlot_VelXideal->clear();
+    qwtPlot_VelXideal->replot();
+    qwtPlot_PosXideal->clear();
+    qwtPlot_PosXideal->replot();
+
+    qwtPlot_AccYideal->clear();
+    qwtPlot_AccYideal->replot();
+    qwtPlot_VelYideal->clear();
+    qwtPlot_VelYideal->replot();
+    qwtPlot_PosYideal->clear();
+    qwtPlot_PosYideal->replot();
+
+    qwtPlot_haussdorff1->clear();
+    qwtPlot_haussdorff1->replot();
+    qwtPlot_haussdorff2->clear();
+    qwtPlot_haussdorff2->replot();
+    qwtPlot_errortraj->clear();
+    qwtPlot_errortraj->replot();
+
+
+   return;
+}
+#endif
 

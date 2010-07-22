@@ -150,6 +150,7 @@ void MyPlot::plotGraph(QwtPlot *p, double xData[], double yData[], int size, cha
   zoom = new QwtPlotZoomer(p->xBottom, p->yLeft, p->canvas());
   p->replot();
   p->setCanvasBackground(QColor(Qt::white));
+  p->setAutoReplot(true);
   return;
 
 }
@@ -421,3 +422,4 @@ void MyPlot::plotHaus(std::vector<double> &dis_a_tracer1, std::vector<double> &d
 
   return;
 }
+

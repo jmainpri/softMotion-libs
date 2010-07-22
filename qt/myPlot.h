@@ -83,7 +83,6 @@ class MyPlot  {
      */       
     void plotHaus(std::vector<double> &dis1, std::vector<double> &dis2, double sup1, double sup2, QwtPlot *qwtPlot_haussdorff1, QwtPlot *qwtPlot_haussdorff2);
 
-
  private:
 
 
