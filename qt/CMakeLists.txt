@@ -20,7 +20,7 @@
 PROJECT (QSoftMotionPlanner C CXX)
 
 file(GLOB source_files main.cpp QSoftMotionPlanner.cpp myPlot.cpp curve.cpp curve_nw.cpp viewer.cpp)
-file(GLOB source_files_light lightQSoftMotionPlanner.cpp mainwindow.cpp mainwindow_nw.cpp curve.cpp curve_nw.cpp viewer.cpp)
+
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
 
 #################################################################
@@ -160,18 +160,41 @@ IF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
   ADD_DEFINITIONS(-O2 -Wall -Wno-unknown-pragmas)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-#MESSAGE("QT source")
-#MESSAGE("${source_files}\n")
-#MESSAGE("QT moc")
-#MESSAGE("${SMP_QT_MOC}")
-#MESSAGE("QT ui")
-#MESSAGE("${SMP_QT_UI_HEADERS}")
+
+
 ADD_EXECUTABLE(QSoftMotionPlanner ${source_files} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
 TARGET_LINK_LIBRARIES(QSoftMotionPlanner softMotion ${LIBS} m)
 
-#ADD_EXECUTABLE(lightQSoftMotionPlanner ${source_files_light} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
-#TARGET_LINK_LIBRARIES(lightQSoftMotionPlanner softMotion ${LIBS} m)
+add_library(
+softMotionPlanner
+SHARED
+${source_files}
+)
 
+SET_TARGET_PROPERTIES(softMotionPlanner PROPERTIES LINKER_LANGUAGE CXX)
+
+
+# -------------------------------------------------------------
+# --- Installation --------------------------------------------
+# -------------------------------------------------------------
+
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "SoftMotionPlanner install prefix" FORCE)
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+INSTALL(TARGETS softMotionPlanner
+
+        LIBRARY DESTINATION lib PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ CONFIGURATIONS ${CMAKE_BUILD_TYPE})
+
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/install" CACHE PATH "SoftMotionPlanner install prefix" FORCE)
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+INSTALL(TARGETS QSoftMotionPlanner
+        RUNTIME DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_WRITE GROUP_EXECUTE WORLD_READ WORLD_EXECUTE CONFIGURATIONS ${CMAKE_BUILD_TYPE})
+ 
+
+
+FILE(GLOB HEADER "${CMAKE_SOURCE_DIR}/qt/*.h")
+INSTALL(FILES ${HEADER} DESTINATION include/softMotion)
 
 
 ENDIF(QT_LIBRARY)
