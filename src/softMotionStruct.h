@@ -400,6 +400,11 @@ typedef struct Point2D
   double x, y;
 } Point2D;
 
+typedef struct Point3D
+{
+  double x,y,z;
+}Point3D;
+
 /**
  * @brief Structure of Sub-Curve type
  */
@@ -417,6 +422,10 @@ typedef enum SubPathType
     SINUS,
     /** @brief type of parabol */
     PARABOL,
+    LCCL_L1,
+    LCCL_L2,
+    LCCL_C1,
+    LCCL_C2,
   } SubPathType;
 
 /**
@@ -471,6 +480,12 @@ typedef struct ParabolParams
   double end_x;
 }ParabolParams;
 
+typedef struct Line_Cercle_Cercle_Line_Params
+{
+  Point3D line1_end, line2_end;
+  double cercle1_rayon, cercle2_rayon;
+}Line_Cercle_Cercle_Line_Params;
+
 /**
  * @brief Structure of Sub-Curves
  */
@@ -490,6 +505,7 @@ typedef struct SubPath
   LineParams line;
   /** @brief theoretic parabol */
   ParabolParams parabol;
+  Line_Cercle_Cercle_Line_Params lccl;
 } SubPath;
 
 /**

@@ -137,11 +137,12 @@ void MyPlot::plotIdealProfile(Curve &curv,QwtPlot * qwtPlot_PosXideal,QwtPlot *q
 void MyPlot::plotGraph(QwtPlot *p, double xData[], double yData[], int size, char* xName, char *yName, char *title) {
   QwtPlotCurve *curve_ay_tra = new QwtPlotCurve("plot");
   QwtPlotZoomer *zoom = NULL;
+  QwtPlotGrid *g = NULL;
   curve_ay_tra->setData(xData,yData, size);
   curve_ay_tra->attach(p);
   p->setAxisTitle(p->xBottom, xName );
   p->setAxisTitle(p->yLeft, yName );
-  QwtPlotGrid *g = new QwtPlotGrid;
+  g = new QwtPlotGrid;
   g->enableXMin(true);
   g->enableYMin(true);
   g->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
@@ -151,6 +152,7 @@ void MyPlot::plotGraph(QwtPlot *p, double xData[], double yData[], int size, cha
   p->replot();
   p->setCanvasBackground(QColor(Qt::white));
   p->setAutoReplot(true);
+
   return;
 
 }
@@ -290,7 +292,7 @@ void MyPlot::plotResults(Curve &curv2, QwtPlot *qwtPlot_JerkXapprox, QwtPlot *qw
   xData_v_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
   yData_v_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
   for (unsigned int i  = 0; i < curv2.traj.size();i++){
-    yData_v_app[i] = sqrt(curv2.traj[i].Vel[0] * curv2.traj[i].Vel[0] + curv2.traj[i].Vel[1] * curv2.traj[i].Vel[1]);
+    yData_v_app[i] = sqrt(curv2.traj[i].Vel[0] * curv2.traj[i].Vel[0] + curv2.traj[i].Vel[1] * curv2.traj[i].Vel[1] + curv2.traj[i].Vel[2] * curv2.traj[i].Vel[2]);
     xData_v_app[i] = curv2.traj[i].t;
   }
   /* accelaration_approx*/
@@ -298,7 +300,7 @@ void MyPlot::plotResults(Curve &curv2, QwtPlot *qwtPlot_JerkXapprox, QwtPlot *qw
   xData_a_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
   yData_a_app = (double* ) malloc (sizeof(double) * curv2.traj.size());
   for (unsigned int i  = 0; i < curv2.traj.size();i++){
-    yData_a_app[i] = sqrt(curv2.traj[i].Acc[0] * curv2.traj[i].Acc[0] + curv2.traj[i].Acc[1] * curv2.traj[i].Acc[1]);
+    yData_a_app[i] = sqrt(curv2.traj[i].Acc[0] * curv2.traj[i].Acc[0] + curv2.traj[i].Acc[1] * curv2.traj[i].Acc[1] + curv2.traj[i].Acc[2] * curv2.traj[i].Acc[2]);
     xData_a_app[i] = curv2.traj[i].t;
   }
 

@@ -126,6 +126,8 @@ public:
      */
     void defineFunction_p();
 
+    void defineFunction_lccl();
+
     /** @brief initialisation
      *
      * initialize all variables needed for MainWindow

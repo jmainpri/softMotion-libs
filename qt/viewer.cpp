@@ -5,6 +5,7 @@
 #endif
 
 #include <stdio.h>
+#include <GL/gl.h>
 
 /** @file viewer.cpp
  * @brief This file includes the constructor and functions related for class Viewer
@@ -48,7 +49,7 @@ void Viewer::keyPressEvent(QKeyEvent *e)
 //      // break;
 //    case Qt::Key_Space :
 //        curve[0].setCurrentKf(0);
-//	
+//
 //        curve[0].setManipulatedFrame(curve[0].keyFrame_[0]);
 //	curve[0].kfi_.setInterpolationSpeed(curve[0].nbKeyFrames()/30.0);
 //	curve[0].kfi_.setLoopInterpolation();
@@ -65,32 +66,38 @@ void Viewer::draw()
   char text[128];
   _gridSize = 0.1;
   _gridStep = 4;
-//   cout << "zNear " << camera()->zNear() << endl;
-  //camera()->setZNearCoefficient(0.00001);
-
-//   camera()->setSceneRadius(camera()->sceneRadius()/2.0);
 
 
-//   camera()->setZNearCoefficient(0.00000001);
-//   cout << "zNear2 " << camera()->zNear() << endl;
 
-//camera()->setFieldOfView(3.0);
-  drawGrid(0.1,4);
+
+
+setBackgroundColor      (    QColor(Qt::white)      );
+setForegroundColor      (    QColor(Qt::black)      );
+
+glColor3f(0,0,0);
+  drawGrid(0.2,4);
+
+ setSceneBoundingBox    ( Vec(-10,-10,-10),Vec(10,10,10));
+
   setTextIsEnabled(true);
-  for(double i = -_gridSize; i<=_gridSize;i = i+(_gridSize/(_gridStep /2))){
+  for(double i = -_gridSize*(_gridStep /2); i<=_gridSize*(_gridStep /2);i = i+_gridSize){
     sprintf(text,"%.3f",i);
     QGLWidget::renderText(i,0,0, text);
     QGLWidget::renderText(0,i,0, text);
   }
 
- 
+  QGLWidget::renderText(_gridSize*(_gridStep /2)+_gridSize/10.0,-_gridSize/8.0,0, "X (m)");
+  QGLWidget::renderText(-_gridSize/3.0,_gridSize*(_gridStep /2)+_gridSize/10.0,0, "Y (m)");
   for(unsigned int i=0; i<curve.size(); i++) {
     if(curve[i].isDraw() == true) {
 
       if(i>=1) {
+
 	curve[i].setColor(1,0,0);
+      } else {
+curve[i].setColor(0,0,1 );
       }
-	 
+
       curve[i].draw();
     }
   }

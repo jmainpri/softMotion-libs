@@ -74,14 +74,14 @@ QWidget *parent
 
     setWindowTitle(QApplication::translate("QSoftMotionPlanner", "Soft Motion Planner", 0, QApplication::UnicodeUTF8));
 
-    this->Slider_Jmax->setRange(0,60,0.001);
+    this->Slider_Jmax->setRange(0,200,0.001);
     this->doubleSpinBox_Jmax->setSingleStep(0.1);
-    this->doubleSpinBox_Jmax->setRange(0,60);
+    this->doubleSpinBox_Jmax->setRange(0,200);
     this->doubleSpinBox_Jmax->setDecimals(4);
 
-    this->Slider_Amax->setRange(0,5,0.01);
+    this->Slider_Amax->setRange(0,40,0.01);
     this->doubleSpinBox_Amax->setSingleStep(0.01);
-    this->doubleSpinBox_Amax->setRange(0,5);
+    this->doubleSpinBox_Amax->setRange(0,40);
     this->doubleSpinBox_Amax->setDecimals(4);
 
     this->Slider_Vmax->setRange(0,2,0.001);
@@ -97,7 +97,7 @@ QWidget *parent
     this->doubleSpinBox_Jmax->setValue(0.9);
     this->doubleSpinBox_Amax->setValue(0.3);
     this->doubleSpinBox_Vmax->setValue(0.02);
-    this->doubleSpinBox_SamplingTime->setValue(0.001);
+    this->doubleSpinBox_SamplingTime->setValue(0.0001);
 
     /*desired error here*/
     this->Slider_desError->setRange(0,0.1, 0.000001);
@@ -127,7 +127,7 @@ QWidget *parent
 //     connect(this->doubleSpinBox_Jmax, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
 //     connect(this->doubleSpinBox_Amax, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
 //     connect(this->doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
-// 
+//
 //     connect(this->doubleSpinBox_xend, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 //     connect(this->doubleSpinBox_yend, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 //     connect(this->doubleSpinBox_Radius, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
@@ -149,7 +149,7 @@ QWidget *parent
     connect(this->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(resetPlanner()));
     connect(this->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(choose_curve()));
     connect(this->pushButton_reset, SIGNAL(clicked(bool)), this, SLOT(resetPlanner()));
-    
+
     ////////////////////////////////////////////////////////////
     //////  SoftMotion Planner                    /////////////
     ///////////////////////////////////////////////////////////
@@ -299,11 +299,12 @@ void QSoftMotionPlanner::choose_curve(){
     case 2: defineFunction_c(); break;
     case 3: defineFunction_s(); break;
     case 4: defineFunction_p(); break;
+    case 5: defineFunction_lccl();break;
     default:			break;
   }
-  if (this->comboBox->currentIndex() == 1){
-    defineFunction_l();
-  }
+//   if (this->comboBox->currentIndex() == 1){
+//     defineFunction_lccl();
+//   }
   viewer->camera()->setSceneCenter(qglviewer::Vec(0,0,0));
   viewer->camera()->setSceneRadius(0.2);
   viewer->camera()->showEntireScene() ;
@@ -330,6 +331,17 @@ void QSoftMotionPlanner::resetPlanner(){
   lcdNumber_trajError->setValue(0.0);
   lcdNumber_pathError->setValue(0.0);
 
+
+//   this->qwtPlot_TrajJerk->clear();
+//   this->qwtPlot_TrajAcc->clear();
+//   this->qwtPlot_TrajVel->clear();
+//   this->qwtPlot_PosXideal->clear();
+//   this->qwtPlot_VelXideal->clear();
+//   this->qwtPlot_AccXideal->clear();
+//   this->qwtPlot_PosYideal->clear();
+//   this->qwtPlot_VelYideal->clear();
+//   this->qwtPlot_AccYideal->clear();
+
 //   this->Slider_Jmax_3->setValue(0.9);
 //   this->doubleSpinBox_Jmax_3->setValue(0.9);
 //   this->Slider_Amax_3->setValue(0.3);
@@ -346,7 +358,7 @@ void QSoftMotionPlanner::resetPlanner(){
 //   this->doubleSpinBox_Vf->setValue(0.0);
 //   this->Slider_Xf->setValue(0.1);
 //   this->doubleSpinBox_Xf->setValue(0.1);
-//       
+//
 //     this->doubleSpinBox_xend->setValue(0.1);
 //     this->doubleSpinBox_yend->setValue(0.15);
 //     this->doubleSpinBox_Radius->setValue(0.1);
@@ -356,7 +368,7 @@ void QSoftMotionPlanner::resetPlanner(){
 //     this->doubleSpinBox_a->setValue(5.0);
 //     this->doubleSpinBox_DesError->setValue(0.0001);
 //     this->doubleSpinBox_SamplingTime->setValue(0.001);
-//       
+//
   #endif
 
   return;
@@ -482,6 +494,56 @@ void QSoftMotionPlanner::initializeApproxVariables()
 #ifdef ENABLE_DISPLAY
   this->viewer->updateGL();
 #endif
+
+}
+
+void QSoftMotionPlanner::defineFunction_lccl(){
+  Curve curv;
+  Path lpath;
+  SubPath lsubpath1,lsubpath2,lsubpath3,lsubpath4;
+  std::string str2;
+
+  lsubpath1.lccl.line1_end.x = 1.0;
+  lsubpath1.lccl.line1_end.y = 0.0;
+  lsubpath1.lccl.line1_end.z = 0.0;
+  lsubpath1.type = LCCL_L1;
+  lpath.subpath.push_back(lsubpath1);
+  lsubpath2.lccl.cercle1_rayon = 1.0;
+  lsubpath2.type = LCCL_C1;
+  lpath.subpath.push_back(lsubpath2);
+  lsubpath3.lccl.cercle2_rayon = 1.0;
+  lsubpath3.type = LCCL_C2;
+  lpath.subpath.push_back(lsubpath3);
+  lsubpath4.lccl.line2_end.x = 2.0;
+  lsubpath4.lccl.line2_end.y = 0.0;
+  lsubpath4.lccl.line1_end.z = 2.0;
+  lsubpath4.type = LCCL_L2;
+  lpath.subpath.push_back(lsubpath4);
+  curv.path.push_back(lpath);
+  constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
+
+  str2.clear();
+  str2 += "cercle_traj.dat";
+  saveTraj(str2, curv.traj);
+  curv.draw();
+  curv.setIsDraw(display());
+  _curve.push_back(curv);
+
+#ifdef ENABLE_DISPLAY
+    viewer->curve.push_back(curv);
+  viewer->camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
+  viewer->updateGL();
+
+  _plot.plotMotionLaw(curv, qwtPlot_TrajJerk, qwtPlot_TrajAcc, qwtPlot_TrajVel);
+  _plot.plotIdealProfile(curv, qwtPlot_PosXideal, qwtPlot_VelXideal, qwtPlot_AccXideal,
+			 qwtPlot_PosYideal, qwtPlot_VelYideal, qwtPlot_AccYideal);
+#else
+
+  computeTraj();
+  genFileTraj();
+
+#endif
+  return;
 
 }
 
@@ -817,10 +879,11 @@ void QSoftMotionPlanner::computeTraj()
   int size_segment = 0;
   int flag_sum = 0;
   int starting_point_each_seg = 0;
+  int nb_seg_total = 0;
   double tu = 0.0,ts = 0.0;
   double tic = 0.0;
   double time_total = 0.0;
-  double longeur_path = 0.0;
+//   double longeur_path = 0.0;
   double val_err_max = 0.0;
   double val_err_max_traj = 0.0;
   double err_max_def = 0.0;
@@ -865,7 +928,7 @@ void QSoftMotionPlanner::computeTraj()
   tic = _sampling;
   err_max_def = _errMax;
 
-  Path_Length(_curve.front().path, &longeur_path);
+//   Path_Length(_curve.front().path, &longeur_path);
   saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
   _curve.begin()->setIsDraw(display());
   time_total = (_curve.front().traj.size()-1) * tic;
@@ -1015,9 +1078,9 @@ void QSoftMotionPlanner::computeTraj()
 	      curv_donne.Acc[1] = iter_temp_divis->traj[kkk].Acc[1];
 	      curv_donne.Acc[2] = iter_temp_divis->traj[kkk].Acc[2];
 
-          curv_donne.Jerk[0] = iter_temp_divis->traj[k].Jerk[0];
-          curv_donne.Jerk[1] = iter_temp_divis->traj[k].Jerk[1];
-          curv_donne.Jerk[2] = iter_temp_divis->traj[k].Jerk[2];
+          curv_donne.Jerk[0] = iter_temp_divis->traj[kkk].Jerk[0];
+          curv_donne.Jerk[1] = iter_temp_divis->traj[kkk].Jerk[1];
+          curv_donne.Jerk[2] = iter_temp_divis->traj[kkk].Jerk[2];
 
 	      curv_donne.u = iter_temp_divis->traj[kkk].u;
 	      curv_donne.du = iter_temp_divis->traj[kkk].du;
@@ -1061,6 +1124,7 @@ void QSoftMotionPlanner::computeTraj()
 
 	    iter_stock->traj.push_back(curv_donne);
 	  }
+	  nb_seg_total ++;
 	  iter_stock->flag_traj = 0;
 	  iter_stock++;
 	}
@@ -1169,6 +1233,7 @@ void QSoftMotionPlanner::computeTraj()
   viewer->curve.push_back(curv2);
   viewer->updateGL();
 #endif
+  cout<<"number of points = "<< nb_seg_total << endl;
   ChronoTimes(&tu, &ts);
 #ifdef ENABLE_DISPLAY
   lcdNumber_comptuationTime->setValue(tu);

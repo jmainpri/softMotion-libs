@@ -87,30 +87,30 @@ void Curve::draw()
 	glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT);
 	glDisable(GL_LIGHTING);
  
-	glPointSize(5.0);
-	glColor3f(1.0, 1.0, 0.0);
+	glPointSize(10.0);
+	glColor3f(0.0, 1.0, 0.0);
 	glBegin(GL_POINTS);
 	for (unsigned int j = 0; j < discPoint.size(); j++) {
-	  glVertex3f(discPoint[j].kc[0].x,discPoint[j].kc[1].x,0.);
+	  glVertex3f(discPoint[j].kc[0].x,discPoint[j].kc[1].x,discPoint[j].kc[2].x);
 	}
 	glEnd();
 
-	glPointSize(10.0);
+	glPointSize(20.0);
 	glColor3f(1.0, 0.0, 0.0);
 	glBegin(GL_POINTS);
-	glVertex3f(errorMax.kc[0].x,errorMax.kc[1].x,0.);
+	glVertex3f(errorMax.kc[0].x,errorMax.kc[1].x,errorMax.kc[2].x);
 	glEnd();
 
 	glPopAttrib();
 
   }
 
-  drawAxis(0.01f);
+  drawAxis(0.05f);
   glColor3f(_color_f1,_color_f2,_color_f3);
   glPushAttrib(GL_LIGHTING_BIT | GL_LINE_BIT);
   glDisable(GL_LIGHTING);
 
-  glLineWidth(2);
+  glLineWidth(4);
   glBegin(GL_LINES);
   for (unsigned int i=1; i< traj.size(); i++) {
        glVertex3f(traj[i-1].Pos[0], traj[i-1].Pos[1], traj[i-1].Pos[2]);
