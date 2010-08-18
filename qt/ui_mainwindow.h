@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Mon Aug 16 10:46:55 2010
+** Created: Tue Aug 17 12:49:46 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -351,7 +351,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, -43, 1055, 867));
+        scrollAreaWidgetContents->setGeometry(QRect(0, -74, 1055, 867));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -1540,6 +1540,7 @@ public:
         lcdNumber_Jmax->setObjectName(QString::fromUtf8("lcdNumber_Jmax"));
         lcdNumber_Jmax->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_Jmax->setDecimals(8);
+        lcdNumber_Jmax->setMaximum(1000);
         lcdNumber_Jmax->setSingleStep(0.1);
 
         gridLayout_7->addWidget(lcdNumber_Jmax, 0, 0, 1, 1);
@@ -1548,6 +1549,7 @@ public:
         lcdNumber_Amax->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
         lcdNumber_Amax->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_Amax->setDecimals(8);
+        lcdNumber_Amax->setMaximum(200);
         lcdNumber_Amax->setSingleStep(0.1);
 
         gridLayout_7->addWidget(lcdNumber_Amax, 1, 0, 1, 1);
@@ -1556,6 +1558,7 @@ public:
         lcdNumber_Vmax->setObjectName(QString::fromUtf8("lcdNumber_Vmax"));
         lcdNumber_Vmax->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_Vmax->setDecimals(8);
+        lcdNumber_Vmax->setMaximum(100);
         lcdNumber_Vmax->setSingleStep(0.01);
 
         gridLayout_7->addWidget(lcdNumber_Vmax, 2, 0, 1, 1);
