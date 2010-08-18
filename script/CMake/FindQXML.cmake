@@ -10,7 +10,7 @@
 ## Check for the header files
 
 find_path (QXML_INCLUDE_DIR qxml.h 
-  PATHS ${QXML_INC} /usr/local/include /usr/include /sw/include /opt/local/include
+  PATHS ${QXML_INC} /usr/share/qt4/include /usr/local/include /usr/include /sw/include /opt/local/include
   PATH_SUFFIXES QtXml
   )
 
@@ -18,7 +18,7 @@ find_path (QXML_INCLUDE_DIR qxml.h
 ## Check for the library
 
 find_library (QXML_LIBRARIES QtXml
-  PATHS ${QXML_LIB} /usr/local/lib /usr/lib /lib /sw/lib /opt/local/lib 
+  PATHS ${QXML_LIB}  /usr/share/qt4/lib /usr/local/lib /usr/lib /lib /sw/lib /opt/local/lib
   )
 
 ## -----------------------------------------------------------------------------

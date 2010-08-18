@@ -17,9 +17,14 @@ find_path (QGLVIEWER_INCLUDE_DIR qglviewer.h
 ## -----------------------------------------------------------------------------
 ## Check for the library
 
-find_library (QGLVIEWER_LIBRARIES QGLViewer
+find_library (QGLVIEWER_LIBRARIES QGLViewer 
   PATHS ${QGLVIEWER_LIB} /usr/local/lib /usr/lib /lib /sw/lib /opt/local/lib 
   )
+if (NOT QGLVIEWER_LIBRARIES)
+find_library (QGLVIEWER_LIBRARIES qglviewer-qt4 
+  PATHS ${QGLVIEWER_LIB} /usr/local/lib /usr/lib /lib /sw/lib /opt/local/lib 
+  )
+endif (NOT QGLVIEWER_LIBRARIES)
 
 ## -----------------------------------------------------------------------------
 ## Actions taken when all components have been found
