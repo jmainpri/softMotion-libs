@@ -6737,8 +6737,10 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
       elementStream.clear();
       if(element=="M" || element=="m")
 	{
-	  printf("=======================\n");
-	  printf("   New Path\n");
+	  if(0) {
+	  	printf("=======================\n");
+	  	printf("   New Path\n");
+	  }
 	  if(element=="M") {relative= false;}
 	  else {relative= true;}
 	  iss >> element ;
@@ -6751,7 +6753,9 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	  lpath.origin.y = (lpath.origin.y* svg_ratio * svg_y_sign + svg_y_offset)* scaley;
 	  lpath.nbSubPath = 0;
 	  path.push_back(lpath);
+ if(0) {
 	  std::cout <<"path origin : x = "<< path.back().origin.x << " y = " << path.back().origin.y << std::endl;
+}
 	}
       else if(element=="L") {
 	iss >> element ;
@@ -6857,7 +6861,9 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
   *height =  *height *svg_ratio * svg_y_sign;
   iss.clear();
   xmlFree(attribute);
+if(0) {
   std::cout << " width " << *width << " height " << *height << std::endl;
+}
   svg_y_offset =  svg_y_sign* *height;
 
   for(cur= root->xmlChildrenNode; cur!=NULL; cur= cur->next)
@@ -6874,17 +6880,25 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
 	    iss >> element;
 	    sscanf(element.c_str(), "matrix(%lf,%lf,%lf,%lf,%lf,%lf)", &ldv1, &ldv2, &ldv3, &ldv4, &ldv5, &ldv6);
 	    iss.clear();
+if(0) {
 	    cout << "scale " << ldv1 << " " << ldv4 << endl;
+}
 	      xmlFree(attribute);
 	}
 
 	for(cur2= cur->xmlChildrenNode; cur2!=NULL; cur2= cur2->next) {
 	  if(!xmlStrcmp(cur2->name, (const xmlChar *)"path")) {
-	    std::cout << "path foud in a group " << cur2->name << std::endl;
+
+	if(0) {    
+		std::cout << "path foud in a group " << cur2->name << std::endl;
+	}
 	    attribute = xmlGetProp(cur2, (xmlChar*)"d");
 	    iss.str((char*)attribute);
 	    parsePath(iss, path, svg_ratio, svg_y_sign, svg_y_offset, ldv1,ldv4);
+	if(0) {
+
 	     cout << "scale " << ldv1 << " " << ldv4 << endl;
+	}
 	    xmlFree(attribute);
 	  }
 
@@ -6897,7 +6911,9 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
 		    iss >> element;
 		    cout << attribute << " " << element <<endl;
 		    sscanf(element.c_str(), "matrix(%lf,%lf,%lf,%lf,%lf,%lf)", &ldv1, &ldv2, &ldv3, &ldv4, &ldv5, &ldv6);
+if(0) {
 		     cout << "scale cur2 " << ldv1 << " " << ldv4 << endl;
+}
 		     iss.clear();
 		      xmlFree(attribute);
 		}
@@ -6913,7 +6929,9 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
 		      iss.str((char*)attribute);
 		      iss >> element;
 		      sscanf(element.c_str(), "matrix(%lf,%lf,%lf,%lf,%lf,%lf)", &ldv1, &ldv2, &ldv3, &ldv4, &ldv5, &ldv6);
+if(0) {
 		       cout << "scale " << ldv1 << " " << ldv4 << endl;
+}
 		       iss.clear();
 			xmlFree(attribute);
 		  }
@@ -6922,23 +6940,33 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
 		   for(cur4= cur3->xmlChildrenNode; cur4!=NULL; cur4= cur4->next) {
 
 		     if(!xmlStrcmp(cur4->name, (const xmlChar *)"path")) {
+if(0){
 		    std::cout << "path foud in a group " << cur4->name << std::endl;
+}
 		    attribute = xmlGetProp(cur4, (xmlChar*)"d");
 		    iss.str((char*)attribute);
 		    parsePath(iss, path, svg_ratio, svg_y_sign, svg_y_offset, ldv1,ldv4);
+if(0){
 		     cout << "scale " << ldv1 << " " << ldv4 << endl;
+}
 		    xmlFree(attribute);
 		  }
 		}
 
 	      }
 	      if(!xmlStrcmp(cur3->name, (const xmlChar *)"path")) {
+if(0) {
 		std::cout << "path foud in a sub group " << cur3->name << std::endl;
+}
 		attribute = xmlGetProp(cur3, (xmlChar*)"d");
 		iss.str((char*)attribute);
+if(0) {
 		cout << "path cur3"<< endl;
+}
 		parsePath(iss, path, svg_ratio, svg_y_sign, svg_y_offset, ldv1,ldv4);
+if(0){
 		cout << "path out"<< endl;
+}
 		xmlFree(attribute);
 	      }
 	    }
@@ -6956,8 +6984,9 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
 
       }
     }
-
+if(0) {
   cout << "Number of path : " << path.size() << endl;
+}
   if (path.size()==0) {
     cout << "There is no path in your file" << endl;
     return SM_ERROR;

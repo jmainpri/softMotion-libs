@@ -141,6 +141,7 @@ QWidget *parent
 //     connect(this->doubleSpinBox_Amax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 //     connect(this->doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 
+    connect(this->pushButtonComputeTrajApprox,SIGNAL(clicked(bool)),this,SLOT(computeTraj()));
     connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
     connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
     connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
@@ -922,6 +923,7 @@ void QSoftMotionPlanner::computeTraj()
 {
 #ifdef ENABLE_DISPLAY
     QApplication::setOverrideCursor(Qt::WaitCursor);
+    cout << "compute the trajectory" << endl;
 #endif
 
   SM_LIMITS lim;
