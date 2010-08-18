@@ -282,6 +282,7 @@ void MyPlot::plotResults(Curve &curv2, QwtPlot *qwtPlot_JerkXapprox, QwtPlot *qw
         length_total += length_petit;
         length_vec.push_back(length_total);
     }
+    curv2.traj[i].u = length_total;
   }
   for (int i  = 0; i < (int)curv2.traj.size();i++){
     yData_ab_app [i] = length_vec[i];
@@ -294,6 +295,7 @@ void MyPlot::plotResults(Curve &curv2, QwtPlot *qwtPlot_JerkXapprox, QwtPlot *qw
   for (unsigned int i  = 0; i < curv2.traj.size();i++){
     yData_v_app[i] = sqrt(curv2.traj[i].Vel[0] * curv2.traj[i].Vel[0] + curv2.traj[i].Vel[1] * curv2.traj[i].Vel[1] + curv2.traj[i].Vel[2] * curv2.traj[i].Vel[2]);
     xData_v_app[i] = curv2.traj[i].t;
+    curv2.traj[i].du = yData_v_app[i];
   }
   /* accelaration_approx*/
   double *xData_a_app = NULL, *yData_a_app  = NULL;
@@ -302,6 +304,7 @@ void MyPlot::plotResults(Curve &curv2, QwtPlot *qwtPlot_JerkXapprox, QwtPlot *qw
   for (unsigned int i  = 0; i < curv2.traj.size();i++){
     yData_a_app[i] = sqrt(curv2.traj[i].Acc[0] * curv2.traj[i].Acc[0] + curv2.traj[i].Acc[1] * curv2.traj[i].Acc[1] + curv2.traj[i].Acc[2] * curv2.traj[i].Acc[2]);
     xData_a_app[i] = curv2.traj[i].t;
+    curv2.traj[i].ddu = yData_a_app[i];
   }
 
   plotGraph(qwtPlot_JerkXapprox, xData_J_X, yData_J_X, curv2.traj.size(), (char *)"time (s)", (char *)"Jerk (m/s^3)", (char *)"");

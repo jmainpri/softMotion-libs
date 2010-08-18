@@ -178,6 +178,8 @@ public slots:
      */
     void genFileTraj();
 
+    void genPlotFile();
+
     /** @brief computation of hausdorff distance
      *
      * compute the hausdorff distance between the ideal and
@@ -213,11 +215,16 @@ public slots:
 private:
     MyPlot _plot;
     int _nbCurve;
-    std::vector<Curve> _curve;
+    int _flag_haus_actif;
+    std::vector<Curve> _curve; // stocker la trajectoire ideale et approxime
+    std::vector<kinPoint> _vec_kinpoint;// les points pour exporter dans le fichier SmDiscr.dat
+    std::vector<double> _err_traj;
+    std::vector<double> _err_haus1;
+    std::vector<double> _err_haus2;
     SM_LIMITS _lim;
     double _errMax;
-    double _sampling;
-    int _timeStep;
+    double _sampling;// temps d'echantionnage
+    int _timeStep;// interval pour generer le fichier
     std::string _fileName;
     bool _isFullScreen;
     bool _display;

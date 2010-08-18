@@ -156,9 +156,9 @@ SET(LIBRARY_OUTPUT_PATH "${CMAKE_BUILD_TYPE}/lib/$ENV{HOSTTYPE}")
 #ADD_DEFINITIONS(-DKCD_MOVE3D -DPRINT_ERROR -DPRINT_INFO)
 
 IF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-  ADD_DEFINITIONS(-g -Wall -Wno-unknown-pragmas)
+  ADD_DEFINITIONS(-g -Wall -Wextra -Wunused -Wno-unknown-pragmas)
 ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
-  ADD_DEFINITIONS(-O2 -Wall -Wno-unknown-pragmas)
+  ADD_DEFINITIONS(-O2 -Wall -Wunused -Wno-unknown-pragmas)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
 

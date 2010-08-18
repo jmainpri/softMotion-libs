@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Tue Aug 10 18:05:20 2010
+** Created: Tue Aug 17 12:49:46 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -26,6 +26,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
+#include <QtGui/QScrollArea>
 #include <QtGui/QSpacerItem>
 #include <QtGui/QSplitter>
 #include <QtGui/QTabWidget>
@@ -47,12 +48,15 @@ public:
     QAction *actionHelp;
     QAction *action_Close_2;
     QWidget *centralWidget;
-    QHBoxLayout *horizontalLayout;
+    QVBoxLayout *verticalLayout_18;
+    QScrollArea *scrollArea;
+    QWidget *scrollAreaWidgetContents;
+    QVBoxLayout *verticalLayout_17;
     QTabWidget *tabWidget_2;
     QWidget *tabSoftMotionPlanner;
-    QGridLayout *gridLayout_17;
+    QVBoxLayout *verticalLayout_33;
     QWidget *widget_19;
-    QGridLayout *gridLayout_13;
+    QHBoxLayout *horizontalLayout_3;
     QwtPlot *qwtPlot;
     QwtPlot *qwtPlot_2;
     QFrame *frame_6;
@@ -85,7 +89,7 @@ public:
     QDoubleSpinBox *doubleSpinBox_dc;
     QLabel *label_8;
     QWidget *widget_4;
-    QGridLayout *gridLayout_16;
+    QHBoxLayout *horizontalLayout_5;
     QFrame *frame_4;
     QVBoxLayout *verticalLayout_24;
     QLabel *label_20;
@@ -150,7 +154,7 @@ public:
     QDoubleSpinBox *doubleSpinBox_Xf;
     QwtSlider *Slider_Xf;
     QWidget *tabTrajectoryApproximation;
-    QGridLayout *gridLayout_14;
+    QHBoxLayout *horizontalLayout;
     QSplitter *splitter;
     QTabWidget *tabWidget;
     QWidget *planner;
@@ -167,11 +171,11 @@ public:
     QDoubleSpinBox *doubleSpinBox_Jmax;
     QwtSlider *Slider_Jmax;
     QWidget *widget_2;
-    QGridLayout *gridLayout_15;
+    QVBoxLayout *verticalLayout_8;
+    QLabel *label_2;
     QFormLayout *formLayout_2;
     QDoubleSpinBox *doubleSpinBox_Amax;
     QwtSlider *Slider_Amax;
-    QLabel *label_2;
     QWidget *widget_3;
     QVBoxLayout *verticalLayout_9;
     QLabel *label_3;
@@ -313,7 +317,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(1012, 886);
+        MainWindow->resize(1075, 818);
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -338,20 +342,30 @@ public:
         sizePolicy1.setVerticalStretch(0);
         sizePolicy1.setHeightForWidth(centralWidget->sizePolicy().hasHeightForWidth());
         centralWidget->setSizePolicy(sizePolicy1);
-        horizontalLayout = new QHBoxLayout(centralWidget);
-        horizontalLayout->setSpacing(6);
-        horizontalLayout->setContentsMargins(11, 11, 11, 11);
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        tabWidget_2 = new QTabWidget(centralWidget);
+        verticalLayout_18 = new QVBoxLayout(centralWidget);
+        verticalLayout_18->setSpacing(0);
+        verticalLayout_18->setContentsMargins(0, 0, 0, 0);
+        verticalLayout_18->setObjectName(QString::fromUtf8("verticalLayout_18"));
+        scrollArea = new QScrollArea(centralWidget);
+        scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
+        scrollArea->setWidgetResizable(true);
+        scrollAreaWidgetContents = new QWidget();
+        scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
+        scrollAreaWidgetContents->setGeometry(QRect(0, -74, 1055, 867));
+        verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
+        verticalLayout_17->setSpacing(0);
+        verticalLayout_17->setContentsMargins(0, 0, 0, 0);
+        verticalLayout_17->setObjectName(QString::fromUtf8("verticalLayout_17"));
+        tabWidget_2 = new QTabWidget(scrollAreaWidgetContents);
         tabWidget_2->setObjectName(QString::fromUtf8("tabWidget_2"));
         sizePolicy1.setHeightForWidth(tabWidget_2->sizePolicy().hasHeightForWidth());
         tabWidget_2->setSizePolicy(sizePolicy1);
         tabSoftMotionPlanner = new QWidget();
         tabSoftMotionPlanner->setObjectName(QString::fromUtf8("tabSoftMotionPlanner"));
-        gridLayout_17 = new QGridLayout(tabSoftMotionPlanner);
-        gridLayout_17->setSpacing(6);
-        gridLayout_17->setContentsMargins(11, 11, 11, 11);
-        gridLayout_17->setObjectName(QString::fromUtf8("gridLayout_17"));
+        verticalLayout_33 = new QVBoxLayout(tabSoftMotionPlanner);
+        verticalLayout_33->setSpacing(6);
+        verticalLayout_33->setContentsMargins(0, 0, 0, 0);
+        verticalLayout_33->setObjectName(QString::fromUtf8("verticalLayout_33"));
         widget_19 = new QWidget(tabSoftMotionPlanner);
         widget_19->setObjectName(QString::fromUtf8("widget_19"));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Expanding);
@@ -359,10 +373,10 @@ public:
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(widget_19->sizePolicy().hasHeightForWidth());
         widget_19->setSizePolicy(sizePolicy2);
-        gridLayout_13 = new QGridLayout(widget_19);
-        gridLayout_13->setSpacing(6);
-        gridLayout_13->setContentsMargins(0, 0, 0, 0);
-        gridLayout_13->setObjectName(QString::fromUtf8("gridLayout_13"));
+        horizontalLayout_3 = new QHBoxLayout(widget_19);
+        horizontalLayout_3->setSpacing(3);
+        horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         qwtPlot = new QwtPlot(widget_19);
         qwtPlot->setObjectName(QString::fromUtf8("qwtPlot"));
         QSizePolicy sizePolicy3(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -371,12 +385,14 @@ public:
         sizePolicy3.setHeightForWidth(qwtPlot->sizePolicy().hasHeightForWidth());
         qwtPlot->setSizePolicy(sizePolicy3);
 
-        gridLayout_13->addWidget(qwtPlot, 0, 0, 1, 1);
+        horizontalLayout_3->addWidget(qwtPlot);
 
         qwtPlot_2 = new QwtPlot(widget_19);
         qwtPlot_2->setObjectName(QString::fromUtf8("qwtPlot_2"));
+        sizePolicy3.setHeightForWidth(qwtPlot_2->sizePolicy().hasHeightForWidth());
+        qwtPlot_2->setSizePolicy(sizePolicy3);
 
-        gridLayout_13->addWidget(qwtPlot_2, 0, 1, 1, 1);
+        horizontalLayout_3->addWidget(qwtPlot_2);
 
         frame_6 = new QFrame(widget_19);
         frame_6->setObjectName(QString::fromUtf8("frame_6"));
@@ -560,17 +576,17 @@ public:
         verticalLayout_16->addWidget(widget_21);
 
 
-        gridLayout_13->addWidget(frame_6, 0, 2, 1, 1);
+        horizontalLayout_3->addWidget(frame_6);
 
 
-        gridLayout_17->addWidget(widget_19, 0, 0, 1, 1);
+        verticalLayout_33->addWidget(widget_19);
 
         widget_4 = new QWidget(tabSoftMotionPlanner);
         widget_4->setObjectName(QString::fromUtf8("widget_4"));
-        gridLayout_16 = new QGridLayout(widget_4);
-        gridLayout_16->setSpacing(6);
-        gridLayout_16->setContentsMargins(11, 11, 11, 11);
-        gridLayout_16->setObjectName(QString::fromUtf8("gridLayout_16"));
+        horizontalLayout_5 = new QHBoxLayout(widget_4);
+        horizontalLayout_5->setSpacing(3);
+        horizontalLayout_5->setContentsMargins(0, 0, 0, 0);
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
         frame_4 = new QFrame(widget_4);
         frame_4->setObjectName(QString::fromUtf8("frame_4"));
         QSizePolicy sizePolicy4(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -697,7 +713,7 @@ public:
         verticalLayout_24->addWidget(widget_13);
 
 
-        gridLayout_16->addWidget(frame_4, 0, 0, 1, 1);
+        horizontalLayout_5->addWidget(frame_4);
 
         frame_5 = new QFrame(widget_4);
         frame_5->setObjectName(QString::fromUtf8("frame_5"));
@@ -818,7 +834,7 @@ public:
         verticalLayout_28->addWidget(widget_17);
 
 
-        gridLayout_16->addWidget(frame_5, 0, 1, 1, 1);
+        horizontalLayout_5->addWidget(frame_5);
 
         frame_3 = new QFrame(widget_4);
         frame_3->setObjectName(QString::fromUtf8("frame_3"));
@@ -938,18 +954,18 @@ public:
         verticalLayout_20->addWidget(widget_10);
 
 
-        gridLayout_16->addWidget(frame_3, 0, 2, 1, 1);
+        horizontalLayout_5->addWidget(frame_3);
 
 
-        gridLayout_17->addWidget(widget_4, 1, 0, 1, 1);
+        verticalLayout_33->addWidget(widget_4);
 
         tabWidget_2->addTab(tabSoftMotionPlanner, QString());
         tabTrajectoryApproximation = new QWidget();
         tabTrajectoryApproximation->setObjectName(QString::fromUtf8("tabTrajectoryApproximation"));
-        gridLayout_14 = new QGridLayout(tabTrajectoryApproximation);
-        gridLayout_14->setSpacing(6);
-        gridLayout_14->setContentsMargins(11, 11, 11, 11);
-        gridLayout_14->setObjectName(QString::fromUtf8("gridLayout_14"));
+        horizontalLayout = new QHBoxLayout(tabTrajectoryApproximation);
+        horizontalLayout->setSpacing(6);
+        horizontalLayout->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         splitter = new QSplitter(tabTrajectoryApproximation);
         splitter->setObjectName(QString::fromUtf8("splitter"));
         splitter->setOrientation(Qt::Horizontal);
@@ -1032,10 +1048,15 @@ public:
 
         widget_2 = new QWidget(frame);
         widget_2->setObjectName(QString::fromUtf8("widget_2"));
-        gridLayout_15 = new QGridLayout(widget_2);
-        gridLayout_15->setSpacing(6);
-        gridLayout_15->setContentsMargins(11, 11, 11, 11);
-        gridLayout_15->setObjectName(QString::fromUtf8("gridLayout_15"));
+        verticalLayout_8 = new QVBoxLayout(widget_2);
+        verticalLayout_8->setSpacing(6);
+        verticalLayout_8->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_8->setObjectName(QString::fromUtf8("verticalLayout_8"));
+        label_2 = new QLabel(widget_2);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        verticalLayout_8->addWidget(label_2);
+
         formLayout_2 = new QFormLayout();
         formLayout_2->setSpacing(6);
         formLayout_2->setObjectName(QString::fromUtf8("formLayout_2"));
@@ -1050,12 +1071,7 @@ public:
         formLayout_2->setWidget(0, QFormLayout::FieldRole, Slider_Amax);
 
 
-        gridLayout_15->addLayout(formLayout_2, 1, 1, 2, 2);
-
-        label_2 = new QLabel(widget_2);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
-
-        gridLayout_15->addWidget(label_2, 0, 1, 1, 1);
+        verticalLayout_8->addLayout(formLayout_2);
 
 
         verticalLayout_10->addWidget(widget_2);
@@ -1533,7 +1549,7 @@ public:
         lcdNumber_Amax->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
         lcdNumber_Amax->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_Amax->setDecimals(8);
-        lcdNumber_Amax->setMaximum(100);
+        lcdNumber_Amax->setMaximum(200);
         lcdNumber_Amax->setSingleStep(0.1);
 
         gridLayout_7->addWidget(lcdNumber_Amax, 1, 0, 1, 1);
@@ -1542,7 +1558,7 @@ public:
         lcdNumber_Vmax->setObjectName(QString::fromUtf8("lcdNumber_Vmax"));
         lcdNumber_Vmax->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_Vmax->setDecimals(8);
-        lcdNumber_Vmax->setMaximum(10);
+        lcdNumber_Vmax->setMaximum(100);
         lcdNumber_Vmax->setSingleStep(0.01);
 
         gridLayout_7->addWidget(lcdNumber_Vmax, 2, 0, 1, 1);
@@ -1572,7 +1588,7 @@ public:
         lcdNumber_nb3segInterval->setObjectName(QString::fromUtf8("lcdNumber_nb3segInterval"));
         lcdNumber_nb3segInterval->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_nb3segInterval->setDecimals(0);
-        lcdNumber_nb3segInterval->setMaximum(1000);
+        lcdNumber_nb3segInterval->setMaximum(10000);
 
         gridLayout_7->addWidget(lcdNumber_nb3segInterval, 6, 0, 1, 1);
 
@@ -1783,16 +1799,20 @@ public:
         viewer->setSizePolicy(sizePolicy6);
         splitter->addWidget(viewer);
 
-        gridLayout_14->addWidget(splitter, 0, 0, 1, 1);
+        horizontalLayout->addWidget(splitter);
 
         tabWidget_2->addTab(tabTrajectoryApproximation, QString());
 
-        horizontalLayout->addWidget(tabWidget_2);
+        verticalLayout_17->addWidget(tabWidget_2);
+
+        scrollArea->setWidget(scrollAreaWidgetContents);
+
+        verticalLayout_18->addWidget(scrollArea);
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName(QString::fromUtf8("menuBar"));
-        menuBar->setGeometry(QRect(0, 0, 1012, 23));
+        menuBar->setGeometry(QRect(0, 0, 1075, 23));
         menu_File = new QMenu(menuBar);
         menu_File->setObjectName(QString::fromUtf8("menu_File"));
         menu_Edit = new QMenu(menuBar);
@@ -1802,6 +1822,15 @@ public:
         menu_Help = new QMenu(menuBar);
         menu_Help->setObjectName(QString::fromUtf8("menu_Help"));
         MainWindow->setMenuBar(menuBar);
+        QWidget::setTabOrder(tabWidget, pushButtonComputeTrajApprox);
+        QWidget::setTabOrder(pushButtonComputeTrajApprox, doubleSpinBox_Amax);
+        QWidget::setTabOrder(doubleSpinBox_Amax, doubleSpinBox_Jmax);
+        QWidget::setTabOrder(doubleSpinBox_Jmax, doubleSpinBox_Vmax);
+        QWidget::setTabOrder(doubleSpinBox_Vmax, doubleSpinBox_SamplingTime);
+        QWidget::setTabOrder(doubleSpinBox_SamplingTime, Slider_Vmax);
+        QWidget::setTabOrder(Slider_Vmax, Slider_SamplingTime);
+        QWidget::setTabOrder(Slider_SamplingTime, Slider_Amax);
+        QWidget::setTabOrder(Slider_Amax, Slider_Jmax);
 
         menuBar->addAction(menu_File->menuAction());
         menuBar->addAction(menu_Edit->menuAction());
@@ -1816,8 +1845,46 @@ public:
 
         retranslateUi(MainWindow);
         QObject::connect(action_Close, SIGNAL(triggered()), MainWindow, SLOT(close()));
+        QObject::connect(Slider_Jmax, SIGNAL(sliderMoved(double)), doubleSpinBox_Jmax, SLOT(setValue(double)));
+        QObject::connect(Slider_SamplingTime, SIGNAL(sliderMoved(double)), doubleSpinBox_SamplingTime, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Amax, SIGNAL(valueChanged(double)), Slider_Amax, SLOT(setValue(double)));
+        QObject::connect(Slider_Amax, SIGNAL(sliderMoved(double)), doubleSpinBox_Amax, SLOT(setValue(double)));
+        QObject::connect(Slider_Vmax, SIGNAL(sliderMoved(double)), doubleSpinBox_Vmax, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Jmax, SIGNAL(valueChanged(double)), Slider_Jmax, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_SamplingTime, SIGNAL(valueChanged(double)), Slider_SamplingTime, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), Slider_Vmax, SLOT(setValue(double)));
+        QObject::connect(pushButtonComputeTrajApprox, SIGNAL(clicked()), MainWindow, SLOT(computeTraj()));
+        QObject::connect(doubleSpinBox_Jmax_3, SIGNAL(valueChanged(double)), Slider_Jmax_3, SLOT(setValue(double)));
+        QObject::connect(Slider_Jmax_3, SIGNAL(valueChanged(double)), doubleSpinBox_Jmax_3, SLOT(setValue(double)));
+        QObject::connect(Slider_Amax_3, SIGNAL(valueChanged(double)), doubleSpinBox_Amax_3, SLOT(setValue(double)));
+        QObject::connect(Slider_Vmax_3, SIGNAL(valueChanged(double)), doubleSpinBox_Vmax_3, SLOT(setValue(double)));
+        QObject::connect(Slider_Vmax_3, SIGNAL(valueChanged(double)), Slider_Vmax_3, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Amax_3, SIGNAL(valueChanged(double)), Slider_Amax_3, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Vmax_3, SIGNAL(valueChanged(double)), Slider_Vmax_3, SLOT(setValue(double)));
+        QObject::connect(Slider_A0, SIGNAL(valueChanged(double)), Slider_A0, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_V0, SIGNAL(valueChanged(double)), Slider_V0, SLOT(setValue(double)));
+        QObject::connect(Slider_X0, SIGNAL(valueChanged(double)), Slider_X0, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_A0, SIGNAL(valueChanged(double)), doubleSpinBox_A0, SLOT(setValue(double)));
+        QObject::connect(Slider_V0, SIGNAL(valueChanged(double)), doubleSpinBox_V0, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_X0, SIGNAL(valueChanged(double)), doubleSpinBox_X0, SLOT(setValue(double)));
+        QObject::connect(Slider_Af, SIGNAL(valueChanged(double)), Slider_Af, SLOT(setValue(double)));
+        QObject::connect(Slider_Vf, SIGNAL(valueChanged(double)), Slider_Vf, SLOT(setValue(double)));
+        QObject::connect(Slider_Xf, SIGNAL(valueChanged(double)), Slider_Xf, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Af, SIGNAL(valueChanged(double)), doubleSpinBox_Af, SLOT(setValue(double)));
+        QObject::connect(Slider_Vf, SIGNAL(valueChanged(double)), doubleSpinBox_Vf, SLOT(setValue(double)));
+        QObject::connect(Slider_Xf, SIGNAL(valueChanged(double)), doubleSpinBox_Xf, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Af, SIGNAL(valueChanged(double)), Slider_Af, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Vf, SIGNAL(valueChanged(double)), Slider_Vf, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Xf, SIGNAL(valueChanged(double)), Slider_Xf, SLOT(setValue(double)));
+        QObject::connect(Slider_Af, SIGNAL(valueChanged(double)), doubleSpinBox_Af, SLOT(setValue(double)));
+        QObject::connect(Slider_A0, SIGNAL(valueChanged(double)), doubleSpinBox_A0, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_A0, SIGNAL(valueChanged(double)), Slider_A0, SLOT(setValue(double)));
+        QObject::connect(Slider_X0, SIGNAL(valueChanged(double)), doubleSpinBox_X0, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_X0, SIGNAL(valueChanged(double)), Slider_X0, SLOT(setValue(double)));
+        QObject::connect(Slider_desError, SIGNAL(valueChanged(double)), doubleSpinBox_DesError, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_DesError, SIGNAL(valueChanged(double)), Slider_desError, SLOT(setValue(double)));
 
-        tabWidget_2->setCurrentIndex(0);
+        tabWidget_2->setCurrentIndex(1);
         tabWidget->setCurrentIndex(0);
 
 
@@ -1875,7 +1942,7 @@ public:
          << QApplication::translate("MainWindow", "circle", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "sinusoid", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("MainWindow", "parabola", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("MainWindow", "Biagiotti Curve", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "Biagiotti", 0, QApplication::UnicodeUTF8)
         );
         label_36->setText(QApplication::translate("MainWindow", "Line parameters", 0, QApplication::UnicodeUTF8));
         label_37->setText(QApplication::translate("MainWindow", "X_end (m)", 0, QApplication::UnicodeUTF8));
@@ -1901,7 +1968,7 @@ public:
         label_33->setText(QApplication::translate("MainWindow", "Computation time (s)", 0, QApplication::UnicodeUTF8));
         label_34->setText(QApplication::translate("MainWindow", "Trajectory error (m)", 0, QApplication::UnicodeUTF8));
         label_43->setText(QApplication::translate("MainWindow", "Path error (m)", 0, QApplication::UnicodeUTF8));
-        label_50->setText(QApplication::translate("MainWindow", "Nb of cubic segment", 0, QApplication::UnicodeUTF8));
+        label_50->setText(QApplication::translate("MainWindow", "Cubic Segment number", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(planner), QApplication::translate("MainWindow", "Planner", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(Traj), QApplication::translate("MainWindow", "Trajectory", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Traj Approx", 0, QApplication::UnicodeUTF8));
