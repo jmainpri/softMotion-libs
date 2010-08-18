@@ -163,6 +163,7 @@ ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
 
 ADD_EXECUTABLE(QSoftMotionPlanner ${source_files} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
+SET_TARGET_PROPERTIES(QSoftMotionPlanner PROPERTIES LINKER_LANGUAGE CXX)
 TARGET_LINK_LIBRARIES(QSoftMotionPlanner softMotion ${LIBS} m)
 
 add_library(
