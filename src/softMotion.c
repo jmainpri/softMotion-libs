@@ -5599,8 +5599,10 @@ SM_STATUS sm_ComputeSoftMotionPointToPoint_gen(int nbAxis,double* J_max, double 
       return SM_ERROR;
     }
   }
+  // IS HERE !!!!!
+  sm_SM_TIMES_copy_into(&Times, &TNE_sec);
+  //sm_SM_TIMES_copy_into(&TM, &TNE_sec);
 
-  sm_SM_TIMES_copy_into(&TM, &TNE_sec);
   sm_sum_motionTimes(&TNE, &sum);
   sm_sum_motionTimes(&TNE_sec, &sum_sec);
 
