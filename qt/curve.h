@@ -63,6 +63,7 @@ public :
   kinPoint errorMax;
   std::vector<kinPoint> discPoint;
   std::vector<SM_CURVE_DATA> traj;
+  std::vector<SM_OUTPUT> segTraj;
   std::list<Path> path;
   std::list<SubTraj> trajList;
 

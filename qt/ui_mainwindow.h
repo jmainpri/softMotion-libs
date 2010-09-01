@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Tue Aug 17 12:49:46 2010
+** Created: Mon Aug 30 14:41:34 2010
 **      by: Qt User Interface Compiler version 4.6.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -245,6 +245,7 @@ public:
     QPushButton *pushButtonGenPlotFile;
     QPushButton *pushButtonComputeHauss;
     QPushButton *pushButton_reset;
+    QPushButton *pushButtonComputeTrajApproxDivisionPriori;
     QFrame *frame_7;
     QVBoxLayout *verticalLayout_12;
     QLabel *label_6;
@@ -351,7 +352,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, -74, 1055, 867));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 1055, 867));
         verticalLayout_17 = new QVBoxLayout(scrollAreaWidgetContents);
         verticalLayout_17->setSpacing(0);
         verticalLayout_17->setContentsMargins(0, 0, 0, 0);
@@ -1421,7 +1422,7 @@ public:
         pushButtonComputeTrajApprox = new QPushButton(planner);
         pushButtonComputeTrajApprox->setObjectName(QString::fromUtf8("pushButtonComputeTrajApprox"));
 
-        gridLayout_3->addWidget(pushButtonComputeTrajApprox, 1, 1, 1, 1);
+        gridLayout_3->addWidget(pushButtonComputeTrajApprox, 2, 1, 1, 1);
 
         gridLayout_2 = new QGridLayout();
         gridLayout_2->setSpacing(6);
@@ -1453,17 +1454,22 @@ public:
         gridLayout_2->addWidget(pushButtonGenPlotFile, 0, 0, 1, 1);
 
 
-        gridLayout_3->addLayout(gridLayout_2, 3, 1, 1, 1);
+        gridLayout_3->addLayout(gridLayout_2, 4, 1, 1, 1);
 
         pushButtonComputeHauss = new QPushButton(planner);
         pushButtonComputeHauss->setObjectName(QString::fromUtf8("pushButtonComputeHauss"));
 
-        gridLayout_3->addWidget(pushButtonComputeHauss, 2, 1, 1, 1);
+        gridLayout_3->addWidget(pushButtonComputeHauss, 3, 1, 1, 1);
 
         pushButton_reset = new QPushButton(planner);
         pushButton_reset->setObjectName(QString::fromUtf8("pushButton_reset"));
 
         gridLayout_3->addWidget(pushButton_reset, 0, 1, 1, 1);
+
+        pushButtonComputeTrajApproxDivisionPriori = new QPushButton(planner);
+        pushButtonComputeTrajApproxDivisionPriori->setObjectName(QString::fromUtf8("pushButtonComputeTrajApproxDivisionPriori"));
+
+        gridLayout_3->addWidget(pushButtonComputeTrajApproxDivisionPriori, 1, 1, 1, 1);
 
 
         gridLayout_20->addLayout(gridLayout_3, 1, 0, 1, 1);
@@ -1540,7 +1546,7 @@ public:
         lcdNumber_Jmax->setObjectName(QString::fromUtf8("lcdNumber_Jmax"));
         lcdNumber_Jmax->setButtonSymbols(QAbstractSpinBox::NoButtons);
         lcdNumber_Jmax->setDecimals(8);
-        lcdNumber_Jmax->setMaximum(1000);
+        lcdNumber_Jmax->setMaximum(5000);
         lcdNumber_Jmax->setSingleStep(0.1);
 
         gridLayout_7->addWidget(lcdNumber_Jmax, 0, 0, 1, 1);
@@ -1961,6 +1967,7 @@ public:
         pushButtonGenPlotFile->setText(QApplication::translate("MainWindow", "Generate Plot file", 0, QApplication::UnicodeUTF8));
         pushButtonComputeHauss->setText(QApplication::translate("MainWindow", "Compute Hausdorff", 0, QApplication::UnicodeUTF8));
         pushButton_reset->setText(QApplication::translate("MainWindow", "Reset", 0, QApplication::UnicodeUTF8));
+        pushButtonComputeTrajApproxDivisionPriori->setText(QApplication::translate("MainWindow", "Compute approximated trajectory in advance", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("MainWindow", "Approximation Results", 0, QApplication::UnicodeUTF8));
         label_46->setText(QApplication::translate("MainWindow", "Jmax (m/s\302\263)", 0, QApplication::UnicodeUTF8));
         label_47->setText(QApplication::translate("MainWindow", "Amax (m/s\302\262)", 0, QApplication::UnicodeUTF8));

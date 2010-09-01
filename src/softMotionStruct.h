@@ -343,6 +343,9 @@ typedef struct SM_CURVE_DATA{
     /** @brief time value of the given data*/
 	double t;
     /** @brief curvature abcissa*/
+    double u_Mlaw;
+    double du_Mlaw;
+    double ddu_Mlaw;
 	double u;
     /** @brief tangential velocity*/
 	double du;

@@ -93,6 +93,21 @@ public:
       return _display;
     }
 
+    /** @brief compute the approximation of a given svg file
+     *
+     * @param jmax : maximum jerk (m/s^3)
+     * @param amax : maximum acceleration (m/s^2)
+     * @param vmax : maximum velocity (m/s)
+     * @param sampTime : discretisation time (second)
+     * @param ErrMax : maximum error of the trajectory allowed
+     * @param ExpTime : discretisation of the generated file
+     * @param flagExport : genere the result file (true: yes, false: no)
+     * @param fileptr : the svg file to approximate
+     * @param errTraj : the trajectory error result
+     * @param result : the trajectory result
+     */
+    int approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, FILE* fileptr, double errTraj, std::vector<SM_OUTPUT> result);
+
     /** @brief load the file
      *
      * load a file .svg
@@ -163,6 +178,7 @@ public slots:
      * trajectory is already loaded
      */
     void computeTraj();
+    void computeTrajInAdvance();
 
     /** @brief computation of SoftMotion
      *
@@ -219,8 +235,10 @@ private:
     std::vector<Curve> _curve; // stocker la trajectoire ideale et approxime
     std::vector<kinPoint> _vec_kinpoint;// les points pour exporter dans le fichier SmDiscr.dat
     std::vector<double> _err_traj;
+    std::vector<double> _err_vit;
     std::vector<double> _err_haus1;
     std::vector<double> _err_haus2;
+//     std::vector<double> _t_Mlaw,_u_Mlaw,_du_Mlaw,_ddu_Mlaw;
     SM_LIMITS _lim;
     double _errMax;
     double _sampling;// temps d'echantionnage

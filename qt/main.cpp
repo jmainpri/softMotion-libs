@@ -25,6 +25,8 @@ int main(int argc, char *argv[])
   w.showMaximized();
   return a.exec();  
 #else
-  // return 0
+//   w.approximate(double jmax,double amax,double vmax,double SampTime,double ErrMax, int ExpTime, FILE* fileptr, std::vector<SM_OUTPUT> result);
+  // w.approximate(jmax, amax, vmax, SampTime, ErrMax, ExpTime, vector< pose >, vector);
+  return 0
 #endif
 }

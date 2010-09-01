@@ -4,14 +4,14 @@
 #include "softMotion.h"
 #include "myPlot.h"
 
-void MyPlot::plotMotionLaw(Curve &curv, QwtPlot *qwtPlot_TrajJerk, QwtPlot *qwtPlot_TrajAcc, QwtPlot *qwtPlot_TrajVel) {
+void MyPlot::plotMotionLaw(Curve &curv, QwtPlot *qwtPlot_TrajJerk, QwtPlot *qwtPlot_TrajAcc, QwtPlot *qwtPlot_TrajVel){
   //computation of the figures velocity, accelaration, and abscisse
   /* velocity*/
   double *xData_v = NULL, *yData_v  = NULL;
   xData_v = (double* ) malloc (sizeof(double) * curv.traj.size());
   yData_v = (double* ) malloc (sizeof(double) * curv.traj.size());
   for (unsigned int i  = 0; i < curv.traj.size();i++){
-    yData_v [i] = curv.traj[i].du;
+    yData_v [i] = curv.traj[i].du_Mlaw;
     xData_v [i] = curv.traj[i].t;
   }
   /* accelaration*/
@@ -19,7 +19,7 @@ void MyPlot::plotMotionLaw(Curve &curv, QwtPlot *qwtPlot_TrajJerk, QwtPlot *qwtP
   xData_a = (double* ) malloc (sizeof(double) * curv.traj.size());
   yData_a = (double* ) malloc (sizeof(double) * curv.traj.size());
   for (unsigned int i  = 0; i < curv.traj.size();i++){
-    yData_a[i] = curv.traj[i].ddu;
+    yData_a[i] = curv.traj[i].ddu_Mlaw;
     xData_a[i] = curv.traj[i].t;
   }
   /* abscicca*/
@@ -27,7 +27,7 @@ void MyPlot::plotMotionLaw(Curve &curv, QwtPlot *qwtPlot_TrajJerk, QwtPlot *qwtP
   xData_ab = (double* ) malloc (sizeof(double) * curv.traj.size());
   yData_ab = (double* ) malloc (sizeof(double) * curv.traj.size());
   for (unsigned int i  = 0; i < curv.traj.size();i++){
-    yData_ab [i] = curv.traj[i].u;
+    yData_ab [i] = curv.traj[i].u_Mlaw;
     xData_ab [i] = curv.traj[i].t;
   }
 

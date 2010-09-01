@@ -5922,7 +5922,7 @@ SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj,std::vector<
   // Assign the IC, FC, Timp
   for (i = 0; i < Timp.size(); i++){
 
-    Timp[i] = IdealTraj[IntervIndex[i + 1]].t - IdealTraj[IntervIndex[i]].t;
+    Timp.at(i) = IdealTraj.at(IntervIndex.at(i + 1)).t - IdealTraj.at(IntervIndex.at(i)).t;
 
 // pour mettre les 40 valeurs dans IC et FC en 3 axes
     for (j = 0; j < 3; j++){
@@ -6499,7 +6499,70 @@ SM_STATUS sm_InputScanning(char *fileName, int *nbLineArc, double *tic, int *nbI
 //}
 
 
+SM_STATUS convertMotionToCurve_InAdvance(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,  std::vector<SM_CURVE_DATA>  &ApproxTraj) {
 
+  unsigned int i = 0, j = 0;
+  std::vector<double> ICloc;
+  double t = 0.0;
+  ApproxTraj.clear();
+  std::vector<double> Tloc,Jloc;
+  std::vector<double> aloc, vloc, xloc;
+  int timefile = 0;  double t0 = 0.0;
+  std::vector<double>  tl;
+  int interval = 0;
+
+  double tloctot = 0;
+  int limit_Time = 0;
+  SM_CURVE_DATA curveData;
+
+  bzero(&curveData, sizeof(SM_CURVE_DATA));
+
+  ICloc.resize(3);
+  Tloc.resize(1);
+  Jloc.resize(1);
+  aloc.resize(3);
+  vloc.resize(3);
+  xloc.resize(3);
+  tl.resize(1);
+  Tloc.at(0) = 0;
+
+
+  for (i = 0; i < motion.size(); i++){
+    tloctot += motion[i].Time[0];
+  }
+
+limit_Time = round (tloctot/tic)+1;
+
+for (int tt = 0; tt < limit_Time; tt++) {
+      t = tt * tic;
+      if((t > (t0 + motion[interval].Time[0]))&& (t <= tloctot )) {
+        t0  += motion[interval].Time[0];
+        interval ++;
+      }
+
+      for (j = 0; j < 3; j++){
+        Jloc[0] = motion[interval].Jerk[j];
+        ICloc[0] = motion[interval].IC[j].a;
+        ICloc[1] = motion[interval].IC[j].v;
+        ICloc[2] = motion[interval].IC[j].x;
+        tl.at(0)  = t-t0;
+
+        sm_AVX_TimeVar(ICloc, Tloc, Jloc, tl, aloc, vloc, xloc);
+
+        curveData.Pos[j]  = xloc.at(0);
+        curveData.Vel[j]  = vloc.at(0);
+        curveData.Acc[j]  = aloc.at(0);
+      }
+
+      curveData.t = t;
+      curveData.Jerk[0]  = motion[interval].Jerk[0];
+      curveData.Jerk[1]  = motion[interval].Jerk[1];
+      curveData.Jerk[2]  = motion[interval].Jerk[2];
+      ApproxTraj.push_back(curveData);
+  }
+
+  return SM_OK;
+}
 
 SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,
                                std::vector<SM_CURVE_DATA>  &ApproxTraj) {
@@ -7267,7 +7330,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   std::vector<double> J;
   J.resize(7);
   std::vector<double> t, ddu, du, u;
-  //  double *t = NULL, *ddu =  NULL, *du = NULL, *u = NULL;
+//    double *t = NULL, *ddu =  NULL, *du = NULL, *u = NULL;
   double total_time = 0.0;
    std::vector<double> Lac ;
   Point2D lpoint;
@@ -7289,7 +7352,6 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   double para_bezier = 0.0;
   std::vector<double> absci_vec;
   std::vector<double> para_vec;
-
 
  //  --------------------------- Using soft Motion to generate the trajectory along the path
   Lac.resize(path.back().subpath.size());
@@ -7404,11 +7466,10 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   }
 
   sm_AVX_TimeVar(IC, Time, J, t, ddu, du, u);
-
   for (int i = 0; i < nbPoints; i++){
-    IdealTraj[i].u   = u[i];
-    IdealTraj[i].du  = du[i];
-    IdealTraj[i].ddu  = ddu[i];
+    IdealTraj[i].u_Mlaw = u[i];
+    IdealTraj[i].du_Mlaw = du[i];
+    IdealTraj[i].ddu_Mlaw = ddu[i];
   }
 
   // --------------------------- 3D evolution ---------------------------------------------
@@ -7440,7 +7501,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
                   6.0*iter->bezier3[1].y*(1.0-para_bezier)*para_bezier - 3.0*iter->bezier3[1].y*para_bezier*para_bezier +
                   3.0*para_bezier*para_bezier*iter->end.y;
 	deriv_norm_courb_para = sqrt(deriv_x * deriv_x + deriv_y * deriv_y);
-	delta_para = IdealTraj[j].du * tic / deriv_norm_courb_para;
+	delta_para = IdealTraj[j].du_Mlaw * tic / deriv_norm_courb_para;
 	para_bezier += delta_para;
       }
       if(iter->type == LINE){
@@ -7451,7 +7512,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 	deriv_x = iter->end.x - iter->start.x;
 	deriv_y = deriv_x * (iter->end.y - iter->start.y)/(iter->end.x - iter->start.x);
 	deriv_norm_courb_para = sqrt(deriv_x * deriv_x + deriv_y * deriv_y);
-	delta_para = IdealTraj[j].du * tic / deriv_norm_courb_para;
+	delta_para = IdealTraj[j].du_Mlaw * tic / deriv_norm_courb_para;
 	para_bezier += delta_para;
       }
       j++;
@@ -7478,6 +7539,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
         lpoint = bezier_point(para/para_vec[i], iter->start, iter->bezier3[0], iter->bezier3[1], iter->end);
         pos_x = lpoint.x;
         pos_y = lpoint.y;
+        pos_z = 0.0;
         deriv_x = -3.0*iter->start.x*(1.0-para)*(1.0-para) +
                   3.0*iter->bezier3[0].x*(1.0-para)*(1.0-para) - 6*iter->bezier3[0].x*para*(1.0-para) +
                   6.0*iter->bezier3[1].x*(1.0-para)*para - 3.0*iter->bezier3[1].x*para*para +
@@ -7486,20 +7548,25 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
                   3.0*iter->bezier3[0].y*(1.0-para)*(1.0-para) - 6*iter->bezier3[0].y*para*(1.0-para) +
                   6.0*iter->bezier3[1].y*(1.0-para)*para - 3.0*iter->bezier3[1].y*para*para +
                   3.0*para*para*iter->end.y;
+        deriv_z = 0.0;
       }
 
       if(iter->type == LINE) {
 	pos_x = iter->start.x + (para/para_vec[i])*(iter->end.x - iter->start.x);;
 	pos_y = iter->start.y + (pos_x - iter->start.x)*(iter->end.y - iter->start.y)/(iter->end.x - iter->start.x);
+    pos_z = 0.0;
 	deriv_x = (iter->end.x - iter->start.x)/para_vec[i];
 	deriv_y = deriv_x * (iter->end.y - iter->start.y)/(iter->end.x - iter->start.x);
+    deriv_z = 0.0;
       }
 
       if(iter->type == LINE_TH) {
         pos_x = para;
         pos_y = iter->line.start.y + (para - iter->line.start.x)*(iter->line.end.y - iter->line.start.y)/(iter->line.end.x - iter->line.start.x);
+        pos_z = 0.0;
         deriv_x = 1.0;
         deriv_y = (iter->line.end.y - iter->line.start.y)/(iter->line.end.x - iter->line.start.x);
+        deriv_z = 0.0;
       }
 
       if(iter->type == CERCLE){
@@ -7569,16 +7636,16 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
       /* Calculation of abscis and velocity for a trajectory */
       deriv_norm_courb_para = sqrt(deriv_x * deriv_x + deriv_y * deriv_y + deriv_z * deriv_z);
-      delta_para = IdealTraj[j].du * tic / deriv_norm_courb_para;
+      delta_para = IdealTraj[j].du_Mlaw * tic / deriv_norm_courb_para;
       delta_absci = delta_para * deriv_norm_courb_para;
       absci += delta_absci;
       IdealTraj[j].absci = absci;
       IdealTraj[j].Pos[0] = pos_x;
       IdealTraj[j].Pos[1] = pos_y;
       IdealTraj[j].Pos[2] = pos_z;
-      IdealTraj[j].Vel[0] = deriv_x * IdealTraj[j].du / deriv_norm_courb_para;
-      IdealTraj[j].Vel[1] = deriv_y * IdealTraj[j].du / deriv_norm_courb_para;
-      IdealTraj[j].Vel[2] = deriv_z * IdealTraj[j].du / deriv_norm_courb_para;
+      IdealTraj[j].Vel[0] = deriv_x * IdealTraj[j].du_Mlaw / deriv_norm_courb_para;
+      IdealTraj[j].Vel[1] = deriv_y * IdealTraj[j].du_Mlaw / deriv_norm_courb_para;
+      IdealTraj[j].Vel[2] = deriv_z * IdealTraj[j].du_Mlaw / deriv_norm_courb_para;
       absci_vec.push_back(absci);
       para += delta_para;
       j++;
@@ -7593,13 +7660,19 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
     }
   }
 
+  for (int i = 0; i < nbPoints; i++){
+    IdealTraj[i].u  =  absci_vec[i];
+    IdealTraj[i].du  =  sqrt((IdealTraj[i].Vel[0])*(IdealTraj[i].Vel[0]) + (IdealTraj[i].Vel[1])*(IdealTraj[i].Vel[1]) + (IdealTraj[i].Vel[2])*(IdealTraj[i].Vel[2]));
+  }
+
+  IdealTraj[IdealTraj.size()-1].ddu = 0.0;
   for (int i = 1; i < nbPoints; i++){
         IdealTraj[i-1].Acc[0] = (IdealTraj[i].Vel[0] - IdealTraj[i-1].Vel[0]) / (t[i] - t[i-1]);
         IdealTraj[i-1].Acc[1] = (IdealTraj[i].Vel[1] - IdealTraj[i-1].Vel[1]) / (t[i] - t[i-1]);
         IdealTraj[i-1].Acc[2] = (IdealTraj[i].Vel[2] - IdealTraj[i-1].Vel[2]) / (t[i] - t[i-1]);
 
         IdealTraj[i-1].AccNorm = sqrt((IdealTraj[i-1].Acc[0])*(IdealTraj[i-1].Acc[0]) + (IdealTraj[i-1].Acc[1])*(IdealTraj[i-1].Acc[1]) + (IdealTraj[i-1].Acc[2])*(IdealTraj[i-1].Acc[2]));
-
+        IdealTraj[i-1].ddu  = sqrt((IdealTraj[i-1].Acc[0])*(IdealTraj[i-1].Acc[0]) + (IdealTraj[i-1].Acc[1])*(IdealTraj[i-1].Acc[1]) + (IdealTraj[i-1].Acc[2])*(IdealTraj[i-1].Acc[2]));
   }
 
   return SM_OK;
@@ -7690,7 +7763,7 @@ fileName.append(argv[1]);
 
 
 
-SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max){
+SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *errMax_pos){
     error.clear();
     double err;
     for (unsigned int i = 0; i< ApproxTraj.size(); i++){
@@ -7700,12 +7773,12 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
               (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1 ])+
               (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2 ]));
 
-        if(err > *val_err_max) {
+        if(err > *errMax_pos) {
         errorMax->kc[0].x= IdealTraj[i].Pos[0];
         errorMax->kc[1].x= IdealTraj[i].Pos[1];
         errorMax->kc[2].x= IdealTraj[i].Pos[2];
         errorMax->t= IdealTraj[i].t;
-        *val_err_max = err;
+        *errMax_pos = err;
         }
         error.push_back(err);
     }
@@ -7713,8 +7786,22 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
   return SM_OK;
 }
 
+SM_STATUS Calcul_Error_Vilocity(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error_vit, double *errMax){
+  error_vit.clear();
+  double err;
+  for (unsigned int i = 0; i< ApproxTraj.size(); i++){
+    err = IdealTraj[i].du - ApproxTraj[i].du;
+  }
+  if (err > *errMax){
+    *errMax = err;
+  }
+  error_vit.push_back(err);
 
-SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error, double *val_err_max){
+  return SM_OK;
+}
+
+
+SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error, double *errMax_pos){
     error.clear();
     double err;
     for (unsigned int i = 0; i< ApproxTraj.size(); i++){
@@ -7724,8 +7811,8 @@ SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_
               (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1 ])+
               (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2 ]));
 
-        if(err > *val_err_max) {
-        *val_err_max = err;
+        if(err > *errMax_pos) {
+        *errMax_pos = err;
         }
         error.push_back(err);
     }
@@ -7913,36 +8000,43 @@ SM_STATUS Path_Length(std::list<Path> &path, double *longeur){
 return SM_OK;
 }
 
-SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max){
-    error.clear();
-    double err;
+SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error_pos, std::vector<double>& error_vel, double *errMax_pos, double *errMax_vel){
+    error_pos.clear();
+    error_vel.clear();
+    double err = 0.0;
+    *errMax_vel = 0.0;
+     *errMax_pos = 0.0;
     for (unsigned int i = 0; i< IdealTraj.size(); i++){
         err = sqrt(
                 (IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])*(IdealTraj[i].Pos[0]-ApproxTraj[i].Pos[0])+
                 (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])+
                 (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2]));
-
-
-        if(err > *val_err_max) {
-
+        if(err > *errMax_pos) {
             errorMax->kc[0].x= IdealTraj[i].Pos[0];
-
             errorMax->kc[1].x= IdealTraj[i].Pos[1];
-
             errorMax->kc[2].x= IdealTraj[i].Pos[2];
-
             errorMax->t= IdealTraj[i].t;
-
-            *val_err_max = err;
-
+            *errMax_pos = err;
         }
-    error.push_back(err);
+        error_pos.push_back(err);
+    }
 
+    err = 0.0;
+    for (unsigned int i = 0; i< IdealTraj.size(); i++){
+        err = sqrt(
+                  (IdealTraj[i].Vel[0]-ApproxTraj[i].Vel[0])*(IdealTraj[i].Vel[0]-ApproxTraj[i].Vel[0])+
+                  (IdealTraj[i].Vel[1]-ApproxTraj[i].Vel[1])*(IdealTraj[i].Vel[1]-ApproxTraj[i].Vel[1])+
+                  (IdealTraj[i].Vel[2]-ApproxTraj[i].Vel[2])*(IdealTraj[i].Vel[2]-ApproxTraj[i].Vel[2]));
+
+        if(err > *errMax_vel) {
+            *errMax_vel = err;
+        }
+        error_vel.push_back(err);
     }
     return SM_OK;
 }
 
-SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *val_err_max, int ind){
+SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *errMax_pos, int ind){
     error.clear();
     double err;
     for (int i = 0; i< ind; i++){
@@ -7951,8 +8045,8 @@ SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vect
                 (IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])*(IdealTraj[i].Pos[1]-ApproxTraj[i].Pos[1])+
                 (IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2])*(IdealTraj[i].Pos[2]-ApproxTraj[i].Pos[2]));
 
-        if(err > *val_err_max) {
-            *val_err_max = err;
+        if(err > *errMax_pos) {
+            *errMax_pos = err;
         }
     error.push_back(err);
 
