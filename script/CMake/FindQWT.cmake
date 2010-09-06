@@ -17,7 +17,7 @@ find_path (QWT_INCLUDE_DIR qwt_plot.h
 ## -----------------------------------------------------------------------------
 ## Check for the library
 
-find_library (QWT_LIBRARIES qwt-qt4
+find_library (QWT_LIBRARIES qwt
   PATHS ${QWT_LIB} /usr/local/lib /usr/lib /lib /sw/lib /opt/local/lib /usr/local/qwt-5.2.0/lib
   )
 
