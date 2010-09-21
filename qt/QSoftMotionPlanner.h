@@ -106,7 +106,7 @@ public:
      * @param errTraj : the trajectory error result
      * @param result : the trajectory result
      */
-    int approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, FILE* fileptr, double errTraj, std::vector<SM_OUTPUT> result);
+    void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName);
 
     /** @brief load the file
      *
@@ -179,6 +179,7 @@ public slots:
      */
     void computeTraj();
     void computeTrajInAdvance();
+    void testCercleForFunction_Curvature_Interval(double jmax,double amax,double vmax,double SampTime, double ErrMax, int ExpTime);
 
     /** @brief computation of SoftMotion
      *
@@ -202,6 +203,8 @@ public slots:
      * approximated trajectory
      */
     void computeHausdorff();
+
+//     void changeProfile(std::vector<SM_CURVE_DATA>  &traj);
 
     /** @brief display a traced trajectory
      *
@@ -238,9 +241,14 @@ private:
     std::vector<double> _err_vit;
     std::vector<double> _err_haus1;
     std::vector<double> _err_haus2;
+    std::vector<double> _courbure;
+    std::vector<double> _vec_interval_courbure;
 //     std::vector<double> _t_Mlaw,_u_Mlaw,_du_Mlaw,_ddu_Mlaw;
     SM_LIMITS _lim;
+    std::vector<SM_OUTPUT> _result;
     double _errMax;
+    double _rayon_circle_for_courbure;
+    double _interval_courbure;
     double _sampling;// temps d'echantionnage
     int _timeStep;// interval pour generer le fichier
     std::string _fileName;

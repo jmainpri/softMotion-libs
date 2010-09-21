@@ -390,6 +390,7 @@ typedef struct SM_OUTPUT{
   std::vector<double> Time;
   /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk for n axes*/
   std::vector<SM_COND> IC;
+  int premier_point;
 }SM_OUTPUT;
 
 

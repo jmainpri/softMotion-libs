@@ -49,7 +49,7 @@
 #include "softMotion.h"
 
 #include "QSoftMotionPlanner.h"
-
+#define PI 3.14159265
 using namespace std;
 
 /** @file QSoftMotionPlanner.cpp
@@ -141,7 +141,6 @@ QWidget *parent
 //     connect(this->doubleSpinBox_Amax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 //     connect(this->doubleSpinBox_Vmax, SIGNAL(valueChanged(double)), this, SLOT(choose_curve()));
 
-    connect(this->pushButtonComputeTrajApprox,SIGNAL(clicked(bool)),this,SLOT(computeTraj()));
     connect(this->action_Open,SIGNAL(triggered()),this,SLOT(openFile()));
     connect(this->actionFull_screen, SIGNAL(triggered()),this,SLOT(fullScreen()));
     connect(this->action_Close_2, SIGNAL(triggered(bool)), this, SLOT(closeFile()));
@@ -229,56 +228,17 @@ QWidget *parent
       _flag_haus_actif = 0;
 
   #else
-    int type_courbe = 0;
-    double Jmax=0.0, Amax=0.0, Vmax=0.0, sampling =0.001, err = 0.001;
-    int step;
-
-//     cout<<endl<<"**** Set the Approx and Motion Law Parameters please ****"<<endl;
-//     cout << "Jmax : " << endl;
-//       cin>> Jmax;
-//     cout << "Amax : " << endl;
-//       cin>> Amax;
-//     cout << "Vmax : " << endl;
-//       cin>> Vmax;
-//     cout << "sampling : " << endl;
-//       cin>> sampling;
-//     cout << "errMax : " << endl;
-//       cin>> err;
-//       cout << "time step for the exported file : "<< endl;
-//      cin>> step;
-
-cout << endl << "******* Please enter the inputs in order the : Jmax, Amax, Vmax, SampTime, ErrMax, ExpTime *******"
-<< endl << " Please enter 'help' for more informations " << endl;
-cin >> Jmax >> Amax >> Vmax >> sampling >> err >> step;
-
-
-      _lim.maxJerk = Jmax;
-      _lim.maxAcc  = Amax;
-      _lim.maxVel  = Vmax;
-      _sampling = sampling;
-      _errMax = err;
-      _timeStep = step;
-      _flag_haus_actif = 0;
-
-    cout<<endl<<"**** Choose a path type please ****"<<endl;
-    cout<<"0--none"<<endl<<"1--droite"<<endl<<"2--circle"<<endl<<"3--sinusoid"<<endl<<"4--parabole"<<endl<<"5--file"<<endl;
-    cin>>type_courbe;
-    switch (type_courbe){
-    case 0:                       break;
-    case 1:   defineFunction_l(); break;
-    case 2:   defineFunction_c(); break;
-    case 3:   defineFunction_s(); break;
-    case 4:   defineFunction_p(); break;
-    case 5:
-      {
+    int ExpTime = 10;
+    double jmax=0.9, amax=0.3, vmax=0.04, SampTime =0.001, ErrMax = 0.001;
+    std::string help;
+    cout << endl << "******* Please enter the inputs in order the : Jmax, Amax, Vmax, SampTime, ErrMax, ExpTime *******"
+    << endl << " Please enter 'help' for more informations " << endl;
+    cin >> jmax >> amax >> vmax >> SampTime >> ErrMax >> ExpTime;
     cout << "Absolute file path : " << endl;
     cin>> _fileName;
     cout << "open the file " << _fileName << endl;
-    openFile();
-      }
-      break;
-    default:                      break;
-    }
+//     approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, true, _fileName);
+    testCercleForFunction_Curvature_Interval(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime);
 
   #endif
   _nbCurve = 0;
@@ -383,13 +343,82 @@ void QSoftMotionPlanner::resetPlanner(){
 }
 
 
-// int QSoftMotionPlanner::approximate(double jmax,double amax,double vmax,double SampTime, double ErrMax, int ExpTime, FILE* fileptr, std::vector<SM_OUTPUT> result) {
-//
-//
-//
-//
-//   return 0;
-// }
+void QSoftMotionPlanner::approximate(double jmax,double amax,double vmax,double SampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName) {
+
+    FILE *fp_segMotion = NULL;
+    double tu = 0.0,ts = 0.0;
+    _lim.maxJerk = jmax;
+    _lim.maxAcc  = amax;
+    _lim.maxVel  = vmax;
+    _sampling = SampTime;
+    _errMax = ErrMax;
+    _timeStep = ExpTime;
+    _flag_haus_actif = 0;
+    _fileName = fileName;
+    SM_OUTPUT tempo_motion;
+
+    std::string str;
+    std::string str2;
+    Curve curv;
+
+    cout << "Open file " << this->_fileName << endl;
+
+    if (parseSvg(this->_fileName.c_str(), curv.path, &curv.width, &curv.height) == SM_ERROR) {
+      cout << "... file parsed " << endl;
+      return;
+    }
+
+    initializeApproxVariables();
+    constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
+    str2.clear();
+    str2 += "QtIdealTraj.dat";
+    saveTraj(str2, curv.traj);
+
+    /* Handle the path */
+    curv.setIsDraw(false);
+    curv.draw();
+    _curve.push_back(curv);
+    cout << " ... Ideal Trajectory Computed " << endl;
+
+    ChronoOn();
+    computeTraj();
+    cout << " ... Approximated Trajectory Computed " << endl;
+
+
+    if(flagExport) {
+       genFileTraj();
+     cout << " ... File exported " << endl;
+    }
+
+  /* fill result */
+  for (unsigned int i = 1; i < _result.size(); i++){
+    for (unsigned int j = 0; j < _result.size()-i ; j++){
+      if (_result[j].premier_point > _result[j+1].premier_point){
+        tempo_motion = _result[j];
+        _result[j] = _result[j+1];
+        _result[j+1] = tempo_motion;
+      }
+    }
+  }
+
+  fp_segMotion = fopen("segMotion.dat", "w");
+  if(fp_segMotion==NULL) {
+    std::cout << " cannont open file to write the trajectory" << std::endl;
+    return;
+  }
+
+  for (unsigned int i = 0; i < _result.size(); i++){
+    fprintf(fp_segMotion, "%d %lf %lf %lf %lf %lf %lf %lf\n", _result[i].premier_point, (_result[i].premier_point + 1) * _sampling, _result[i].Jerk[0], _result[i].Jerk[1], _result[i].Jerk[2], _result[i].Time[0], _result[i].Time[1], _result[i].Time[2]);
+  }
+
+  fclose(fp_segMotion);
+  cout << "motion file exported" << endl;
+
+  ChronoTimes(&tu, &ts);
+  ChronoPrint("");
+  ChronoOff();
+  return ;
+}
 
 
 void QSoftMotionPlanner::genPlotFile(){
@@ -660,6 +689,65 @@ void QSoftMotionPlanner::defineFunction_p(){
   return;
 }
 
+
+void QSoftMotionPlanner::testCercleForFunction_Curvature_Interval(double jmax,double amax,double vmax,double SampTime, double ErrMax, int ExpTime){
+  _lim.maxJerk = jmax;
+  _lim.maxAcc  = amax;
+  _lim.maxVel  = vmax;
+  _sampling = SampTime;
+  _errMax = ErrMax;
+  _timeStep = ExpTime;
+  double tu = 0.0,ts = 0.0;
+  FILE *fp_inter_curva_circle = NULL;
+  std::vector<double> courbure_cercle; // stock the curvatures of different circles
+  int nb_test = 100;
+  ChronoOn();
+  for (int i = 0; i < nb_test; i++){
+    double r = 0.01;
+    double f = 20.0;
+    Curve curv;
+    Path lpath;
+    SubPath lsubpath;
+
+    _rayon_circle_for_courbure = r * (1+i); // raise the radius of circle by step of 0.001m
+    lsubpath.cercle.center.x = 0.0;
+    lsubpath.cercle.center.y = 0.0;
+    lsubpath.cercle.radius = _rayon_circle_for_courbure;
+    lsubpath.cercle.sinus_para.frequency = f;
+    lsubpath.type = CERCLE;
+    lpath.subpath.push_back(lsubpath);
+    curv.path.push_back(lpath);
+    constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
+
+    curv.draw();
+    curv.setIsDraw(display());
+    _curve.push_back(curv);
+
+    computeTraj();
+    courbure_cercle.push_back(1.0/_rayon_circle_for_courbure);
+    _vec_interval_courbure.push_back(_interval_courbure);
+  }
+
+  fp_inter_curva_circle = fopen("intervale_courbure.dat", "w");
+  if(fp_inter_curva_circle==NULL) {
+    std::cout << " cannont open file to write the interval_curvature" << std::endl;
+    return;
+  }
+
+  for (int i = 0; i < nb_test; i++){
+    fprintf(fp_inter_curva_circle, "%lf %lf\n", courbure_cercle[i], _vec_interval_courbure[i]);
+  }
+
+  fclose(fp_inter_curva_circle);
+  cout << "interval_curvature file exported" << endl;
+
+  ChronoTimes(&tu, &ts);
+  ChronoPrint("");
+  ChronoOff();
+  return;
+}
+
+
 /* the definition of a cercle x = acos(2PIft); y = asin(2PIft) */
 void QSoftMotionPlanner::defineFunction_c(){
   Curve curv;
@@ -838,6 +926,7 @@ void QSoftMotionPlanner::openFile()
     /* computation of the trajectory*/
 
     constructTrajSvg(curv.path,_sampling, _lim, curv.traj);
+//     changeProfile(curv.traj);
 
     str2.clear();
     str2 += "QtIdealTraj.dat";
@@ -884,9 +973,10 @@ void QSoftMotionPlanner::openFile()
     }
     cout << "... file parsed " << endl;
 
-    QSoftMotionPlanner::initializeApproxVariables();
+//    initializeApproxVariables();
     /* computation of the trajectory*/
     constructTrajSvg(curv.path, _sampling, _lim, curv.traj);
+//     changeProfile(curv.traj);
 
     str2.clear();
     str2 += "QtIdealTraj.dat";
@@ -898,9 +988,7 @@ void QSoftMotionPlanner::openFile()
     _curve.push_back(curv);
     cout << " ... Ideal Trajectory Computed " << endl;
 
-
   computeTraj();
-
     cout << " ... Approximated Trajectory Computed " << endl;
   genFileTraj();
     cout << " ... File exported " << endl;
@@ -923,6 +1011,18 @@ void QSoftMotionPlanner::fullScreen()
   return;
 }
 
+// void QSoftMotionPlanner::changeProfile(std::vector<SM_CURVE_DATA>  &traj){
+//   calcul_courbure(traj, _courbure);
+//   for (unsigned int i = 0; i < traj.size(); i++){
+//     if (traj[i].du * traj[i].du * _courbure[i] > traj[i].ddu){
+//       traj[i].du =
+//     }
+//   }
+/*
+
+  return;
+}*/
+
 void QSoftMotionPlanner::closeFile()
 {
   this->_curve.clear();
@@ -932,7 +1032,6 @@ void QSoftMotionPlanner::closeFile()
 #endif
   return;
 }
-
 
 void QSoftMotionPlanner::computeTrajInAdvance(){
 
@@ -945,7 +1044,7 @@ void QSoftMotionPlanner::computeTrajInAdvance(){
   double max_jerk = 0.0;
   double errMax_pos_traj = 0.0;
   SM_LIMITS lim;
-  kinPoint kc_subTraj;
+//   kinPoint kc_subTraj;
 
   Curve curv2; //approximated curve
 
@@ -1034,16 +1133,15 @@ void QSoftMotionPlanner::computeTrajInAdvance(){
   return;
 }
 
-
-
 void QSoftMotionPlanner::computeTraj()
 {
 #ifdef ENABLE_DISPLAY
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    cout << "compute the trajectory" << endl;
 #endif
 
   SM_LIMITS lim;
+  SM_OUTPUT outMotion;
+  int premier_point_motionSeg;
   int nbIntervals_local = 0;
   int kkk = 0;
   int hh = 0;
@@ -1052,6 +1150,7 @@ void QSoftMotionPlanner::computeTraj()
   int flag_sum = 0; //it shows whether we need to divise a sub-trajectory
   int starting_point_each_seg = 0; // the starting points of each sub-trajectory
   int nb_seg_total = 0;
+  int test_for_circle_only = 0;
   double tu = 0.0,ts = 0.0; // chrono on et off
   double tic = 0.0;
   double time_total = 0.0;
@@ -1095,10 +1194,11 @@ void QSoftMotionPlanner::computeTraj()
   lim.maxVel = _lim.maxVel;
   tic = _sampling;
   err_max_def_pos = _errMax;
-  err_max_def_vel = lim.maxVel/20.0;
+  err_max_def_vel = lim.maxVel;
 
 //   Path_Length(_curve.front().path, &longeur_path);
-  saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
+
+//  saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
   _curve.begin()->setIsDraw(display());
   time_total = (_curve.front().traj.size()-1) * tic;
 
@@ -1139,7 +1239,7 @@ void QSoftMotionPlanner::computeTraj()
     curv_temp_cond.trajList.resize(curv_temp_divis.trajList.size());
     for(iter_stock = curv_stock.trajList.begin(); iter_stock != curv_stock.trajList.end(); iter_stock ++){
       iter_stock->traj.clear();
-      iter_stock->flag_traj = -1; //100
+      iter_stock->flag_traj = -1;
     }
     for(iter_temp_cond = curv_temp_cond.trajList.begin(); iter_temp_cond != curv_temp_cond.trajList.end(); iter_temp_cond ++){
       iter_temp_cond->traj.clear();
@@ -1157,8 +1257,6 @@ void QSoftMotionPlanner::computeTraj()
       }
       iter_temp_cond ++;
     }
-
-
 
     iter_temp_divis = curv_temp_divis.trajList.begin();
     curv_divis.trajList.resize(nbIntervals_local);
@@ -1222,6 +1320,7 @@ void QSoftMotionPlanner::computeTraj()
           iter_stock->traj.push_back(curv_donne);
           kkk ++;
         }
+
         /* iter_stock->flag_traj = 1 --> the error is BAD */
         iter_stock->flag_traj = 1;
         iter_stock++;
@@ -1230,12 +1329,24 @@ void QSoftMotionPlanner::computeTraj()
     }
     else{
       /* save the approximated subTraj into curv_stock */
+      if(test_for_circle_only == 0){
+        _interval_courbure = 2 * PI * _rayon_circle_for_courbure / nbIntervals_local ;
+        test_for_circle_only = 1;
+      }
       iter_stock->point_depart = iter_temp_divis->point_depart;
+      premier_point_motionSeg = iter_temp_divis->point_depart;
       size_segment = iter_divis->traj.size();
+      for(int nb_motionSeg = 0; nb_motionSeg < 3; nb_motionSeg ++){
+        outMotion.premier_point = premier_point_motionSeg + nb_motionSeg * int(iter_divis->motion_par_seg[nb_motionSeg].Time[0]/_sampling);
+        outMotion.Jerk = iter_divis->motion_par_seg[nb_motionSeg].Jerk;
+        outMotion.Time = iter_divis->motion_par_seg[nb_motionSeg].Time;
+        _result.push_back(outMotion);
+      }
       for (int k = 0; k < size_segment; k++){
         curv_donne = iter_divis->traj[k];
         iter_stock->traj.push_back(curv_donne);
       }
+
        /* iter_stock->flag_traj = 0 the error is OK */
       iter_stock->flag_traj = 0;
       iter_stock++;
@@ -1271,6 +1382,7 @@ void QSoftMotionPlanner::computeTraj()
           curv_donne = iter_stock->traj[k];
           iter_temp_divis->traj.push_back(curv_donne);
         }
+
         iter_temp_divis ++;
         flag_sum ++;
       }
@@ -1290,6 +1402,7 @@ void QSoftMotionPlanner::computeTraj()
            curv2.traj[k].t = k * tic;
         } /* end for copy value in curv2 */
       } /* end else if (iter_stock->flag_traj == 0) -->  err < errMax*/
+
     }
 
 
@@ -1305,7 +1418,6 @@ void QSoftMotionPlanner::computeTraj()
             qwtPlot_TrajPosApprox, qwtPlot_TrajVelApprox, qwtPlot_TrajAccApprox);
 #endif
   Calcul_Error(_curve.begin()->traj, curv2.traj, &_curve.begin()->errorMax, _err_traj, &errMax_pos_traj);
-
 #ifdef ENABLE_DISPLAY
   lcdNumber_trajError->setValue(errMax_pos_traj);
   lcdNumber_Jmax->setValue(max_jerk);
@@ -1339,6 +1451,10 @@ void QSoftMotionPlanner::computeTraj()
 #endif
   return;
 }
+
+
+
+
 
 void QSoftMotionPlanner::maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel){
   double v = 0.0;
