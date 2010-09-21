@@ -3,9 +3,9 @@
  % saveas(gcf, 'file', 'epsc2');
 
 
-
+ function QSoftMotionPlannerPlot(fileName)
  french = 0;
-fileName = ['droite'];
+%fileName = ['droite'];
 withJerk = 0;
 fileCurve = ['SmCurves_',fileName, '.dat'];
 fileDiscr = ['SmDiscr_',fileName, '.dat'];
@@ -507,4 +507,4 @@ end
 
 
 
-
+ end
