@@ -299,7 +299,6 @@ typedef struct SM_TIMES_ADJUSTED_MOTION {
 } SM_TIMES_ADJUSTED_MOTION;
 
 typedef struct SM_SEGMENT {
-#include "softMotionStruct.h"
 	int type; /* 1 to 7 */
 	double time;
 	int timeM;
