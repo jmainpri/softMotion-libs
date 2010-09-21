@@ -6954,7 +6954,7 @@ if(0) {
 	for(cur2= cur->xmlChildrenNode; cur2!=NULL; cur2= cur2->next) {
 	  if(!xmlStrcmp(cur2->name, (const xmlChar *)"path")) {
 
-	if(0) {    
+	if(0) {
 		std::cout << "path foud in a group " << cur2->name << std::endl;
 	}
 	    attribute = xmlGetProp(cur2, (xmlChar*)"d");
@@ -8053,3 +8053,124 @@ SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vect
     }
     return SM_OK;
 }
+
+SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> &curvature){
+
+  unsigned int seuil = 65500;
+  double curvature_tempo = 0.0;
+  double prem_deriv_tempo = 0.0;
+  double deux_deriv_tempo = 0.0;
+  std::vector<double> prem_deriv_courbe;
+  std::vector<double> deux_deriv_courbe;
+
+//   prem_deriv_courbe.resize(traj.size());
+//   deux_deriv_courbe.resize(traj.size());
+
+  for (int i = 0; i < (traj.size() - 1); i++){
+    if (traj[i+1].Pos[0] != traj[i].Pos[0]){
+      prem_deriv_tempo = (traj[i+1].Pos[1] - traj[i].Pos[1]) / (traj[i+1].Pos[0] - traj[i].Pos[0]);
+      prem_deriv_courbe.push_back(prem_deriv_tempo);
+    }
+    else{
+      prem_deriv_tempo = seuil;
+      prem_deriv_courbe.push_back(prem_deriv_tempo); // pour traiter le cas vertical
+    }
+  }
+  prem_deriv_courbe.push_back(prem_deriv_tempo); // ajouter le dernier deriv : meme que l'avant dernier
+
+  for (int i = 0; i < (traj.size() - 1); i++){
+    if (traj[i+1].Pos[0] != traj[i].Pos[0]){
+      deux_deriv_tempo = (prem_deriv_courbe.at(i+1) - prem_deriv_courbe.at(i)) / (traj[i+1].Pos[0] - traj[i].Pos[0]);
+      deux_deriv_courbe.push_back(deux_deriv_tempo);
+    }
+    else{
+      deux_deriv_tempo = seuil;
+      deux_deriv_courbe.push_back(deux_deriv_tempo); // pour traiter le cas vertical
+    }
+  }
+  deux_deriv_courbe.push_back(deux_deriv_tempo); // ajouter le dernier deriv : meme que l'avant dernier
+
+  for (int i = 0; i < traj.size(); i++){
+    curvature_tempo = (fabs(deux_deriv_courbe.at(i))) /
+                      pow((1 + prem_deriv_courbe.at(i)*prem_deriv_courbe.at(i)), 1.5);
+    curvature.push_back(curvature_tempo);
+  }
+
+
+  return SM_OK;
+}
+
+/*
+SM_STATUS calcul_courbure(std::list<Path> &path, std::vector<double> &curvature, double tic){
+    double t = 0.0;
+    double sample_time = 0.001;
+    int i = 0;
+    int j = 0;
+    Point2D dot;
+    Point2D previous_dot;
+    int nb_boucle = 1/sample_time;
+    std::vector<double> tangente_pre;
+    std::vector<double> tangente_sec;
+    std::vector<double> x_diff;
+    std::vector<double> y_diff;
+  //  std::vector<double> curvature;
+
+    std::list<SubPath>::iterator iter;
+
+    for(iter=path.back().subpath.begin(); iter != path.back().subpath.end(); iter++) {
+
+            if(iter->type == LINE) {
+            double x_diff = (iter->end.x - iter->start.x);
+            double y_diff = (iter->end.y - iter->start.y);
+            sub_length = sqrt((iter->end.x - iter->start.x)*(iter->end.x - iter->start.x) + (iter->end.y - iter->start.y)*(iter->end.y - iter->start.y));
+
+             for (t = 0.0; t<=1; t = t+sample_time){
+                 vel_path_x.push_back(x_diff/sub_length);
+                 vel_path_y.push_back(y_diff/sub_length);
+             }
+
+            TotalLength = sub_length + TotalLength;
+            Lac[i] = TotalLength;
+        }
+
+
+         if (iter->type == BEZIER3){
+
+            for (t = 0.0; t < 1; t = t+sample_time) {
+                dot = bezier_point (t, iter->start, iter->bezier3[0], iter->bezier3[1], iter->end);
+
+                if ((t > 0) || (iter!=path.back().subpath.begin())) {
+
+                    x_diff.push_back ( dot.x - previous_dot.x );
+                    y_diff.push_back ( dot.y - previous_dot.y );
+
+                    if (x_diff[j-1] != 0)   {tangente_pre.push_back(y_diff[j-1]/x_diff[j-1]);}
+                    else                    {tangente_pre[j-1] = tangente_pre[j-2];}
+
+                    if ((t > sample_time) || (iter!=path.back().subpath.begin())){
+                        tangente_sec.push_back ( (tangente_pre[j-1] - tangente_pre[j-2])/x_diff[j-2] );
+                        curvature.push_back((abs(tangente_sec[j-2]))/pow((1+tangente_pre[j-2]*tangente_pre[j-2]),1.5));
+                       // curvature_rad.push_back(1/curvature[j-2]);
+                    }
+                }
+                j++;
+                previous_dot = dot;
+            }
+           // sum = sum + curvature[]
+        }
+    }
+
+    double seuil = 1000;
+
+
+    for (int p = 0; p<curvature.size();p++){
+        if (abs(curvature[p]) < seuil){
+            curvature_filtre.push_back(curvature[p]);
+        }else cout << curvature[p]<<endl;
+    }
+cout<<"break point"<<endl;
+
+cout<<"break point"<<endl;
+    return SM_OK;
+}
+*/
