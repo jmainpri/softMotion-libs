@@ -175,8 +175,8 @@ extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC,std::vector<SM_
 
 // Functions from Wang
 /** @brief motion profile
-  *  
-  * stock the position, velocity and acceleration of trajectories 
+  *
+  * stock the position, velocity and acceleration of trajectories
   *
   * @param &IdealTraj : the ideal trajectory with motion law
   * @param &vel_discr_X : the discretised velocity in axis X
@@ -186,14 +186,14 @@ extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC,std::vector<SM_
   * @param &pos_discr_X : the discretised position in axis X
   * @param &pos_discr_Y : the discretised position in axis Y
   * @return SM_OK : the status of SoftMotion
-  */     
+  */
 extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y);
- 
+
 // extern SM_STATUS Vel_Profile_Path(std::list<Path> &path, std::vector<double> &vel_path_x, std::vector<double> &vel_path_y, double  sample_time);
 // extern SM_STATUS Courbure(std::list<Path> &path, std::vector<double> &curvature);
 
 /** @brief computation of the error
-  *  
+  *
   * calculate the error between ideal and approximated trajectories
   *
   * @param &IdealTraj : the ideal trajectory with motion law
@@ -202,7 +202,7 @@ extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector
   * @param &error : vector for stocking all the values of error
   * @param *val_err_max : pointer of the maximum value of error
   * @return SM_OK : the status of SoftMotion
-  */    
+  */
 extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
 // extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
 
@@ -210,22 +210,22 @@ extern SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vec
 
 
 /** @brief calculation of length
-  *  
+  *
   * calculate the total length of curves
   *
   * @param &path : a curve
   * @param *longeur : pointer of the length of curves.
   * @return SM_OK : the status of SoftMotion
-  */    
+  */
 extern SM_STATUS Path_Length(std::list<Path> &path, double *longeur);
 
 /** @brief computation of the error
-  *  
+  *
   * calculate the error between every sub-ideal and approximated trajectories
   *
   * @param &IdealTraj : the sub-ideal trajectory with motion law
   * @param &ApproxTraj : the sub-approximated trajectory with motion law
-  * @param *errorMax : pointer for the position of the maximum error found 
+  * @param *errorMax : pointer for the position of the maximum error found
   * @param &error : vector for stocking all the values of error
   * @param *val_err_max : pointer of the maximum value of error
   * @param ind : size of the ideal and approximated trajectories
@@ -237,7 +237,9 @@ extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::
 extern SM_STATUS Calcul_Error_Vilocity(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error_vit, double *val_err_max);
 
 extern SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *val_err_max, int ind);
- 
+
+extern SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> &curvature);
+
 #endif
 #endif
 
