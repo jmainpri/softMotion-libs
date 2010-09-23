@@ -5881,6 +5881,108 @@ SM_STATUS sm_AVX_TimeVar( std::vector<double> IC,  std::vector<double> T, std::v
   return SM_OK;
 }
 
+
+SM_STATUS sm_AVX_TimeVar( std::vector<SM_SEG> seg, std::vector<double> t, std::vector<double> &a, std::vector<double> &v, std::vector<double> &x){
+
+  /* This function computes the position, acceleration, vel at a given time (t array with nbSample elements) given
+     -- IC[3]: Array of initial condition in acceleration (IC[0]) velocity (IC[1]) position (IC[2])
+     -- *T   : Array of time segment
+     -- *J   : Arrar of Jerk in each segment
+     -- nbSeg : number of segment
+     -- *t : array of sample points (echantillonage) in time
+     -- nbSample : length of *t
+     -- *a : output array of computed acceleration
+     -- *v : output array of computed velocity
+     -- *x : output array of computed position
+  */
+
+  std::vector<double> Tac;
+  std::vector<double> const0;
+  std::vector<double> const1;
+  std::vector<double> const2;
+  std::vector<double> const3;
+  unsigned int i, j,n ;
+  double auxT;
+
+  /*---------------------------Initialize-------------------*/
+  // allocate memory for local variable
+
+  Tac.resize(seg.size());
+  const0.resize(seg.size());
+  const1.resize(seg.size());
+  const2.resize(seg.size());
+  const3.resize(seg.size());
+
+  // Initilize accumulate time end segment constant
+  for (i = 0; i < seg.size(); i++){
+    if (i == 0) Tac.at(i) = 0.0;
+    else {
+      Tac.at(i) = 0.0;
+      for (j = 0; j < i; j ++){
+	Tac.at(i) = Tac.at(i) + seg.at(j).time;
+      }
+    }
+    const0[i] = 0.0;
+    const1[i] = 0.0;
+    const2[i] = 0.0;
+    const3[i] = 0.0;
+  }
+  // Initilize acceleration, velocity anh position
+  a.resize(t.size());
+  v.resize(t.size());
+  x.resize(t.size());
+
+  for (i = 0;  i < t.size(); i++){
+    a.at(i) =  0.0;
+    v.at(i) =  0.0;
+    x.at(i) =  0.0;
+  }
+
+  /*------------------- Compute end segment constant ---------------------------------*/
+  for ( n = 0; n < seg.size(); n++){
+
+    for ( i = 0; i < n; i ++) {
+      const0[n] = const0[n] + seg[i].jerk * seg[i].time;
+      const1[n] = const1[n] + seg[i].jerk * pow(seg[i].time,2.0) / 2.0;
+      const2[n] = const2[n] + seg[i].jerk * pow(seg[i].time,3.0) / 6.0;
+
+      for (j = i + 1; j < n; j ++) {
+
+	const1[n] = const1[n] + seg[i].jerk * seg[i].time * seg[j].time;
+	const2[n] = const2[n] + seg[i].jerk * seg[i].time * pow(seg[j].time,2.0) / 2.0;
+      }
+
+    }
+
+    for (j = 0; j < n; j++){
+      const3[n] = const3[n] + const1[j] * seg[j].time;
+    }
+  }
+
+  /*------------------- Compute AVX ---------------------------------*/
+  for (i = 0; i < t.size(); i++){
+
+    // Find segment Index
+    n = seg.size() -1;
+    while (t.at(i) < Tac[n]) { n = n - 1;}
+
+    auxT = t.at(i) - Tac[n];
+
+     a.at(i) = seg[n].jerk * auxT                + seg[0].IC.a;
+     v.at(i) = seg[n].jerk * pow(auxT,2.0) / 2.0 + seg[0].IC.a * ( t.at(i) )                + seg[0].IC.v;
+     x.at(i) = seg[n].jerk * pow(auxT,3.0) / 6.0 + seg[0].IC.a * pow(( t.at(i) ),2.0) / 2.0 + seg[0].IC.v * ( t.at(i) ) + seg[0].IC.x;
+
+     a.at(i) = a.at(i) + const0[n] ;
+     v.at(i) = v.at(i) + const0[n] * auxT              + const1[n];
+     x.at(i) = x.at(i) + const0[n] * pow(auxT,2.0) / 2 + const1[n] * auxT +  const2[n] + const3[n];
+
+  }
+  return SM_OK;
+}
+
+
+
+
 SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj,std::vector<kinPoint> &discPoint, std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<int>
 &IntervIndex){
 
@@ -6507,7 +6609,7 @@ SM_STATUS convertMotionToCurve_InAdvance(std::vector<SM_OUTPUT> &motion, double 
   ApproxTraj.clear();
   std::vector<double> Tloc,Jloc;
   std::vector<double> aloc, vloc, xloc;
-  int timefile = 0;  double t0 = 0.0;
+    double t0 = 0.0;
   std::vector<double>  tl;
   int interval = 0;
 
@@ -8054,6 +8156,7 @@ SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vect
     return SM_OK;
 }
 
+
 SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> &curvature){
 
   unsigned int seuil = 65500;
@@ -8174,3 +8277,93 @@ cout<<"break point"<<endl;
     return SM_OK;
 }
 */
+
+void SM_TRAJ::clear() 
+{
+  qStart.clear();
+  qGoal.clear();
+  traj.clear();
+  duration.clear();
+  return;
+}
+
+int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
+{
+
+  SM_COND IC;
+  SM_STATUS resp;
+
+  std::vector<double> t(1);
+  std::vector<double> a(1);
+  std::vector<double> v(1);
+  std::vector<double> x(1);
+
+  cond.clear();
+
+  for(unsigned int i=0;  i< traj.size(); i++) {
+
+    t[0] = time;
+    resp = sm_AVX_TimeVar(traj[i], t, a, v, x);
+    IC.a = a[0];
+    IC.v = v[0];
+    IC.x = x[0];
+    cond.push_back(IC);
+  }
+  return 0;
+}
+
+//int SM_TRAJ::extractTraj(double time1, double time2, ){
+//
+//  return 0;
+//}
+//
+int SM_TRAJ::computeTimeOnTraj()
+{
+  duration.clear();
+  duration.resize(traj.size());
+
+  for(unsigned int i=0;  i< traj.size(); i++) {
+    for (unsigned int j = 0; j < traj[i].size(); j++){
+      if (j == 0) traj[i][j].timeOnTraj = 0.0;
+      else {
+	traj[i][j].timeOnTraj = 0.0;
+	for (unsigned int k = 0; k < j; k ++){
+	  traj[i][j].timeOnTraj = traj[i][j].timeOnTraj + traj[i][k].time;
+	}
+      }
+    }
+    duration[i] = traj[i][traj[i].size()-1].timeOnTraj + traj[i][traj[i].size()-1].time;
+  }
+  return 0;
+}
+
+void SM_TRAJ::print() 
+{
+  this->computeTimeOnTraj();
+  std::cout.precision(4);
+  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
+  cout<<  "             TRAJECTORY               " << std::endl;  
+  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
+  cout << " Number of joints: " << traj.size() <<  std::endl; 
+  cout << " qStart: " <<  std::endl; 
+  for(unsigned int j = 0; j < qStart.size(); j++){
+    cout << std::fixed << " (" << j << "){" << qStart[j] << "}" ;
+  }
+  cout <<  std::endl; 
+  cout << " qGoal: " <<  std::endl; 
+  for(unsigned int j = 0; j < qGoal.size(); j++){
+    cout << std::fixed << " (" << j << "){" << qGoal[j] << "}" ;
+  }
+  cout <<  std::endl; 
+  for(unsigned int j = 0; j < traj.size(); j++){
+    std::cout << "===========  Traj on axis " << j <<" ==========" <<  std::endl; 
+    std::cout << "   Number of segments: " << traj[j].size() <<  std::endl; 
+    std::cout << "   Duration:           " << duration[j] <<  std::endl; 
+    std::cout << "   Segments:" <<  std::endl; 
+    for(unsigned int k=0; k<traj[j].size();k++) {
+      std::cout << std::fixed << " (" << k << "){Ti= "<< traj[j][k].timeOnTraj <<" }{T=" << traj[j][k].time << " , J=" <<  traj[j][k].jerk << "}"<<std::endl;
+    }
+  }
+
+}
+

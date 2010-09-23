@@ -383,14 +383,46 @@ typedef struct SM_COND_DIM{
  * @brief Structure of output
  */
 typedef struct SM_OUTPUT{
-    /** @brief output jerk for n axes*/
+    /** @brief output jerk */
   std::vector<double> Jerk;
-  /** @brief output time for n axes*/
+  /** @brief output time */
   std::vector<double> Time;
-  /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk for n axes*/
+  /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk*/
   std::vector<SM_COND> IC;
   int premier_point;
 }SM_OUTPUT;
+
+//typedef struct SM_AXIS_TRAJ{
+//    /** @brief output jerk */
+//  std::vector<double> Jerk;
+//  /** @brief output time */
+//  std::vector<double> Time;
+//  /** @brief output initial condition (at the beginning of the segmnent, before applying Jerk*/
+//  std::vector<SM_COND> IC;
+//  /** @brief time on the traj */
+//  std::vector<double> TimeOnTraj; 
+//}SM_OUTPUT;
+
+typedef struct SM_SEG{
+  double timeOnTraj;
+  SM_COND IC;
+  double  time;
+  double jerk;
+} SM_SEG;
+
+class SM_TRAJ {
+ public:
+  std::vector<double> qStart;
+  std::vector<double> qGoal;
+  std::vector<double> duration;
+  std::vector< std::vector<SM_SEG> > traj;
+  void sm_traj(){};
+  //virtual ~sm_traj();
+  void clear();
+  int getMotionCond(double time, std::vector<SM_COND> & cond);
+  int computeTimeOnTraj();
+  void print();
+};
 
 
 // #ifdef __cplusplus
