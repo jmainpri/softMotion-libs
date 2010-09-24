@@ -7802,67 +7802,67 @@ void wait_for_key ()
   return;
 }
 
-int main(int argc, char **argv){
 
-
-
-std::vector<SM_OUTPUT> motion;
-//   SM_OUTPUT motion[SM_NB_INTERVALS_MAX];
-  int nbJerkConst;
-
-  FILE *ofp;
-  char outputFilename[] = "out.txt";
-  int i;
-  std::string fileName;
-
-  ofp = fopen(outputFilename, "w");
-
-  if (ofp == NULL) {
-    fprintf(stderr, "Can't open output file %s!\n", outputFilename);
-  }
-
-fileName.clear();
-fileName.append(argv[1]);
-  sm_Main(motion, &nbJerkConst, fileName);
-  printf("Approximation OK --> nbJekConst = %d\n",nbJerkConst);
-
-
-  fprintf(ofp, "Jx = [");
-  for (i = 0; i < nbJerkConst; i++){
-    fprintf(ofp,"%lf ", motion[i].Jerk[0]);
-  }
-  fprintf(ofp, "] \n Tx = [");
-  for (i = 0; i < nbJerkConst; i++){
-    fprintf(ofp,"%lf ", motion[i].Time[0]);
-  }
-
-  fprintf(ofp, "] \n");
-  fprintf(ofp, "Jy = [");
-  for (i = 0; i < nbJerkConst; i++){
-    fprintf(ofp,"%lf ", motion[i].Jerk[1]);
-  }
-  fprintf(ofp, "] \n Ty = [");
-  for (i = 0; i < nbJerkConst; i++){
-    fprintf(ofp,"%lf ", motion[i].Time[1]);
-  }
-
-
-  fprintf(ofp, "] \n Z");
-  fprintf(ofp, "Jz = [");
-  for (i = 0; i < nbJerkConst; i++){
-    fprintf(ofp,"%lf ", motion[i].Jerk[2]);
-  }
-  fprintf(ofp, "] \n Tz = [");
-  for (i = 0; i < nbJerkConst; i++){
-    fprintf(ofp,"%lf ", motion[i].Time[2]);
-  }
-  fprintf(ofp, "]");
-  fclose(ofp);
-
-  return 0;
-
-}
-
+//int main(int argc, char **argv){
+//
+//
+//  std::vector<SM_OUTPUT> motion;
+//  //SM_OUTPUT motion[SM_NB_INTERVALS_MAX];
+//  int nbJerkConst;
+//
+//  FILE *ofp;
+//  char outputFilename[] = "out.txt";
+//  int i;
+//  std::string fileName;
+//
+//  ofp = fopen(outputFilename, "w");
+//
+//  if (ofp == NULL) {
+//    fprintf(stderr, "Can't open output file %s!\n", outputFilename);
+//  }
+//
+//  fileName.clear();
+//  fileName.append(argv[1]);
+//  sm_Main(motion, &nbJerkConst, fileName);
+//  printf("Approximation OK --> nbJekConst = %d\n",nbJerkConst);
+//
+//
+//  fprintf(ofp, "Jx = [");
+//  for (i = 0; i < nbJerkConst; i++){
+//    fprintf(ofp,"%lf ", motion[i].Jerk[0]);
+//  }
+//  fprintf(ofp, "] \n Tx = [");
+//  for (i = 0; i < nbJerkConst; i++){
+//    fprintf(ofp,"%lf ", motion[i].Time[0]);
+//  }
+//
+//  fprintf(ofp, "] \n");
+//  fprintf(ofp, "Jy = [");
+//  for (i = 0; i < nbJerkConst; i++){
+//    fprintf(ofp,"%lf ", motion[i].Jerk[1]);
+//  }
+//  fprintf(ofp, "] \n Ty = [");
+//  for (i = 0; i < nbJerkConst; i++){
+//    fprintf(ofp,"%lf ", motion[i].Time[1]);
+//  }
+//
+//
+//  fprintf(ofp, "] \n Z");
+//  fprintf(ofp, "Jz = [");
+//  for (i = 0; i < nbJerkConst; i++){
+//    fprintf(ofp,"%lf ", motion[i].Jerk[2]);
+//  }
+//  fprintf(ofp, "] \n Tz = [");
+//  for (i = 0; i < nbJerkConst; i++){
+//    fprintf(ofp,"%lf ", motion[i].Time[2]);
+//  }
+//  fprintf(ofp, "]");
+//  fclose(ofp);
+//
+//  return 0;
+//
+//}
+//
 
 
 SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *errMax_pos){
