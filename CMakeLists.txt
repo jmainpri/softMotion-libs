@@ -16,7 +16,7 @@
 #
 #                                            Xavier BROQUERE on Fri Feb 26 2010
 
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6.4)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 PROJECT (SoftMotionPlanner)
 

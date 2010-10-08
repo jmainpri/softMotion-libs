@@ -16,7 +16,7 @@
 #
 #                                            Xavier BROQUERE on Tue Jun 8 2010
 
-CMAKE_MINIMUM_REQUIRED (VERSION 2.6.4)
+CMAKE_MINIMUM_REQUIRED (VERSION 2.6)
 
 configure_file (${CMAKE_SOURCE_DIR}/pkgconfig/softMotion-libs.pc.cmake ${CMAKE_BINARY_DIR}/pkgconfig/softMotion-libs.pc @ONLY)
 

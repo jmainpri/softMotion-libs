@@ -4,7 +4,7 @@ libdir=@CMAKE_INSTALL_PREFIX@/lib
 includedir=@CMAKE_INSTALL_PREFIX@/include
  
 Name: softMotion-libs
-Description: the For Research Interface library provided by kuka
+Description: Trajectory generator with bounded jerk, acceleration and velocity
 Version: @SOFTMOTION_VERSION@
 Libs: -L${libdir} -lsoftMotion
 Cflags: -I${includedir}
