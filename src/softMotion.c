@@ -8169,7 +8169,7 @@ SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> 
 //   prem_deriv_courbe.resize(traj.size());
 //   deux_deriv_courbe.resize(traj.size());
 
-  for (int i = 0; i < (traj.size() - 1); i++){
+  for (unsigned int i = 0; i < (traj.size() - 1); i++){
     if (traj[i+1].Pos[0] != traj[i].Pos[0]){
       prem_deriv_tempo = (traj[i+1].Pos[1] - traj[i].Pos[1]) / (traj[i+1].Pos[0] - traj[i].Pos[0]);
       prem_deriv_courbe.push_back(prem_deriv_tempo);
@@ -8181,7 +8181,7 @@ SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> 
   }
   prem_deriv_courbe.push_back(prem_deriv_tempo); // ajouter le dernier deriv : meme que l'avant dernier
 
-  for (int i = 0; i < (traj.size() - 1); i++){
+  for (unsigned int i = 0; i < (traj.size() - 1); i++){
     if (traj[i+1].Pos[0] != traj[i].Pos[0]){
       deux_deriv_tempo = (prem_deriv_courbe.at(i+1) - prem_deriv_courbe.at(i)) / (traj[i+1].Pos[0] - traj[i].Pos[0]);
       deux_deriv_courbe.push_back(deux_deriv_tempo);
@@ -8193,7 +8193,7 @@ SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> 
   }
   deux_deriv_courbe.push_back(deux_deriv_tempo); // ajouter le dernier deriv : meme que l'avant dernier
 
-  for (int i = 0; i < traj.size(); i++){
+  for (unsigned int i = 0; i < traj.size(); i++){
     curvature_tempo = (fabs(deux_deriv_courbe.at(i))) /
                       pow((1 + prem_deriv_courbe.at(i)*prem_deriv_courbe.at(i)), 1.5);
     curvature.push_back(curvature_tempo);
@@ -8283,7 +8283,16 @@ void SM_TRAJ::clear()
   qStart.clear();
   qGoal.clear();
   traj.clear();
-  duration.clear();
+  duration = 0.0;
+  return;
+}
+
+void SM_TRAJ::resize(int size) 
+{
+  this.clear();
+  qStart.resize(size);
+  qGoal.resize(size);
+  traj.resize(size);
   return;
 }
 
@@ -8319,8 +8328,10 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
 //
 int SM_TRAJ::computeTimeOnTraj()
 {
-  duration.clear();
-  duration.resize(traj.size());
+  std::vector<double> durationArray;
+  durationArray.clear();
+  durationArray.resize(traj.size());
+  duration = 0.0;
 
   for(unsigned int i=0;  i< traj.size(); i++) {
     for (unsigned int j = 0; j < traj[i].size(); j++){
@@ -8332,7 +8343,10 @@ int SM_TRAJ::computeTimeOnTraj()
 	}
       }
     }
-    duration[i] = traj[i][traj[i].size()-1].timeOnTraj + traj[i][traj[i].size()-1].time;
+    durationArray[i] = traj[i][traj[i].size()-1].timeOnTraj + traj[i][traj[i].size()-1].time;
+    if(durationArray[i] > duration) {
+      duration = durationArray[i];
+    }
   }
   return 0;
 }
@@ -8358,12 +8372,37 @@ void SM_TRAJ::print()
   for(unsigned int j = 0; j < traj.size(); j++){
     std::cout << "===========  Traj on axis " << j <<" ==========" <<  std::endl; 
     std::cout << "   Number of segments: " << traj[j].size() <<  std::endl; 
-    std::cout << "   Duration:           " << duration[j] <<  std::endl; 
+    std::cout << "   Duration:           " << duration <<  std::endl; 
     std::cout << "   Segments:" <<  std::endl; 
     for(unsigned int k=0; k<traj[j].size();k++) {
       std::cout << std::fixed << " (" << k << "){Ti= "<< traj[j][k].timeOnTraj <<" }{T=" << traj[j][k].time << " , J=" <<  traj[j][k].jerk << "}"<<std::endl;
     }
   }
 
+}
+
+int SM_TRAJ::append(SM_TRAJ_STR inTraj) 
+{
+  SM_SEG seg;
+  if(traj.size() != inTraj.nbAxis) {
+    printf("ERROR SM_TRAJ:append() diffrent size in trajs\n");
+    traj.clear();
+    traj.resize(inTraj.nbAxis);
+  }
+  for(unsigned int i=0; i<traj.size(); i++) {
+    for(int j=0; j<inTraj.traj[i].nbSeg; j++) {
+      seg.timeOnTraj = 0.0;
+      seg.lpId = inTraj.traj[i].seg[j].lpId;
+      seg.timeOnTraj = inTraj.traj[i].seg[j].timeOnTraj;
+      seg.time = inTraj.traj[i].seg[j].time;
+      seg.jerk = inTraj.traj[i].seg[j].jerk;
+      seg.IC.a = inTraj.traj[i].seg[j].ic_a;
+      seg.IC.v = inTraj.traj[i].seg[j].ic_v;
+      seg.IC.x = inTraj.traj[i].seg[j].ic_x;
+      traj[i].push_back(seg);
+    }
+  }
+  computeTimeOnTraj();
+  return 0;
 }
 

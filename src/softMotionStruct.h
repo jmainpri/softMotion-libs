@@ -42,6 +42,7 @@
 
 
 #include "softMotionConst.h"
+#include "softMotionStructGenom.h"
 
 /** @file softMotionStruct.h
  * @brief This file includes structure declarations for softMotion library.
@@ -405,6 +406,7 @@ typedef struct SM_OUTPUT{
 
 typedef struct SM_SEG{
   double timeOnTraj;
+  int lpId;
   SM_COND IC;
   double  time;
   double jerk;
@@ -414,7 +416,7 @@ class SM_TRAJ {
  public:
   std::vector<double> qStart;
   std::vector<double> qGoal;
-  std::vector<double> duration;
+  double duration;
   std::vector< std::vector<SM_SEG> > traj;
   void sm_traj(){};
   //virtual ~sm_traj();
@@ -422,8 +424,9 @@ class SM_TRAJ {
   int getMotionCond(double time, std::vector<SM_COND> & cond);
   int computeTimeOnTraj();
   void print();
+  void resize(int size);
+  int append(SM_TRAJ_STR inTraj);
 };
-
 
 // #ifdef __cplusplus
 /**
