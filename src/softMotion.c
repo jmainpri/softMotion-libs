@@ -8289,7 +8289,7 @@ void SM_TRAJ::clear()
 
 void SM_TRAJ::resize(int size) 
 {
-  this.clear();
+  this->clear();
   qStart.resize(size);
   qGoal.resize(size);
   traj.resize(size);
