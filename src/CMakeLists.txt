@@ -18,11 +18,9 @@
 
 project(src)
 
-file(GLOB source_files ./*)
+file(GLOB source_files ./*.c ./*.cpp)
 
 
-SET(CMAKE_C_COMPILER g++)
-SET(CMAKE_CXX_COMPILER g++)
 
 SET(CMAKE_CXX_FLAGS " -lm ")
 
