@@ -579,7 +579,7 @@ void QSoftMotionPlanner::changeEvent(QEvent *e)
 }
 #endif
 
-void QSoftMotionPlanner::loadSvgFile(string str)
+void QSoftMotionPlanner::loadSvgFile(std::string str)
 {
   Curve curv;
   this->_curve.push_back(curv);

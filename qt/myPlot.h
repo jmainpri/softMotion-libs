@@ -25,6 +25,9 @@ class MyPlot  {
      * plot the motion law "SoftMotion"
      *
      * @param &curv : a curve with motion law
+     * @param qwtPlot_TrajJerk
+     * @param qwtPlot_TrajAcc
+     * @param qwtPlot_TrajVel
      */   
     void plotMotionLaw(Curve &curv, QwtPlot *qwtPlot_TrajJerk, QwtPlot *qwtPlot_TrajAcc, QwtPlot *qwtPlot_TrajVel);
     
@@ -33,6 +36,12 @@ class MyPlot  {
      * plot the ideal trajectory with "SoftMotion" in axis x and y separately
      *
      * @param &curv : a curve with motion law
+     * @param qwtPlot_PosXideal
+     * @param qwtPlot_VelXideal
+     * @param qwtPlot_AccXideal
+     * @param qwtPlot_PosYideal
+     * @param qwtPlot_VelYideal
+     * @param qwtPlot_AccYideal
      */     
     void plotIdealProfile(Curve &curv, QwtPlot * qwtPlot_PosXideal,QwtPlot *qwtPlot_VelXideal,QwtPlot *qwtPlot_AccXideal,
 			  QwtPlot * qwtPlot_PosYideal,QwtPlot *qwtPlot_VelYideal,QwtPlot *qwtPlot_AccYideal);
@@ -56,6 +65,18 @@ class MyPlot  {
      * plot the approximated trajectory with "SoftMotion" in axis x and y separately 
      *
      * @param &curv2 : a curve with motion law
+     * @param qwtPlot_JerkXapprox
+     * @param qwtPlot_JerkYapprox
+     * @param qwtPlot_JerkZapprox
+     * @param qwtPlot_AccXapprox 
+     * @param qwtPlot_AccYapprox
+     * @param qwtPlot_AccZapprox
+     * @param qwtPlot_VelXapprox
+     * @param qwtPlot_VelYapprox
+     * @param qwtPlot_VelZapprox
+     * @param qwtPlot_TrajPosApprox
+     * @param qwtPlot_TrajVelApprox
+     * @param qwtPlot_TrajAccApprox
      */   
     void plotResults(Curve &curv2, QwtPlot *qwtPlot_JerkXapprox, QwtPlot *qwtPlot_JerkYapprox, QwtPlot *qwtPlot_JerkZapprox, 
 		       QwtPlot *qwtPlot_AccXapprox, QwtPlot *qwtPlot_AccYapprox, QwtPlot *qwtPlot_AccZapprox,
@@ -69,6 +90,7 @@ class MyPlot  {
      * @param &curv2 : a curve with motion law
      * @param &error : a vector of errors
      * @param *val_err_max : pointer of the maximum value of error
+     * @param qwtPlot_errortraj
      */      
     void plotErrors(Curve &curv2, std::vector<double> &error, double *val_err_max, QwtPlot *qwtPlot_errortraj);
     
@@ -80,6 +102,8 @@ class MyPlot  {
      * @param &dis2 : the second vector of hausdorff distance
      * @param sup1 : the maximum value of the first vector hausdorff 
      * @param sup2 : the maximum value of the second vector hausdorff
+     * @param qwtPlot_haussdorff1
+     * @param qwtPlot_haussdorff2
      */       
     void plotHaus(std::vector<double> &dis1, std::vector<double> &dis2, double sup1, double sup2, QwtPlot *qwtPlot_haussdorff1, QwtPlot *qwtPlot_haussdorff2);
 

@@ -4456,7 +4456,8 @@ SM_STATUS sm_FindTransitionTime( SM_POSELIMITS limitsGoto, SM_TRANSITION_MOTION*
   /* Find time to impose */
   k=0;
   for(k=0 ; k<= motion->timeToStop + 2; k++) {
-    if (interval[0][k]==1 && interval[1][k]==1 && interval[2][k]==1 && interval[3][k]==1 && interval[4][k]==1 && interval[5][k]==1 && interval[6][k]==1){
+    if (interval[0][k]==1 && interval[1][k]==1 && interval[2][k]==1 && interval[3][k]==1 && interval[4][k]==1 && interval[5][k]==1 ){
+      //   if (interval[0][k]==1 && interval[1][k]==1 && interval[2][k]==1 && interval[3][k]==1 && interval[4][k]==1 && interval[5][k]==1 && interval[6][k]==1){
       break;
     }
   }
@@ -5466,7 +5467,7 @@ SM_STATUS sm_ComputeSoftMotionPointToPoint_gen(int nbAxis,double* J_max, double 
   //  double MaxLDist = 0.0;
   int MaxLAxis = 0;
   double LTjc = 0.0, LTac = 0.0, LTvc = 0.0, TimeLi = 0.0, TimeL = 0.0;
-  double Tjc, Tac, Tvc;
+  double Tjc = 0.0, Tac = 0.0, Tvc = 0.0;
   SM_LIMITS auxLimits;
   int i=0;
   SM_TIMES TNE, TNE_sec;
@@ -5486,6 +5487,12 @@ SM_STATUS sm_ComputeSoftMotionPointToPoint_gen(int nbAxis,double* J_max, double 
   SM_JERKS Jerks;
   SM_TIMES Times, TM;
   SM_COND IC, FC;
+
+  Jerks.sel = 1;
+  Jerks.J1 = 0.0;
+  Jerks.J2 = 0.0;
+  Jerks.J3 = 0.0;
+  Jerks.J4 = 0.0;
 
   if ((PFrom = MY_ALLOC(double, nbAxis)) == NULL) {
     printf("  lm_create_softMotion: allocation failed\n");
@@ -7890,7 +7897,7 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
 
 SM_STATUS Calcul_Error_Vilocity(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error_vit, double *errMax){
   error_vit.clear();
-  double err;
+  double err = 0.0;
   for (unsigned int i = 0; i< ApproxTraj.size(); i++){
     err = IdealTraj[i].du - ApproxTraj[i].du;
   }

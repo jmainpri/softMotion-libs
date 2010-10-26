@@ -58,13 +58,14 @@ class QSoftMotionPlanner
 #endif
 
 public:
+
+#ifdef ENABLE_DISPLAY
     /** @brief Constructor
      *
      * The constructor of class QSoftMotionPlanner
      *
      * @param *parent : Null
      */
-#ifdef ENABLE_DISPLAY
     QSoftMotionPlanner(QWidget *parent = 0);
 #else
     QSoftMotionPlanner();
@@ -102,9 +103,7 @@ public:
      * @param ErrMax : maximum error of the trajectory allowed
      * @param ExpTime : discretisation of the generated file
      * @param flagExport : genere the result file (true: yes, false: no)
-     * @param fileptr : the svg file to approximate
-     * @param errTraj : the trajectory error result
-     * @param result : the trajectory result
+     * @param fileName : the svg file to approximate
      */
     void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName);
 
