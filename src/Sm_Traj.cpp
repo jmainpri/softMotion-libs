@@ -152,23 +152,22 @@ int SM_TRAJ::computeTimeOnTraj()
 
 int SM_TRAJ::updateIC()
 {
-  SM_STATUS resp = SM_OK;
-  std::vector<double> I(3);
-  std::vector<double> T(SM_NB_SEG);
-  std::vector<double> J(SM_NB_SEG);
+  
+  SM_STATUS resp;
   std::vector<double> t(1);
   std::vector<double> a(1);
   std::vector<double> v(1);
   std::vector<double> x(1);
 
-  for(unsigned axis =0; axis <traj.size(); axis++) {
-    for (unsigned int s = 0; s < (traj[axis].size()-1) ; s++) {
+  for(unsigned int axis=0;  axis< traj.size(); axis++) {
+    for (unsigned int s = 0; s < (traj[axis].size()) ; s++) {
       t[0] = traj[axis][s].timeOnTraj;
-      resp = sm_AVX_TimeVar(I, T, J, t, a, v, x);
-      traj[axis][s+1].IC.a = a[0];
-      traj[axis][s+1].IC.v = v[0];
-      traj[axis][s+1].IC.x = x[0];
-
+      
+      resp = sm_AVX_TimeVar(traj[axis], t, a, v, x);
+      traj[axis][s].IC.a = a[0];
+      traj[axis][s].IC.v = v[0];
+      traj[axis][s].IC.x = x[0];     
+      
       if (resp != SM_OK) {
 	printf("ERROR: Q interpolation failed (sm_AVX_TimeVar funcion)\n");
 	return 1;
@@ -176,7 +175,6 @@ int SM_TRAJ::updateIC()
     }
   }
   return 0;
-
 }
 
 
@@ -204,7 +202,7 @@ void SM_TRAJ::print()
     std::cout << "   Duration:           " << duration <<  std::endl; 
     std::cout << "   Segments:" <<  std::endl; 
     for(unsigned int k=0; k<traj[j].size();k++) {
-      std::cout << std::fixed << " (" << k << "){Ti= "<< traj[j][k].timeOnTraj <<" }{T=" << traj[j][k].time << " , J=" <<  traj[j][k].jerk << "}"<<std::endl;
+      std::cout << std::fixed << " (" << k << "){Ti= "<< traj[j][k].timeOnTraj <<" }{T=" << traj[j][k].time << " , J=" <<  traj[j][k].jerk << "}{IC.x="<< traj[j][k].IC.x << "}" << std::endl;
     }
   }
 
