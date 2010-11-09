@@ -47,6 +47,7 @@
 
 #include "time_proto.h"
 #include "softMotion.h"
+#include "Sm_Traj.h"
 
 #include "QSoftMotionPlanner.h"
 #define PI 3.14159265
@@ -228,17 +229,17 @@ QWidget *parent
       _flag_haus_actif = 0;
 
   #else
-    int ExpTime = 10;
-    double jmax=0.9, amax=0.3, vmax=0.04, SampTime =0.001, ErrMax = 0.001;
-    std::string help;
-    cout << endl << "******* Please enter the inputs in order the : Jmax, Amax, Vmax, SampTime, ErrMax, ExpTime *******"
-    << endl << " Please enter 'help' for more informations " << endl;
-    cin >> jmax >> amax >> vmax >> SampTime >> ErrMax >> ExpTime;
-    cout << "Absolute file path : " << endl;
-    cin>> _fileName;
-    cout << "open the file " << _fileName << endl;
+//    int ExpTime = 10;
+//    double jmax=0.9, amax=0.3, vmax=0.04, SampTime =0.001, ErrMax = 0.001;
+//    std::string help;
+//    cout << endl << "******* Please enter the inputs in order the : Jmax, Amax, Vmax, SampTime, ErrMax, ExpTime *******"
+//    << endl << " Please enter 'help' for more informations " << endl;
+//    cin >> jmax >> amax >> vmax >> SampTime >> ErrMax >> ExpTime;
+//    cout << "Absolute file path : " << endl;
+//    cin>> _fileName;
+//    cout << "open the file " << _fileName << endl;
 //     approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, true, _fileName);
-    testCercleForFunction_Curvature_Interval(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime);
+////    testCercleForFunction_Curvature_Interval(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime);
 
   #endif
   _nbCurve = 0;
@@ -343,6 +344,17 @@ void QSoftMotionPlanner::resetPlanner(){
 }
 
 
+void QSoftMotionPlanner::approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &traj)
+{
+  this->approximate(jmax, amax, vmax, sampTime,  ErrMax,  ExpTime, flagExport, fileName);
+  traj.clear();
+
+
+  return;
+}
+
+
+
 void QSoftMotionPlanner::approximate(double jmax,double amax,double vmax,double SampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName) {
 
     FILE *fp_segMotion = NULL;
@@ -408,7 +420,10 @@ void QSoftMotionPlanner::approximate(double jmax,double amax,double vmax,double 
   }
 
   for (unsigned int i = 0; i < _result.size(); i++){
-    fprintf(fp_segMotion, "%d %lf %lf %lf %lf %lf %lf %lf\n", _result[i].premier_point, (_result[i].premier_point + 1) * _sampling, _result[i].Jerk[0], _result[i].Jerk[1], _result[i].Jerk[2], _result[i].Time[0], _result[i].Time[1], _result[i].Time[2]);
+    fprintf(fp_segMotion, "%d %lf %lf %lf %lf %lf %lf %lf\n", _result[i].premier_point, 
+	    (_result[i].premier_point + 1) * _sampling, 
+	    _result[i].Jerk[0], _result[i].Jerk[1], _result[i].Jerk[2], 
+	    _result[i].Time[0], _result[i].Time[1], _result[i].Time[2]);
   }
 
   fclose(fp_segMotion);
@@ -1389,7 +1404,7 @@ void QSoftMotionPlanner::computeTraj()
       else if (iter_stock->flag_traj == 0){
         nb_seg_total ++;
         starting_point_each_seg = iter_stock->point_depart;
-        for (int k = starting_point_each_seg; k < (iter_stock->traj.size() + starting_point_each_seg); k++) {
+        for (unsigned int k = starting_point_each_seg; k < (iter_stock->traj.size() + starting_point_each_seg); k++) {
           if(k == starting_point_each_seg){
             kc_subTraj.t = k * tic;
             kc_subTraj.kc[0].x = iter_stock->traj[k-starting_point_each_seg].Pos[0];

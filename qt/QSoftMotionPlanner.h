@@ -1,12 +1,16 @@
 #ifndef QSOFTMOTIONPLANNER_H
 #define QSOFTMOTIONPLANNER_H
 
+#ifdef ENABLE_DISPLAY
 #include <QMainWindow>
-#include <string>
-#include "curve.h"
 #include "myPlot.h"
 #include "ui_mainwindow.h"
-#include "gbM/gbGENOM.h"
+#endif
+#include "Sm_Traj.h"
+#include <string>
+#include "curve.h"
+
+//#include "gbM/gbGENOM.h"
 
 
 
@@ -106,6 +110,9 @@ public:
      * @param fileName : the svg file to approximate
      */
     void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName);
+
+
+    void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &traj);
 
     /** @brief load the file
      *
@@ -231,7 +238,9 @@ public slots:
 #endif
 
 private:
+#ifdef ENABLE_DISPLAY
     MyPlot _plot;
+#endif
     int _nbCurve;
     int _flag_haus_actif;
     std::vector<Curve> _curve; // stocker la trajectoire ideale et approxime
