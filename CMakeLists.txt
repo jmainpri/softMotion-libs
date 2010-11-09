@@ -68,12 +68,26 @@ MACRO(SMP_flag flagName description status)
 #  set_property(CACHE ANIMATION PROPERTY VALUE ON)
 ENDMACRO(SMP_flag)
 
+MACRO(SMP_CheckCompilationFlags)
+  SET(SMP_ActiveFlags "")
+  MESSAGE ("Active Flags :")
+  FOREACH(flag ${SMP_CompilationFlags})
+    IF(${flag})
+      FILE(APPEND ${CMAKE_CURRENT_BINARY_DIR}/smpFlags "-D${flag} ")
+      MESSAGE("${flag}")
+      ADD_DEFINITIONS("-D${flag}")
+      LIST(APPEND SMP_ActiveFlags ${flag})
+    ENDIF()
+  ENDFOREACH(flag)
+
+ENDMACRO(SMP_CheckCompilationFlags)
 
 
 SMP_flag(ENABLE_DISPLAY "Sets the Qt interface active" OFF)
 SMP_flag(QT_LIBRARY "Sets QtLibrary compiling mode" OFF)
 SMP_flag(WITH_TCL "Sets the tcl package compiling mode" OFF)
 
+SMP_CheckCompilationFlags()
 
 add_subdirectory(src)
 add_subdirectory(pkgconfig)

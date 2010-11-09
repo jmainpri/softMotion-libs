@@ -53,7 +53,7 @@
 #endif
 
 #include "Sm_Traj.h"
-#include "QSoftMotionPlanner.h"
+//#include "QSoftMotionPlanner.h"
 
 
 using namespace std;
@@ -510,12 +510,12 @@ int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  doubl
 {
 
 #ifdef QT_LIBRARY
-  bool flagExport = true;
-  QSoftMotionPlanner w;
-  int ExpTime = 10;
-  SM_TRAJ traj,
-  w.approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, flagExport, fileName, traj);
-  this->clear();
+ // bool flagExport = true;
+ // QSoftMotionPlanner w;
+ // int ExpTime = 10;
+ // SM_TRAJ traj,
+ // w.approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, flagExport, fileName, traj);
+ // this->clear();
 #else
   printf("ERROR: softMotion-libs is not compiled with the QT_LIBRARY flag\n");
 #endif

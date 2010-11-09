@@ -6003,29 +6003,34 @@ SM_STATUS sm_getMotionCond(const SM_MOTION_MONO* motion, double time, SM_COND *c
   I[1] = motion->IC.v;
   I[2] = motion->IC.x;
 
-  T[0] = motion->Times.Tjpa;
-  T[1] = motion->Times.Taca;
-  T[2] = motion->Times.Tjna;
-  T[3] = motion->Times.Tvc;
-  T[4] = motion->Times.Tjnb;
-  T[5] = motion->Times.Tacb;
-  T[6] = motion->Times.Tjpb;
-
-  J[0] =   motion->Dir*motion->jerk.J1;
-  J[1] =   0.0;
-  J[2] = - motion->Dir*motion->jerk.J1;
-  J[3] =   0.0;
-  J[4] = - motion->Dir*motion->jerk.J1;
-  J[5] =   0.0;
-  J[6] =   motion->Dir*motion->jerk.J1;
-  
-  t[0] = time;
-
-  sm_AVX_TimeVar(I, T, J, t, a, v, x);
-  cond->a = a[0];
-  cond->v = v[0];
-  cond->x = x[0];     
-  
+  if(motion->MotionDuration > 0.001) {
+    T[0] = motion->Times.Tjpa;
+    T[1] = motion->Times.Taca;
+    T[2] = motion->Times.Tjna;
+    T[3] = motion->Times.Tvc;
+    T[4] = motion->Times.Tjnb;
+    T[5] = motion->Times.Tacb;
+    T[6] = motion->Times.Tjpb;
+    
+    J[0] =   motion->Dir*motion->jerk.J1;
+    J[1] =   0.0;
+    J[2] = - motion->Dir*motion->jerk.J1;
+    J[3] =   0.0;
+    J[4] = - motion->Dir*motion->jerk.J1;
+    J[5] =   0.0;
+    J[6] =   motion->Dir*motion->jerk.J1;
+    
+    t[0] = time;
+    
+    sm_AVX_TimeVar(I, T, J, t, a, v, x);
+    cond->a = a[0];
+    cond->v = v[0];
+    cond->x = x[0];     
+  } else {
+    cond->a = motion->IC.a;
+    cond->v = motion->IC.v;
+    cond->x = motion->IC.x;  
+  }
   return SM_OK;
 }
 
