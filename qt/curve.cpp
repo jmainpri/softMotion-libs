@@ -1,9 +1,9 @@
 #include "curve.h"
-
+#ifdef ENABLE_DISPLAY
 #if QT_VERSION >= 0x040000
 # include <QKeyEvent>
 #endif
-
+#endif
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,7 +12,9 @@
  * @brief This file includes the constructor and functions related for class Curve
  */
 
+#ifdef ENABLE_DISPLAY
 using namespace qglviewer;
+#endif
 using namespace std;
 
 Curve::Curve()
