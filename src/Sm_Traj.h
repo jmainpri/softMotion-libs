@@ -36,15 +36,31 @@
 #include "softMotionStructGenom.h"
 
 class SM_TRAJ {
+ private:
+  int trajId;
+  double duration;
+
  public:
   std::vector<double> qStart;
   std::vector<double> qGoal;
-  double duration;
-  int trajId;
   std::vector< std::vector<SM_SEG> > traj;
-  void sm_traj(){};
-  //virtual ~sm_traj();
+
+
+ public:
+  void sm_traj();
+  void sm_traj(const SM_TRAJ &traj);
+  
   void clear();
+  /*
+   * Setters / Getters
+   */
+  int getTrajId();
+  void setTrajId(int id);
+  double getDuration();
+  void setQStart(std::vector<double> &qs);
+  void setQGoal(std::vector<double> &qg);
+  void setTraj(std::vector<std::vector<SM_SEG> > &t);
+
   int getMotionCond(double time, std::vector<SM_COND> & cond);
   int computeTimeOnTraj();
   int updateIC();
@@ -55,6 +71,9 @@ class SM_TRAJ {
   int load(char *name, int (*fct(void)));
   int convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj);
   int importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj);
+
+
+  int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
  private:
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);

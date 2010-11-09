@@ -46,20 +46,33 @@
 #include <sstream>
 #include "time_proto.h"
 
-#include <libxml2/libxml/xmlreader.h>
 #include <time.h>
 #include <stdlib.h>
 #ifdef __APPLE__
-#include <malloc/malloc.h>
 #include <cstdlib>
-#else
-#include <malloc.h>
 #endif
 
 #include "Sm_Traj.h"
+#include "QSoftMotionPlanner.h"
 
 
 using namespace std;
+
+void SM_TRAJ::sm_traj()
+{
+  this->clear();
+  return;
+}
+
+void SM_TRAJ::sm_traj(const SM_TRAJ &traj)
+{
+  this->trajId = traj.trajId;
+  this->duration = traj.duration;
+  this->qStart = traj.qStart;
+  this->qGoal = traj.qGoal;
+  this->traj = traj.traj;
+  return;
+}
 
 void SM_TRAJ::clear() 
 {
@@ -67,6 +80,41 @@ void SM_TRAJ::clear()
   qGoal.clear();
   traj.clear();
   duration = 0.0;
+  trajId = 0.0;
+  return;
+}
+
+int  SM_TRAJ::getTrajId()
+{
+  return this->trajId;
+}
+
+void  SM_TRAJ::setTrajId(int id)
+{
+  this->trajId = id;
+  return;
+}
+
+double  SM_TRAJ::getDuration()
+{
+  return this->duration;
+}
+
+void  SM_TRAJ::setQStart(std::vector<double> &qs)
+{
+  this->qStart = qs;
+  return;
+}
+
+void  SM_TRAJ::setQGoal(std::vector<double> &qg)
+{
+  this->qGoal = qg;
+  return;
+}
+
+void SM_TRAJ::setTraj(std::vector<std::vector<SM_SEG> > &t)
+{
+  this->traj = t;
   return;
 }
 
@@ -125,7 +173,7 @@ int SM_TRAJ::computeTimeOnTraj()
   std::vector<double> durationArray;
   durationArray.clear();
   durationArray.resize(traj.size());
-  duration = 0.0;
+  this->duration = 0.0;
 
   for(unsigned int i=0;  i< traj.size(); i++) {
     for (unsigned int j = 0; j < traj[i].size(); j++){
@@ -142,8 +190,8 @@ int SM_TRAJ::computeTimeOnTraj()
     } else {
      durationArray[i] = 0.0;
     }
-    if(durationArray[i] > duration) {
-      duration = durationArray[i];
+    if(durationArray[i] > this->duration) {
+      this->duration = durationArray[i];
     }
   }
   updateIC();
@@ -246,11 +294,16 @@ int SM_TRAJ::save(char *name)
   fprintf(fileptr, "%d\n", (int)trajId);
   fprintf(fileptr, "%d\n", (int)traj.size());
 
+  for(unsigned int i=0; i<qStart.size(); i++) {
+    fprintf(fileptr, "%f\t", qStart[i]);
+  }
+  fprintf(fileptr, "\n");
+  for(unsigned int i=0; i<qGoal.size(); i++) {
+    fprintf(fileptr, "%f\t", qGoal[i]);
+  }
+  fprintf(fileptr, "\n");
   for(unsigned int i=0; i<traj.size(); i++) {
-    //fprintf(fileptr, "%d\n", (int)traj[i].size());
     for(unsigned int j=0; j<traj[i].size(); j++) {
-      
-      //if( (double)traj[i][j].time > (double)0.0001) {
 	fprintf(fileptr, "%d\t", traj[i][j].lpId);
 	fprintf(fileptr, "%f\t", traj[i][j].timeOnTraj);
 	fprintf(fileptr, "%f\t", traj[i][j].time);
@@ -258,11 +311,9 @@ int SM_TRAJ::save(char *name)
 	fprintf(fileptr, "%f\t", traj[i][j].IC.v);
 	fprintf(fileptr, "%f\t", traj[i][j].IC.x);
 	fprintf(fileptr, "%f\t", traj[i][j].jerk);
-	//}
     }
     fprintf(fileptr, "\n");
   }
-    
   if(fileptr) {
     fclose(fileptr);
   }
@@ -310,65 +361,78 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
 
   this->clear();
 
-  if(file)  // si l'ouverture a fonctionné
-    {
-      getline(file, contenu);  // on met dans "contenu" la ligne
-      doubleVector = parseFrame(contenu);
-      trajId = doubleVector[0];
-
-      doubleVector.clear();
-      getline(file, contenu);  // on met dans "contenu" la ligne
-      doubleVector = parseFrame(contenu);
-      nbAxis = doubleVector[0];
-        
-      this->resize(nbAxis);
-
-      for(int a=0; a<nbAxis; a++) {
-	//doubleVector.clear();
-	//getline(file, contenu);  // on met dans "contenu" la ligne
-	//doubleVector = parseFrame(contenu);
-	//nbSeg = doubleVector[0];
-	
-	doubleVector.clear();
-	getline(file, contenu);  // on met dans "contenu" la ligne
-	doubleVector = parseFrame(contenu);
-
-	traj[a].resize((int)doubleVector.size()/7);
-
-	for(unsigned int segIndex=0; segIndex<doubleVector.size()/7; segIndex++) {
-	  traj[a][segIndex].lpId       = doubleVector[7*segIndex +0];
-	  traj[a][segIndex].timeOnTraj = doubleVector[7*segIndex +1];
-	  traj[a][segIndex].time       = doubleVector[7*segIndex +2];
-	  traj[a][segIndex].IC.a       = doubleVector[7*segIndex +3];
-	  traj[a][segIndex].IC.v       = doubleVector[7*segIndex +4];
-	  traj[a][segIndex].IC.x       = doubleVector[7*segIndex +5];
-	  traj[a][segIndex].jerk       = doubleVector[7*segIndex +6];	
-	}
-      }
-      file.close();
+  if(file) {
+    /* Read trajId */
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    trajId = doubleVector[0];
+    
+    /* Read nbAxis */
+    doubleVector.clear();
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    nbAxis = doubleVector[0];
+    
+    this->resize(nbAxis);
+    
+    /* Read qStart */
+    doubleVector.clear();
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    for(unsigned int i=0; i <doubleVector.size(); i++) {
+      qStart[i] = doubleVector[i];
     }
-  else
-    cerr << "Impossible d'ouvrir le fichier !" << endl;
+    /* Read qGoal */
+    doubleVector.clear();
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    for(unsigned int i=0; i <doubleVector.size(); i++) {
+      qGoal[i] = doubleVector[i];
+    }
+    for(int a=0; a<nbAxis; a++) {
+      
+      doubleVector.clear();
+      getline(file, contenu);
+      doubleVector = parseFrame(contenu);
+      traj[a].resize((int)doubleVector.size()/7);
+      for(unsigned int segIndex=0; segIndex<doubleVector.size()/7; segIndex++) {
+	traj[a][segIndex].lpId       = doubleVector[7*segIndex +0];
+	traj[a][segIndex].timeOnTraj = doubleVector[7*segIndex +1];
+	traj[a][segIndex].time       = doubleVector[7*segIndex +2];
+	traj[a][segIndex].IC.a       = doubleVector[7*segIndex +3];
+	traj[a][segIndex].IC.v       = doubleVector[7*segIndex +4];
+	traj[a][segIndex].IC.x       = doubleVector[7*segIndex +5];
+	traj[a][segIndex].jerk       = doubleVector[7*segIndex +6];	
+      }
+      }
+    file.close();
+    this->computeTimeOnTraj();
+    cout << "SM_TRAJ::load file " << name << " loaded" << endl;  
 
-
-  this->computeTimeOnTraj();
-  cout << "SM_TRAJ::load file " << name << " loaded" << endl;
+  } else {
+    std::cout << "Cannot open the file " << name << " !" << endl;
+  }
   return 0;
 }
 
 int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
 {
   if(traj.size() != SM_TRAJ_NB_AXIS) {
-    printf("ERROR nbAxis in file : (%d) != SM_TRAJ_NB_AXIS\n", (int)traj.size());
+    printf("ERROR nbAxis in traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)traj.size());
     return 1;
   }
   smTraj->trajId = this->trajId;
   smTraj->nbAxis = (int)traj.size();
 
   for(int i=0; i<smTraj->nbAxis; i++) {
+    smTraj->qStart[i] =  this->qStart[i];
+  }
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    smTraj->qGoal[i] =  this->qGoal[i];
+  }
 
+  for(int i=0; i<smTraj->nbAxis; i++) {
     smTraj->traj[i].nbSeg = (int)traj[i].size();
-
     for(int j=0; j<smTraj->traj[i].nbSeg; j++) {
       smTraj->traj[i].seg[j].lpId       =  traj[i][j].lpId;
       smTraj->traj[i].seg[j].timeOnTraj =  traj[i][j].timeOnTraj;
@@ -379,20 +443,24 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
       smTraj->traj[i].seg[j].jerk       =  traj[i][j].jerk;
     }
   }
-  
   return 0;
 }
 
 int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
 {
-  if(traj.size() != SM_TRAJ_NB_AXIS) {
-    printf("ERROR nbAxis in file : (%d) != SM_TRAJ_NB_AXIS\n", (int)traj.size());
+  if(smTraj->nbAxis != SM_TRAJ_NB_AXIS) {
+    printf("ERROR nbAxis in input traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)smTraj->nbAxis);
     return 1;
   }
   this->clear();
   this->resize(smTraj->nbAxis);
-
   this->trajId = smTraj->trajId;
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    this->qStart[i] = smTraj->qStart[i];
+  }
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    this->qGoal[i] = smTraj->qGoal[i];
+  }
   
   for(int i=0; i<smTraj->nbAxis; i++) {
     traj[i].resize(smTraj->traj[i].nbSeg);
@@ -406,10 +474,8 @@ int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
       traj[i][j].jerk	    = smTraj->traj[i].seg[j].jerk      ;
     }
   }
-  
   return 0;
 }
-
 
 //int SM_TRAJ::exportQFile(char *name)
 //{
@@ -439,3 +505,19 @@ int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
 //
 //
 //}
+
+int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName)
+{
+
+#ifdef QT_LIBRARY
+  bool flagExport = true;
+  QSoftMotionPlanner w;
+  int ExpTime = 10;
+  SM_TRAJ traj,
+  w.approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, flagExport, fileName, traj);
+  this->clear();
+#else
+  printf("ERROR: softMotion-libs is not compiled with the QT_LIBRARY flag\n");
+#endif
+  return 0;
+}
