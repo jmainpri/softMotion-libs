@@ -2,7 +2,9 @@
 #define CURVE_H
 
 #include "../src/softMotionStruct.h"
+#ifdef ENABLE_DISPLAY
 #include <qglviewer.h>
+#endif
 
 /** @file curve.h
  * @brief This file includes the declaration of class Curve
