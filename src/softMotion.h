@@ -173,6 +173,7 @@ extern SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj
 extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj, std::vector<kinPoint> &discPoint, std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<int> &IntervIndex);
 extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC,std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<SM_OUTPUT> &motion);
 
+extern SM_STATUS sm_getMotionCond(const SM_MOTION_MONO *motion, double time, SM_COND *cond);
 // Functions from Wang
 /** @brief motion profile
   *
