@@ -6,5 +6,5 @@ includedir=@CMAKE_INSTALL_PREFIX@/include
 Name: softMotion-libs
 Description: Trajectory generator with bounded jerk, acceleration and velocity
 Version: @SOFTMOTION_VERSION@
-Libs: -L${libdir} -lsoftMotion
+Libs: -L${libdir} -lsoftMotion -lxml2 -lm
 Cflags: -I${includedir}
