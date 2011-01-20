@@ -34,8 +34,8 @@
 
 
 
-#define SM_TRAJ_NB_AXIS 24
-#define SM_SEGMENT_TRACK_MAX_SIZE 200
+#define SM_TRAJ_NB_AXIS 32
+#define SM_SEGMENT_TRACK_MAX_SIZE 128
 
 /*
  * The two following structures are the new way 
@@ -43,6 +43,7 @@
  */
 typedef struct SM_SEGMENT_STR {
   int lpId;
+  int unused;
   double timeOnTraj;
   double time;
   double ic_a;
@@ -53,6 +54,7 @@ typedef struct SM_SEGMENT_STR {
 
 typedef struct SM_TRAJ_AXIS_STR {
   int nbSeg;
+  int unsused;
   SM_SEGMENT_STR seg[SM_SEGMENT_TRACK_MAX_SIZE];
 } SM_TRAJ_AXIS_STR;
 

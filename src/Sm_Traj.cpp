@@ -417,10 +417,10 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
 
 int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
 {
-  if(traj.size() != SM_TRAJ_NB_AXIS) {
-    printf("ERROR nbAxis in traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)traj.size());
-    return 1;
-  }
+  //if(traj.size() != SM_TRAJ_NB_AXIS) {
+  //  printf("ERROR nbAxis in traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)traj.size());
+  //  return 1;
+  //}
   smTraj->trajId = this->trajId;
   smTraj->nbAxis = (int)traj.size();
 
@@ -448,10 +448,10 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
 
 int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
 {
-  if(smTraj->nbAxis != SM_TRAJ_NB_AXIS) {
-    printf("ERROR nbAxis in input traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)smTraj->nbAxis);
-    return 1;
-  }
+  //if(smTraj->nbAxis != SM_TRAJ_NB_AXIS) {
+  //  printf("ERROR nbAxis in input traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)smTraj->nbAxis);
+  //  return 1;
+  //}
   this->clear();
   this->resize(smTraj->nbAxis);
   this->trajId = smTraj->trajId;
