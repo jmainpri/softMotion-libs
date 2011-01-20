@@ -61,6 +61,7 @@ typedef struct SM_TRAJ_AXIS_STR {
 typedef struct SM_TRAJ_STR {
   int trajId;
   int nbAxis;
+  double timePreserved;
   double qStart[SM_TRAJ_NB_AXIS];
   double qGoal[SM_TRAJ_NB_AXIS];
   SM_TRAJ_AXIS_STR traj[SM_TRAJ_NB_AXIS];

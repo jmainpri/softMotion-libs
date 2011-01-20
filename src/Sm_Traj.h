@@ -38,6 +38,7 @@
 class SM_TRAJ {
  private:
   int trajId;
+  double timePreserved;
   double duration;
 
  public:
@@ -56,6 +57,8 @@ class SM_TRAJ {
    */
   int getTrajId();
   void setTrajId(int id);
+  int getTimePreserved();
+  void setTimePreserved(int t);
   double getDuration();
   void setQStart(std::vector<double> &qs);
   void setQGoal(std::vector<double> &qg);

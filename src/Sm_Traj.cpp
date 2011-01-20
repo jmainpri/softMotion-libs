@@ -95,6 +95,17 @@ void  SM_TRAJ::setTrajId(int id)
   return;
 }
 
+int  SM_TRAJ::getTimePreserved()
+{
+  return this->timePreserved;
+}
+
+void  SM_TRAJ::setTimePreserved(int t)
+{
+  this->timePreserved = t;
+  return;
+}
+
 double  SM_TRAJ::getDuration()
 {
   return this->duration;
@@ -233,7 +244,9 @@ void SM_TRAJ::print()
   cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
   cout<<  "             TRAJECTORY               " << std::endl;  
   cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
-  cout << " Number of joints: " << traj.size() <<  std::endl; 
+  cout << " Number of joints: " << traj.size() <<  std::endl;
+  cout << " trajId: " << trajId <<  std::endl; 
+  cout << " timePreserved: " << timePreserved <<  std::endl; 
   cout << " qStart: " <<  std::endl; 
   for(unsigned int j = 0; j < qStart.size(); j++){
     cout << std::fixed << " (" << j << "){" << qStart[j] << "}" ;
@@ -292,6 +305,7 @@ int SM_TRAJ::save(char *name)
 
   /* Read File Variables */
   fprintf(fileptr, "%d\n", (int)trajId);
+  fprintf(fileptr, "%f\n", (double)timePreserved);
   fprintf(fileptr, "%d\n", (int)traj.size());
 
   for(unsigned int i=0; i<qStart.size(); i++) {
@@ -366,6 +380,11 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     getline(file, contenu);
     doubleVector = parseFrame(contenu);
     trajId = doubleVector[0];
+
+    /* Read timePreserved */
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    timePreserved = doubleVector[0];
     
     /* Read nbAxis */
     doubleVector.clear();
@@ -422,6 +441,7 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
   //  return 1;
   //}
   smTraj->trajId = this->trajId;
+  smTraj->timePreserved = this->timePreserved;
   smTraj->nbAxis = (int)traj.size();
 
   for(int i=0; i<smTraj->nbAxis; i++) {
@@ -455,6 +475,7 @@ int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
   this->clear();
   this->resize(smTraj->nbAxis);
   this->trajId = smTraj->trajId;
+  this->timePreserved = smTraj->timePreserved;
   for(int i=0; i<smTraj->nbAxis; i++) {
     this->qStart[i] = smTraj->qStart[i];
   }
