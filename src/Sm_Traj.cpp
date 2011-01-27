@@ -305,7 +305,7 @@ int SM_TRAJ::save(char *name)
 
   /* Read File Variables */
   fprintf(fileptr, "%d\n", (int)trajId);
-  fprintf(fileptr, "%f\n", (double)timePreserved);
+  //fprintf(fileptr, "%f\n", (double)timePreserved);
   fprintf(fileptr, "%d\n", (int)traj.size());
 
   for(unsigned int i=0; i<qStart.size(); i++) {
@@ -381,10 +381,10 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     doubleVector = parseFrame(contenu);
     trajId = doubleVector[0];
 
-    /* Read timePreserved */
-    getline(file, contenu);
-    doubleVector = parseFrame(contenu);
-    timePreserved = doubleVector[0];
+    ///* Read timePreserved */
+    //getline(file, contenu);
+    //doubleVector = parseFrame(contenu);
+    //timePreserved = doubleVector[0];
     
     /* Read nbAxis */
     doubleVector.clear();
@@ -393,7 +393,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     nbAxis = doubleVector[0];
     
     this->resize(nbAxis);
-    
+    printf("there are %d axes\n",nbAxis);
     /* Read qStart */
     doubleVector.clear();
     getline(file, contenu);
@@ -401,6 +401,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     for(unsigned int i=0; i <doubleVector.size(); i++) {
       qStart[i] = doubleVector[i];
     }
+    printf("toto1\n");
     /* Read qGoal */
     doubleVector.clear();
     getline(file, contenu);
@@ -408,7 +409,8 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     for(unsigned int i=0; i <doubleVector.size(); i++) {
       qGoal[i] = doubleVector[i];
     }
-    for(int a=0; a<nbAxis; a++) {
+   printf("toto2\n"); 
+   for(int a=0; a<nbAxis; a++) {
       
       doubleVector.clear();
       getline(file, contenu);
