@@ -92,7 +92,7 @@ public:
       _display = val;
     }
 
-    void maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel);
+    void maxProfile(std::vector<SM_CURVE_DATA3>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel);
 
     bool display() {
       return _display;
@@ -210,7 +210,7 @@ public slots:
      */
     void computeHausdorff();
 
-//     void changeProfile(std::vector<SM_CURVE_DATA>  &traj);
+//     void changeProfile(std::vector<SM_CURVE_DATA3>  &traj);
 
     /** @brief display a traced trajectory
      *
@@ -244,7 +244,7 @@ private:
     int _nbCurve;
     int _flag_haus_actif;
     std::vector<Curve> _curve; // stocker la trajectoire ideale et approxime
-    std::vector<kinPoint> _vec_kinpoint;// les points pour exporter dans le fichier SmDiscr.dat
+    std::vector<kinPoint3> _vec_kinpoint;// les points pour exporter dans le fichier SmDiscr.dat
     std::vector<double> _err_traj;
     std::vector<double> _err_vit;
     std::vector<double> _err_haus1;

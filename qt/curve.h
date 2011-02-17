@@ -62,12 +62,12 @@ public :
   double width;
   double height;
 
-  kinPoint errorMax;
-  std::vector<kinPoint> discPoint;
-  std::vector<SM_CURVE_DATA> traj;
+  kinPoint3 errorMax;
+  std::vector<kinPoint3> discPoint;
+  std::vector<SM_CURVE_DATA3> traj;
   std::vector<SM_OUTPUT> segTraj;
   std::list<Path> path;
-  std::list<SubTraj> trajList;
+  std::list<SubTraj3> trajList;
 
 
 protected :

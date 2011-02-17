@@ -1068,8 +1068,8 @@ void QSoftMotionPlanner::computeTrajInAdvance(){
   std::vector<double> error;
   std::vector<double> dis_a_tracer1;
   std::vector<double> dis_a_tracer2;
-  std::vector<SM_COND_DIM> IC;
-  std::vector<SM_COND_DIM> FC;
+  std::vector<SM_COND_DIM3> IC;
+  std::vector<SM_COND_DIM3> FC;
   std::vector<SM_OUTPUT> motion;
 
   ChronoOn();
@@ -1180,7 +1180,7 @@ void QSoftMotionPlanner::computeTraj()
   double max_acc = 0.0;
   double max_vel = 0.0;
   double max_jerk = 0.0;
-  kinPoint kc_subTraj;
+  kinPoint3 kc_subTraj;
 
   Curve curv2; //approximated curve
   Curve curv_temp; //ideal curve for the iteration
@@ -1189,15 +1189,15 @@ void QSoftMotionPlanner::computeTraj()
   Curve curv_stock; // curve for the divised trajectory
   Curve curv_temp_cond; //curve just for calculate the IC and FC
 
-  std::vector<SM_COND_DIM> IC;
-  std::vector<SM_COND_DIM> FC;
+  std::vector<SM_COND_DIM3> IC;
+  std::vector<SM_COND_DIM3> FC;
   std::vector<double> Timp;
   std::vector<int> IntervIndex;
   std::vector<SM_OUTPUT> motion;
   std::vector<double> error;
   std::vector<double> error_vel;
-  std::list<SubTraj>::iterator iter_temp;
-  std::list<SubTraj>::iterator iter_stock;
+  std::list<SubTraj3>::iterator iter_temp;
+  std::list<SubTraj3>::iterator iter_stock;
   ChronoOn();
 
   for(unsigned int i=0 ; i< _curve.size(); i++) {
@@ -1227,13 +1227,14 @@ void QSoftMotionPlanner::computeTraj()
   error.clear();
   error_vel.clear();
   errMax_pos_subTraj = 0.0;
-  SM_CURVE_DATA curv_donne;
+  SM_CURVE_DATA3 curv_donne;
+
   std::vector<double> Temp_alias(1);
   curv_temp_divis.trajList.resize(nbIntervals_local);
   curv_temp_divis.trajList.front().traj.resize(_curve.front().traj.size());
   curv_temp_cond.trajList.resize(1);
-  std::list<SubTraj>::iterator iter_temp_cond;
-  std::list<SubTraj>::iterator iter_temp_divis;
+  std::list<SubTraj3>::iterator iter_temp_cond;
+  std::list<SubTraj3>::iterator iter_temp_divis;
 
 
   /* copy the entire ideal curve into the subtraj list:
@@ -1249,7 +1250,7 @@ void QSoftMotionPlanner::computeTraj()
     /****************************/
     flag_sum = 0;
     nouveau_temp_divis = 0;
-    std::list<SubTraj>::iterator iter_divis;
+    std::list<SubTraj3>::iterator iter_divis;
     curv_stock.trajList.resize(nbIntervals_local*2);
     curv_temp_cond.trajList.resize(curv_temp_divis.trajList.size());
     for(iter_stock = curv_stock.trajList.begin(); iter_stock != curv_stock.trajList.end(); iter_stock ++){
@@ -1291,13 +1292,13 @@ void QSoftMotionPlanner::computeTraj()
       }
 
 
-      std::vector<SM_COND_DIM> IC_seg(1);
-      std::vector<SM_COND_DIM> FC_seg(1);
+      std::vector<SM_COND_DIM3> IC_seg(1);
+      std::vector<SM_COND_DIM3> FC_seg(1);
 
     error.clear();
     error_vel.clear();
-    memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
-    memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
+    memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM3));
+    memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM3));
     iter_divis->motion_par_seg.resize(3);
     Temp_alias.clear();
     Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
@@ -1307,7 +1308,7 @@ void QSoftMotionPlanner::computeTraj()
     /***********************************/
     sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
     iter_divis->traj.clear();
-    convertMotionToCurve(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
+    convertMotionToCurve3(iter_divis->motion_par_seg, tic, 1, iter_divis->traj);
 
     /****************************************/
     /* compute error of the current subTraj */
@@ -1471,7 +1472,7 @@ void QSoftMotionPlanner::computeTraj()
 
 
 
-void QSoftMotionPlanner::maxProfile(std::vector<SM_CURVE_DATA>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel){
+void QSoftMotionPlanner::maxProfile(std::vector<SM_CURVE_DATA3>  &ApproxTraj, double *max_jerk, double *max_acc, double *max_vel){
   double v = 0.0;
   double a = 0.0;
   double j = 0.0;

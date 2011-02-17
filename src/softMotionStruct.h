@@ -354,18 +354,49 @@ typedef struct SM_CURVE_DATA{
     /** @brief tangential acceleration*/
 	double ddu;
     /** @brief cartesian coordinate*/
-	double Pos[3];
+        std::vector<double> Pos;
+    /** @brief projected velocity in cartesian coordinate*/
+	std::vector<double> Vel;
+    /** @brief projected acceleration in cartesian coordinate*/
+	std::vector<double> Acc;
+    /** @brief projected Jerk in cartesian coordinate*/
+        std::vector<double> Jerk;
+    /** @brief acceleration norm*/
+	double AccNorm;
+    /** @brief length of trajectory*/
+	double absci;
+}SM_CURVE_DATA;
+
+/** 
+ * @brief Structure of datas for trajectory
+ */ 
+typedef struct SM_CURVE_DATA3{
+    /** @brief time value of the given data*/
+	double t;
+    /** @brief curvature abcissa*/
+    double u_Mlaw;
+    double du_Mlaw;
+    double ddu_Mlaw;
+	double u;
+    /** @brief tangential velocity*/
+	double du;
+    /** @brief tangential acceleration*/
+	double ddu;
+    /** @brief cartesian coordinate*/
+	double Pos[3];  
     /** @brief projected velocity in cartesian coordinate*/
 	double Vel[3];
     /** @brief projected acceleration in cartesian coordinate*/
-	double Acc[3];
+	double Acc[3];  
     /** @brief projected Jerk in cartesian coordinate*/
     double Jerk[3];
     /** @brief acceleration norm*/
 	double AccNorm;
     /** @brief length of trajectory*/
 	double absci;
-}SM_CURVE_DATA;
+}SM_CURVE_DATA3;
+
+
 
 typedef struct SM_ROT{
 	double thetaX; // angle of rotation /x
@@ -379,8 +410,16 @@ typedef struct SM_ROT{
  */
 typedef struct SM_COND_DIM{
     /** @brief Initial or final condition in 3 axis*/
-	SM_COND Axis[3];
+  std::vector<SM_COND> Axis;
 } SM_COND_DIM;
+
+/**
+ * @brief Structure of dimension of conditions
+ */
+typedef struct SM_COND_DIM3{
+    /** @brief Initial or final condition in 3 axis*/
+  SM_COND Axis[3]; 
+} SM_COND_DIM3;
 
 /**
  * @brief Structure of output
@@ -553,10 +592,21 @@ typedef struct Path
 typedef struct kinPoint
 {
   /** @brief coordinate of points */
-  SM_COND kc[3];
+  std::vector<SM_COND> kc;
   /** @brief time of points */
   double t;
 } kinPoint;
+
+/** 
+ * @brief Structure of points in Viewer
+ */
+typedef struct kinPoint3 
+{
+  /** @brief coordinate of points */
+  SM_COND kc[3];
+  /** @brief time of points */
+  double t;
+} kinPoint3;
 
 /**
  * @brief Structure of sub-trajectory
@@ -576,6 +626,26 @@ typedef struct SubTraj
   int flag_traj;
   int point_depart;
 } SubTraj;
+
+/**
+ * @brief Structure of sub-trajectory
+ */
+typedef struct SubTraj3
+{
+  /** @brief motion data for the sub-trajectory */
+  std::vector<SM_CURVE_DATA3> traj;
+  /** @brief jerk value, interval time and conditions for three segments */
+  std::vector<SM_OUTPUT> motion_par_seg;
+  /** @brief initial condition for three segments */
+  std::vector<SM_COND_DIM3> IC_par_seg;
+  /** @brief final condition for three segments */
+  std::vector<SM_COND_DIM3> FC_par_seg;
+  /** @brief error beteween the sub-trajectories */
+  double err;
+  int flag_traj;
+  int point_depart;
+} SubTraj3;
+
 
 /**
  * @brief Structure of index for the point

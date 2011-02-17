@@ -167,11 +167,15 @@ extern SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS L
 extern SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA> &IdealTraj, double width, double height);
 extern SM_STATUS plotApproxTraj(std::string fileName, std::vector<SM_CURVE_DATA> &IdealTraj, double width, double height);
 extern SM_STATUS convertMotionToCurve(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,  std::vector<SM_CURVE_DATA>  &ApproxTraj);
+extern SM_STATUS convertMotionToCurve2(std::vector<SM_OUTPUT> &motion, int nbAxis, double tic,double nbIntervals,
+				std::vector<SM_CURVE_DATA>  &ApproxTraj) ;
+
 extern void wait_for_key ();
 extern SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj);
 
 extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA> &IdealTraj, std::vector<kinPoint> &discPoint, std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<int> &IntervIndex);
 extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC,std::vector<SM_COND_DIM> &FC, std::vector<double> &Timp, std::vector<SM_OUTPUT> &motion);
+
 
 extern SM_STATUS sm_getMotionCond(const SM_MOTION_MONO *motion, double time, SM_COND *cond);
 // Functions from Wang
@@ -207,6 +211,7 @@ extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector
 extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, kinPoint *errorMax, std::vector<double>& error, double *val_err_max);
 // extern SM_STATUS  Hausdorff(std::vector<SM_CURVE_DATA>  &idealTraj, std::vector<SM_CURVE_DATA>  &proxTraj, std::vector<double> &dis_a_tracer1, std::vector<double> &dis_a_tracer2, double * sup1, double * sup2);
 
+
 extern SM_STATUS Calcul_Error_nw(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error, double *val_err_max);
 
 
@@ -236,11 +241,27 @@ extern SM_STATUS Path_Length(std::list<Path> &path, double *longeur);
 extern SM_STATUS convertMotionToCurve_InAdvance(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,  std::vector<SM_CURVE_DATA>  &ApproxTraj);
 extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, kinPoint *errorMax, std::vector<double>& error_pos, std::vector<double>& error_vel, double *errMax_pos, double *errMax_vel);
 extern SM_STATUS Calcul_Error_Vilocity(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CURVE_DATA> &ApproxTraj, std::vector<double>& error_vit, double *val_err_max);
-
 extern SM_STATUS Calcul_Error_list_nw(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<SM_CURVE_DATA>  &ApproxTraj, std::vector<double>& error, double *val_err_max, int ind);
-
 extern SM_STATUS calcul_courbure(std::vector<SM_CURVE_DATA> &traj, std::vector<double> &curvature);
 
+
+
+
+
+
+extern SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM3> &IC, std::vector<SM_COND_DIM3> &FC, std::vector<double> &Timp, std::vector<SM_OUTPUT> &motion);
+extern SM_STATUS convertMotionToCurve3(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,
+				       std::vector<SM_CURVE_DATA3>  &ApproxTraj);
+extern SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA3>  &IdealTraj, std::vector<SM_CURVE_DATA3>  &ApproxTraj, kinPoint3 *errorMax, std::vector<double>& error_pos, std::vector<double>& error_vel, double *errMax_pos, double *errMax_vel);
+extern SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std::vector<SM_CURVE_DATA3> &IdealTraj);
+extern SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA3> &IdealTraj, double width, double height);
+extern SM_STATUS plotApproxTraj(std::string fileName, std::vector<SM_CURVE_DATA3> &IdealTraj, double width, double height);
+extern SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA3> &traj);
+extern SM_STATUS convertMotionToCurve_InAdvance(std::vector<SM_OUTPUT> &motion, double tic,double nbIntervals,  std::vector<SM_CURVE_DATA3>  &ApproxTraj);
+extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA3>  &IdealTraj, std::vector<double> &vel_discr_X,std::vector<double> &vel_discr_Y, std::vector<double> &acc_discr_X, std::vector<double> &acc_discr_Y, std::vector<double> &pos_discr_X, std::vector<double> &pos_discr_Y);
+extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA3>  &IdealTraj,std::vector<SM_CURVE_DATA3> &ApproxTraj, kinPoint3 *errorMax, std::vector<double>& error, double *val_err_max);
+extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA3> &IdealTraj,std::vector<kinPoint3> &discPoint, std::vector<SM_COND_DIM3> &IC, std::vector<SM_COND_DIM3> &FC, std::vector<double> &Timp, std::vector<int>
+				     &IntervIndex);
 #endif
 #endif
 
