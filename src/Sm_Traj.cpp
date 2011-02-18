@@ -28,7 +28,7 @@
   Fonctions            : Define and Adjust Time Profile of Jerk
   Date de creation     : June 2007
   Date de modification : June 2007
-  Auteur               : Xavier BROQUERE
+  Auteur               : Xavier BROQUERE49
 
   ----------------------------------------------------------------------*/
 
@@ -46,6 +46,8 @@
 #include <sstream>
 #include "time_proto.h"
 
+#include <vector>
+
 #include <time.h>
 #include <stdlib.h>
 #ifdef __APPLE__
@@ -53,6 +55,8 @@
 #endif
 
 #include "Sm_Traj.h"
+#include "Sm_Curve.h"
+#include "Sm_Approx.h"
 //#include "QSoftMotionPlanner.h"
 
 
@@ -542,5 +546,79 @@ int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  doubl
 #else
   printf("ERROR: softMotion-libs is not compiled with the QT_LIBRARY flag\n");
 #endif
+  return 0;
+}
+
+
+int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, int id)
+{
+  this->clear();
+  this->trajId = id;
+  this->timePreserved = 0.0;
+
+  if(trajIn.size() == 0) {
+    printf("SmTraj: trajectory empty\n");
+    return 1;
+  }
+  if(timeStep <= 0) {
+    printf("SmTraj: error input timeStep\n");
+    return 1;
+  }
+
+  this->resize(trajIn.size());
+  int nbAxis = (int)trajIn.size();
+
+  int nbSample = trajIn[0].size();
+
+  printf("SmTraj: initial trajectory duration %f\n",nbSample*timeStep);
+  double total_time = nbSample*timeStep;
+
+  for(int i=0; i< nbAxis; i++) {
+    this->qStart[i] = trajIn[i][0].x;
+  }
+  for(int i=0; i< nbAxis; i++) {
+    this->qGoal[i] = trajIn[i][nbSample-1].x;
+  }
+
+  double initTimeStep = 0.2; /* second*/
+  int initStep = initTimeStep/timeStep;
+
+  Sm_Curve curv;
+  
+
+  curv.traj.resize(nbSample);
+  for(unsigned int i=0; i<curv.traj.size(); i++) {
+    curv.traj[i].Pos.resize(nbAxis);
+    curv.traj[i].Vel.resize(nbAxis);
+    curv.traj[i].Acc.resize(nbAxis);
+    curv.traj[i].Jerk.resize(nbAxis);
+  }
+  //ddu.resize(nbSamples);
+  //du.resize(nbSamples);
+  //u.resize(nbSamples);
+  //curv.t.resize(nbSamples);
+
+  for (unsigned int i = 0; i < curv.traj.size(); i++){
+    curv.traj[i].t = i * timeStep;
+    if (curv.traj[i].t >= total_time) {
+      curv.traj[i].t =total_time;
+    }
+    //curv.t.at(i) = curv.traj[i].t;
+  }
+
+  for (int i = 1; i < nbSample; i++){
+    for(int j=0; j< nbAxis; j++) {
+      curv.traj[i].Pos[j] = trajIn[j][i].x;
+      curv.traj[i].Vel[j] = trajIn[j][i].v;
+      curv.traj[i].Acc[j] = trajIn[j][i].a;
+    }
+  }
+
+  Sm_Approx approx;
+
+  approx.approximate(curv, timeStep,  0.01, 10, true, "toto.traj");
+
+
+
   return 0;
 }

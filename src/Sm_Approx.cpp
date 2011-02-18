@@ -30,6 +30,30 @@ int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &traj)
 }
 
 
+void Sm_Approx::approximate(Sm_Curve curv, double SampTime,  double ErrMax,int ExpTime, bool flagExport, std::string fileName)
+{
+
+    FILE *fp_segMotion = NULL;
+    _sampling = SampTime;
+    _errMax = ErrMax;
+    _timeStep = ExpTime;
+    _flag_haus_actif = 0;
+    _fileName = fileName;
+    _nbAxis = 24;
+   
+    initializeApproxVariables();
+
+    /* Handle the path */
+    _curve.push_back(curv);
+    cout << " ... Ideal Trajectory Computed " << endl;
+
+
+    computeTraj();
+    cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE" << endl;
+
+    return;
+}
+
 void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime, double ErrMax, 
 int ExpTime, bool flagExport, std::string fileName) {
  
@@ -245,7 +269,7 @@ void Sm_Approx::computeTraj(){
   int starting_point_each_seg = 0; // the starting points of each sub-trajectory
   int nb_seg_total = 0;
   int test_for_circle_only = 0;
-  double tu = 0.0,ts = 0.0; // chrono on et off
+  //  double tu = 0.0,ts = 0.0; // chrono on et off
   double tic = 0.0;
   double time_total = 0.0;
   double errMax_pos_subTraj = 0.0; //maxi error of each sub-trajectory
@@ -379,7 +403,7 @@ void Sm_Approx::computeTraj(){
     //memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
     //memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
 
-    iter_divis->motion_par_seg.resize(3);
+    iter_divis->motion_par_seg.resize(_nbAxis);
     Temp_alias.clear();
     Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
 

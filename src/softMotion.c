@@ -7112,7 +7112,8 @@ SM_STATUS convertMotionToCurve3(std::vector<SM_OUTPUT> &motion, double tic,doubl
 
 SM_STATUS convertMotionToCurve2(std::vector<SM_OUTPUT> &motion, int nbAxis, double tic,double nbIntervals,
                                std::vector<SM_CURVE_DATA>  &ApproxTraj) {
-  unsigned int i = 0, j = 0;
+  unsigned int i = 0;
+  int j = 0;
   std::vector<double> ICloc;
   double t = 0.0;
   ApproxTraj.clear();

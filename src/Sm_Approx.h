@@ -40,6 +40,8 @@ class Sm_Approx {
     void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, 
 		     bool flagExport, std::string fileName);
 
+    void approximate(Sm_Curve curv, double SampTime,  double ErrMax,int ExpTime, bool flagExport, std::string fileName);
+
 
     void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, 
 		     bool flagExport, std::string fileName, SM_TRAJ &traj);
