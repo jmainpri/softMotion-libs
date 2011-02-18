@@ -32,7 +32,7 @@ int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &traj)
 
 void Sm_Approx::approximate(Sm_Curve curv, double SampTime,  double ErrMax,int ExpTime, bool flagExport, std::string fileName)
 {
-
+    std::string str2;
     FILE *fp_segMotion = NULL;
     _sampling = SampTime;
     _errMax = ErrMax;
@@ -40,19 +40,72 @@ void Sm_Approx::approximate(Sm_Curve curv, double SampTime,  double ErrMax,int E
     _flag_haus_actif = 0;
     _fileName = fileName;
     _nbAxis = 24;
+   SM_OUTPUT tempo_motion;
+   
+        _lim.maxJerk = 0.9;
+    _lim.maxAcc  = 0.3;
+    _lim.maxVel  = 0.1;
    
     initializeApproxVariables();
-
+  str2.clear();
+    str2 += "QtIdealTraj.dat";
+    saveTraj(str2, curv.traj);
     /* Handle the path */
     _curve.push_back(curv);
     cout << " ... Ideal Trajectory Computed " << endl;
 
 
     computeTraj();
-    cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE" << endl;
 
+      /* fill result */
+  for (unsigned int i = 1; i < _result.size(); i++){
+    for (unsigned int j = 0; j < _result.size()-i ; j++){
+      if (_result[j].premier_point > _result[j+1].premier_point){
+        tempo_motion = _result[j];
+        _result[j] = _result[j+1];
+        _result[j+1] = tempo_motion;
+      }
+    }
+  }
+
+ _result[0].IC.resize(_result[0].Time.size());
+
+ for(unsigned int i=0; i<_result[0].Time.size(); i++) {
+    _result[0].IC[i].x = curv.traj[0].Pos[i];
+ }
+
+ printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());
+  
+ fp_segMotion = fopen("segMotion.dat", "w");
+  if(fp_segMotion==NULL) {
+    std::cout << " cannont open file to write the trajectory" << std::endl;
     return;
+  }
+  for (unsigned int i = 0; i < _result.size(); i++){
+    fprintf(fp_segMotion, "%d %lf ",_result[i].premier_point, (_result[i].premier_point + 1) * _sampling);
+    for(unsigned int k=0; k<_result[i].Time.size(); k++) {
+      fprintf(fp_segMotion, "%lf %lf ",_result[i].Time[k],_result[i].Jerk[k]);
+    }
+    fprintf(fp_segMotion, "\n");
+  }
+  fclose(fp_segMotion);
+  cout << "motion file exported" << endl;
+  cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE" << endl;
+
+  SM_TRAJ smTraj;
+ printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());
+   smTraj.importFromSM_OUTPUT(36, _result);
+     //smTraj.print();
+
+     smTraj.save("Approximation_Seg.traj");
+  return;
 }
+
+
+
+
+
+
 
 void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime, double ErrMax, 
 int ExpTime, bool flagExport, std::string fileName) {
@@ -255,7 +308,6 @@ void Sm_Approx::genFileTraj(){
   return;
 }
 
-
 void Sm_Approx::computeTraj(){
     SM_LIMITS lim;
   SM_OUTPUT outMotion;
@@ -403,7 +455,7 @@ void Sm_Approx::computeTraj(){
     //memcpy(IC_seg[0].Axis, IC[hh].Axis, sizeof(SM_COND_DIM));
     //memcpy(FC_seg[0].Axis, FC[hh].Axis, sizeof(SM_COND_DIM));
 
-    iter_divis->motion_par_seg.resize(_nbAxis);
+    iter_divis->motion_par_seg.resize(3);
     Temp_alias.clear();
     Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
 
@@ -534,13 +586,13 @@ void Sm_Approx::computeTraj(){
 
 
   Calcul_Error(_curve.begin()->traj, curv2.traj, &_curve.begin()->errorMax, _err_traj, &errMax_pos_traj);
-
   saveTraj("QtApproxTraj.dat", curv2.traj);
-
+  
+  printf("errMax_pos_traj %f\n",errMax_pos_traj);
+ 
   curv2.discPoint = _curve.front().discPoint;
   curv2.errorMax = _curve.front().errorMax;
   _curve.push_back(curv2);
-
 
   return;
   

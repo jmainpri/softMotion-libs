@@ -60,6 +60,10 @@ class Sm_Approx {
     void initializeApproxVariables();
     void computeTraj();
 
+
+    void computeTrajXav();
+
+
     void computeHausdorff();
 
 

@@ -472,6 +472,70 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
   return 0;
 }
 
+
+int SM_TRAJ::importFromSM_OUTPUT(int trajId, std::vector<SM_OUTPUT> &trajIn)
+{
+
+
+ this->clear();
+
+ if(trajIn.size() == 0) {
+  printf("ERROR: importFromSM_OUTPUT empty traj\n");
+  return 1;
+ }
+ if(trajIn[0].Time.size() == 0) {
+  printf("ERROR: importFromSM_OUTPUT empty traj\n");
+  return 1;
+ }
+  int nbSeg = (int)trajIn.size();
+  int nbAxis = (int)trajIn[0].Time.size();
+
+
+   printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
+
+ 
+  this->resize(trajIn[0].Time.size());
+  this->trajId = trajId;
+ this->timePreserved = 0.0;
+ 
+  for(int i=0; i<nbAxis; i++) {
+    traj[i].resize(nbSeg);
+    for(int j=0; j<nbSeg; j++) {
+      traj[i][j].lpId       = 0;
+      traj[i][j].timeOnTraj = 0.0;
+      traj[i][j].time       =  trajIn[j].Time[i];
+      traj[i][j].IC.a	    =  0.0 ;
+      traj[i][j].IC.v	    =  0.0 ;
+      traj[i][j].IC.x	    =  0.0 ;
+      traj[i][j].jerk	    =  trajIn[j].Jerk[i];
+    }
+  }
+
+
+  
+if(trajIn[0].IC.size()) {
+  for(int i=0; i<nbAxis; i++) {
+    this->qStart[i] = trajIn[0].IC[i].x;
+  }
+  for(int i=0; i<nbAxis; i++) {
+    this->qGoal[i] = 0.0;
+  }
+}
+
+  /*set the initial condition in the first segment */
+  for(int i=0; i<nbAxis; i++) {
+      traj[i][0].IC.a	    =  trajIn[0].IC[i].a;
+      traj[i][0].IC.v	    =  trajIn[0].IC[i].v;
+      traj[i][0].IC.x	    =  trajIn[0].IC[i].x;
+  }
+  // compute the initial conditions and other variable for all segments
+   computeTimeOnTraj();
+
+
+  
+ return 0;
+}
+
 int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
 {
   //if(smTraj->nbAxis != SM_TRAJ_NB_AXIS) {
@@ -550,7 +614,7 @@ int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  doubl
 }
 
 
-int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, int id)
+int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, double errorMax, int id)
 {
   this->clear();
   this->trajId = id;
@@ -606,7 +670,7 @@ int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::ve
     //curv.t.at(i) = curv.traj[i].t;
   }
 
-  for (int i = 1; i < nbSample; i++){
+  for (int i = 0; i < nbSample; i++){
     for(int j=0; j< nbAxis; j++) {
       curv.traj[i].Pos[j] = trajIn[j][i].x;
       curv.traj[i].Vel[j] = trajIn[j][i].v;
@@ -616,7 +680,7 @@ int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::ve
 
   Sm_Approx approx;
 
-  approx.approximate(curv, timeStep,  0.01, 10, true, "toto.traj");
+  approx.approximate(curv, timeStep,  errorMax, 10, true, "toto.traj");
 
 
 

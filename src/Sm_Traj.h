@@ -74,11 +74,12 @@ class SM_TRAJ {
   int load(char *name, int (*fct(void)));
   int convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj);
   int importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj);
-
+  
+  int importFromSM_OUTPUT(int trajId, std::vector<SM_OUTPUT>  &trajIn);
 
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
-  int approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, int id);
+  int approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, double errorMax, int id);
 
  private:
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);

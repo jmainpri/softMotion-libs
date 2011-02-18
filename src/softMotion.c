@@ -6420,7 +6420,7 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
   }
 
   // Compute jerk and time segment
-  for (i = 0; i < IC.size(); i++){
+  for (i = 0; i < IC.size(); i++){ // IC.size toujours 1 donc i toujours 0
     for (j = 0; j < IC[0].Axis.size(); j++){
 
       locRHS[0] = (FC[i].Axis[j].a - IC[i].Axis[j].a) / Timp [i];
@@ -7173,9 +7173,11 @@ SM_STATUS convertMotionToCurve2(std::vector<SM_OUTPUT> &motion, int nbAxis, doub
 
 
       curveData.t = t;
-      curveData.Jerk[0]  = motion[interval].Jerk[0];
-      curveData.Jerk[1]  = motion[interval].Jerk[1];
-      curveData.Jerk[2]  = motion[interval].Jerk[2];
+      for(j=0; j<nbAxis; j++){
+      curveData.Jerk[j]  = motion[interval].Jerk[j];
+      //curveData.Jerk[1]  = motion[interval].Jerk[1];
+      //curveData.Jerk[2]  = motion[interval].Jerk[2];
+      }
       ApproxTraj.push_back(curveData);
   }
 
@@ -7617,7 +7619,7 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
 {
   int i =0;
   FILE * f = NULL;
-
+  printf("traj.size() %d\n", (int)traj.size() );
   f = fopen(fileName.c_str(),"w");
   if(f == NULL) {
     printf("ERROR saveTraj : cannot open file\n");
@@ -7627,6 +7629,34 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
   for(i=0; i<(int)traj.size() -1; i++){
     fprintf(f,"%d %f %f %f %f %f\n", i,traj[i].Pos[0],traj[i].Pos[1],traj[i].Pos[2], traj[i].Vel[0], traj[i].Acc[0] );
   }
+  fclose(f);
+
+
+
+  //for(i=0; i<(int)traj.size() -1; i++){
+    std::string str;
+    str.clear();
+    str += "FULL_";
+    str += fileName.c_str();
+    
+ f = fopen(str.c_str(),"w");
+  if(f == NULL) {
+    printf("ERROR saveTraj : cannot open file\n");
+    return SM_ERROR;
+  }
+  
+  for(i=0; i<(int)traj.size(); i++){
+  
+    fprintf(f,"%d",i);
+ 
+    for(unsigned u=0; u<traj[i].Pos.size(); u++) {
+
+      fprintf(f," %f", traj[i].Pos[u]);
+    }
+    fprintf(f,"\n");
+
+  }
+
   fclose(f);
   return SM_OK;
 }
@@ -9122,7 +9152,7 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
     for (unsigned int i = 0; i< IdealTraj.size(); i++){
 
      double dist2 = 0;
-      for(unsigned int h =0; h<IdealTraj[0].Pos.size(); h++) {
+      for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
 	dist2 += (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h])*(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
       }
       err  = sqrt(dist2);
@@ -9156,7 +9186,7 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
     for (unsigned int i = 0; i< IdealTraj.size(); i++){
 
       double dist2 = 0;
-      for(unsigned int h =0; h<IdealTraj[0].Pos.size(); h++) {
+      for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
 	dist2 += (IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h])*(IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h]);
       }
       err  = sqrt(dist2);
