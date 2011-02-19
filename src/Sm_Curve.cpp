@@ -19,6 +19,7 @@ Sm_Curve::Sm_Curve()
   //  errorMax.kc[i].x = 0.0;
   //}
   errorMax.t = 0.0;
+  errorMaxVal = 0.0;
   discPoint.clear();
   traj.clear();
   
@@ -31,6 +32,7 @@ Sm_Curve::Sm_Curve (const Sm_Curve& c)
   trajList = c.trajList;
   discPoint = c.discPoint; 
   errorMax = c.errorMax;
+  errorMaxVal = c.errorMaxVal;
 }
 Sm_Curve::~Sm_Curve()
 {
@@ -43,9 +45,7 @@ Sm_Curve::~Sm_Curve()
 Sm_Curve& Sm_Curve::operator=(const Sm_Curve& curv)
 {
   static Sm_Curve o;
-
   o.discPoint = curv.discPoint;
-
   return o;
 }
 

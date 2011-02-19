@@ -80,7 +80,7 @@ class SM_TRAJ {
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
   int approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, double errorMax, int id);
-
+  int approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id);
  private:
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);
   std::vector<double> parseFrame(std::string& line);

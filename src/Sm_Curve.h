@@ -40,6 +40,7 @@ public :
   double height;
 
   kinPoint errorMax;
+  double errorMaxVal;
   std::vector<kinPoint> discPoint;
   std::vector<SM_CURVE_DATA> traj;
   std::vector<SM_OUTPUT> segTraj;

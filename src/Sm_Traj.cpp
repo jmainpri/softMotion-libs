@@ -491,7 +491,7 @@ int SM_TRAJ::importFromSM_OUTPUT(int trajId, std::vector<SM_OUTPUT> &trajIn)
   int nbAxis = (int)trajIn[0].Time.size();
 
 
-   printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
+  //  printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
 
  
   this->resize(trajIn[0].Time.size());
@@ -614,8 +614,9 @@ int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  doubl
 }
 
 
-int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::vector<double> vmax, std::vector<double> amax, double timeStep, double errorMax, int id)
+int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id)
 {
+  Sm_Approx approx;
   this->clear();
   this->trajId = id;
   this->timePreserved = 0.0;
@@ -630,11 +631,9 @@ int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::ve
   }
 
   this->resize(trajIn.size());
+
   int nbAxis = (int)trajIn.size();
-
   int nbSample = trajIn[0].size();
-
-  printf("SmTraj: initial trajectory duration %f\n",nbSample*timeStep);
   double total_time = nbSample*timeStep;
 
   for(int i=0; i< nbAxis; i++) {
@@ -644,12 +643,7 @@ int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::ve
     this->qGoal[i] = trajIn[i][nbSample-1].x;
   }
 
-  double initTimeStep = 0.2; /* second*/
-  int initStep = initTimeStep/timeStep;
-
   Sm_Curve curv;
-  
-
   curv.traj.resize(nbSample);
   for(unsigned int i=0; i<curv.traj.size(); i++) {
     curv.traj[i].Pos.resize(nbAxis);
@@ -657,19 +651,12 @@ int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::ve
     curv.traj[i].Acc.resize(nbAxis);
     curv.traj[i].Jerk.resize(nbAxis);
   }
-  //ddu.resize(nbSamples);
-  //du.resize(nbSamples);
-  //u.resize(nbSamples);
-  //curv.t.resize(nbSamples);
-
   for (unsigned int i = 0; i < curv.traj.size(); i++){
     curv.traj[i].t = i * timeStep;
     if (curv.traj[i].t >= total_time) {
       curv.traj[i].t =total_time;
     }
-    //curv.t.at(i) = curv.traj[i].t;
   }
-
   for (int i = 0; i < nbSample; i++){
     for(int j=0; j< nbAxis; j++) {
       curv.traj[i].Pos[j] = trajIn[j][i].x;
@@ -678,11 +665,7 @@ int SM_TRAJ::approximateAVX(std::vector< std::vector<SM_COND> > &trajIn, std::ve
     }
   }
 
-  Sm_Approx approx;
+  int res = approx.approximate(curv, timeStep, errorPosMax, errorVelMax, *this);
 
-  approx.approximate(curv, timeStep,  errorMax, 10, true, "toto.traj");
-
-
-
-  return 0;
+  return res;
 }

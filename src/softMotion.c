@@ -7619,7 +7619,7 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
 {
   int i =0;
   FILE * f = NULL;
-  printf("traj.size() %d\n", (int)traj.size() );
+  //printf("traj.size() %d\n", (int)traj.size() );
   f = fopen(fileName.c_str(),"w");
   if(f == NULL) {
     printf("ERROR saveTraj : cannot open file\n");
