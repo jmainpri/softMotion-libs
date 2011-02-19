@@ -114,7 +114,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE (Feb 2011)" << endl;
 
   if(flagExport==true) {  
-    smTraj.save("Approximation_Seg.traj");
+    smTraj.save((char*)"Approximation_Seg.traj");
   }
   return 0;
 }
@@ -570,7 +570,7 @@ void Sm_Approx::computeTraj(){
         nb_seg_total ++;
         starting_point_each_seg = iter_stock->point_depart;
         for (unsigned int k = starting_point_each_seg; k < (iter_stock->traj.size() + starting_point_each_seg); k++) {
-          if(k == starting_point_each_seg){
+          if((int)k == starting_point_each_seg){
             kc_subTraj.t = k * tic;
 	    for(int h=0; h<_nbAxis; h++) {
 	      kc_subTraj.kc[h].x = iter_stock->traj[k-starting_point_each_seg].Pos[h];
