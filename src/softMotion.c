@@ -8884,9 +8884,11 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
 // 	dist2 += (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h])*(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
 //       }
 //       err  = sqrt(dist2);
+
+
         err = 0.0;
       for(unsigned int h =0; h<IdealTraj[0].Pos.size(); h++) {
-	dist2 = (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+	dist2 = ABS(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
 	if(dist2>err) {
 	   err = dist2;
 	}
@@ -9177,7 +9179,7 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
 
 err = 0.0;
       for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
-	dist2 = (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+	dist2 = ABS(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
 	if(dist2>err) {
 	   err = dist2;
 	}

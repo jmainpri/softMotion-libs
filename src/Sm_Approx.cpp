@@ -534,7 +534,7 @@ void Sm_Approx::computeTraj(){
       // iter_temp_divis->traj --> the ideal traj
       // iter_divis->traj --> the approximated traj
       Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &_curve.front().errorMax, error, error_vel, &errMax_pos_subTraj, &errMax_vel_subTraj);
-//printf("Errerur %f \n",errMax_pos_subTraj);
+      //printf("Errerur %f \n",errMax_pos_subTraj);
 //printf("##########################################\n");
 
 
