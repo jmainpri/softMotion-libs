@@ -75,7 +75,7 @@ class SM_TRAJ {
   int convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj);
   int importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj);
   
-  int importFromSM_OUTPUT(int trajId, std::vector<SM_OUTPUT>  &trajIn);
+  int importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT>  &trajIn);
 
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
