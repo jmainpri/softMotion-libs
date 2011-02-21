@@ -6458,6 +6458,16 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
     //}
   }
 
+       if(0){
+	
+	cout << endl << "segement " << 0 << endl;
+	cout << " IC " << motion[0].IC[0].a << " " << motion[0].IC[0].v << " " << motion[0].IC[0].x << endl;
+       cout << " Jerk " << motion[0].Jerk[0] << " Time " << motion[0].Time[0]<< endl;
+	//cout << " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0) << endl;
+	cout << endl;
+
+      }
+
   for (i = 1; i < (3 * IC.size()); i++){
 
     for (j = 0; j < IC[0].Axis.size(); j++){
@@ -6490,6 +6500,7 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
 	cout << endl << "segement " << i << endl;
 	cout << " IC " << motion[i].IC[j].a << " " << motion[i].IC[j].v << " " << motion[i].IC[j].x << endl;
 	cout << " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0) << endl;
+	cout << " Jerk " << motion[i].Jerk[j] << " Time " << motion[i].Time[j]<< endl;
 	cout << endl;
 
       }
@@ -7626,7 +7637,7 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
     return SM_ERROR;
   }
 
-  for(i=0; i<(int)traj.size() -1; i++){
+  for(i=0; i<(int)traj.size(); i++){
     fprintf(f,"%d %f %f %f %f %f\n", i,traj[i].Pos[0],traj[i].Pos[1],traj[i].Pos[2], traj[i].Vel[0], traj[i].Acc[0] );
   }
   fclose(f);
@@ -8868,11 +8879,18 @@ SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA>  &IdealTraj,std::vector<SM_CUR
     double err;
     for (unsigned int i = 0; i< ApproxTraj.size(); i++){
       double dist2 = 0;
+     
+//       for(unsigned int h =0; h<IdealTraj[0].Pos.size(); h++) {
+// 	dist2 += (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h])*(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+//       }
+//       err  = sqrt(dist2);
+        err = 0.0;
       for(unsigned int h =0; h<IdealTraj[0].Pos.size(); h++) {
-	dist2 += (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h])*(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+	dist2 = (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+	if(dist2>err) {
+	   err = dist2;
+	}
       }
-      err  = sqrt(dist2);
-      
       if(err > *errMax_pos) {
 	errorMax->kc.clear();
 	errorMax->kc.resize(IdealTraj[i].Pos.size());
@@ -9152,10 +9170,20 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
     for (unsigned int i = 0; i< IdealTraj.size(); i++){
 
      double dist2 = 0;
+//       for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
+// 	dist2 += (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h])*(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+//       }
+//       err  = sqrt(dist2);
+
+err = 0.0;
       for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
-	dist2 += (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h])*(IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+	dist2 = (IdealTraj[i].Pos[h]-ApproxTraj[i].Pos[h]);
+	if(dist2>err) {
+	   err = dist2;
+	}
       }
-      err  = sqrt(dist2);
+
+      
       
       if(err > *errMax_pos) {
 	errorMax->kc.clear();
@@ -9186,10 +9214,18 @@ SM_STATUS Calcul_Error_list(std::vector<SM_CURVE_DATA>  &IdealTraj, std::vector<
     for (unsigned int i = 0; i< IdealTraj.size(); i++){
 
       double dist2 = 0;
+//       for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
+// 	dist2 += (IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h])*(IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h]);
+//       }
+//       err  = sqrt(dist2);
+
+      err = 0.0;
       for(unsigned int h =0; h<IdealTraj[i].Pos.size(); h++) {
-	dist2 += (IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h])*(IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h]);
+	dist2 = (IdealTraj[i].Vel[h]-ApproxTraj[i].Vel[h]);
+	if(dist2>err) {
+	   err = dist2;
+	}
       }
-      err  = sqrt(dist2);
       
 
 
