@@ -658,7 +658,7 @@ int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  doubl
 
 int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id)
 {
-  Sm_Approx approx;
+
   this->clear();
   this->trajId = id;
   this->timePreserved = 0.0;
@@ -687,7 +687,7 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
     this->qGoal[i] = trajIn[i][nbSample-1].x;
   }
 
-  Sm_Curve curv;
+  Sm_Curve curv; // initialize and fill the ideal curve
   curv.traj.resize(nbSample);
   for(unsigned int i=0; i<curv.traj.size(); i++) {
     curv.traj[i].Pos.resize(nbAxis);
@@ -709,6 +709,8 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
     }
   }
 
+  // utilise la classe SM_Approx pour effectuer l'approximation
+  Sm_Approx approx;
   int res = approx.approximate(curv, timeStep, errorPosMax, errorVelMax, *this);
 
   return res;

@@ -29,6 +29,8 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double sampTime,
   return;
 }
 
+
+// fonction d'interface avec SM_TRAJ
 int Sm_Approx::approximate(Sm_Curve &curv, double SampTime, double ErrPosMax, double ErrVelMax, SM_TRAJ &smTraj)
 {
   std::string fileName;
@@ -60,20 +62,28 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
    
   initializeApproxVariables();
 
+  // dans l'attribut _curve il y aura deux courbes, la premiere _curve[0] est la traj ideale
+  // la second _curve[1] = (_curve.back()) sera la traj approximee
+  // les suites de cubiques de la traj approxime sont stockées dans _result
+  // _result.size() est la nombre de segment de cubique (c'est la meme pour tout les axes)
+
+  // SAUVE LA TRAJCTOIRE IDEALE (sous la forme d'un tableau)
   //if(flagExport==true) {
-    str2.clear();
-    str2 += "QtIdealTraj.dat";
-    saveTraj(str2, curv.traj);
-    cout << " ... Ideal Trajectory Already Computed and Saved" << endl;
-    //}
+  str2.clear();
+  str2 += "QtIdealTraj.dat";
+  saveTraj(str2, curv.traj);
+  cout << " ... Ideal Trajectory Already Computed and Saved" << endl;
+  //}
 
   /* Handle the path */
   _curve.push_back(curv);
 
+
+  /// CALCUL DE L'APPROXIMATION //
   computeTraj();
+  
 
-
-
+  // SAUVE LA TRAJCTOIRE APPROXIMEE (sous la forme d'un tableau)
   saveTraj("QtApproxTraj.dat", (_curve.back()).traj);
   printf("Error Max Pos %f \n",(_curve.back()).errorMaxVal);
 
@@ -83,6 +93,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
 // 
 //   }
 
+  
   /* fill result */
   for (unsigned int i = 1; i < _result.size(); i++){
     for (unsigned int j = 0; j < _result.size()-i ; j++){
@@ -119,6 +130,11 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
     
     //printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());
   }
+
+
+
+  // importe le resultat _result dans une classe de type SM_TRAJ Attention on recalcule tte les conditions initiales
+  // de chaque segment dans cette fonction ainsi que la duree totale de la trajectoire a partir des couples (Ti, Ji)
   smTraj.importFromSM_OUTPUT(36, _sampling, _result);
   cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE (Feb 2011)" << endl;
 
@@ -126,29 +142,27 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
     smTraj.save((char*)"Approximation_Seg.traj");
   }
   /* compare end point */
-std::vector< SM_COND> cond;
-    smTraj.getMotionCond(smTraj.getDuration(), cond);
-printf("tutu1\n");
+  /* verification du point final atteint par smTraj par rapport a IdealTraj */
+  std::vector< SM_COND> cond;
+  smTraj.getMotionCond(smTraj.getDuration(), cond);
+  printf("tutu1\n");
   for(unsigned int i=0; i<cond.size(); i++) {
     double err = fabs(cond[i].x -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
     if( err > 0.001) {
       printf("ERROR final pose on axis %d , err= %f \n",i, err);
     }
   }
-
+  
   printf("Final Conditions of the Ideal trajectory\n");
   for(unsigned int i=0; i<cond.size(); i++) {
-
-      printf("%f ",(_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+    printf("%f ",(_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
   }
-printf("\n");
+  printf("\n"); 
   printf("Final Conditions of the smTraj trajectory\n");
   for(unsigned int i=0; i<cond.size(); i++) {
-   
-      printf("%f ",cond[i].x);
+    printf("%f ",cond[i].x);
   }
-
-printf("\n");
+  printf("\n");
 //  std::vector< SM_COND> cond;
 //   printf("there are %d segment in the approx traj\n",(int)_result.size());
 //   printf("ERREUR 2222222222222\n");
