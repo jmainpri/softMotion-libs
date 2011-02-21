@@ -60,20 +60,29 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
    
   initializeApproxVariables();
 
-  if(flagExport==true) {
+  //if(flagExport==true) {
     str2.clear();
     str2 += "QtIdealTraj.dat";
     saveTraj(str2, curv.traj);
     cout << " ... Ideal Trajectory Already Computed and Saved" << endl;
- }
+    //}
 
   /* Handle the path */
   _curve.push_back(curv);
 
   computeTraj();
 
-  saveTraj("QtApproxTrajTOTOT.dat", (_curve.back()).traj);
+
+
+  saveTraj("QtApproxTraj.dat", (_curve.back()).traj);
   printf("Error Max Pos %f \n",(_curve.back()).errorMaxVal);
+
+  
+//   for (unsigned int i = 1; i < _result.size(); i++){
+//      printf("index seg %f\n",_result[i].premier_point);
+// 
+//   }
+
   /* fill result */
   for (unsigned int i = 1; i < _result.size(); i++){
     for (unsigned int j = 0; j < _result.size()-i ; j++){
@@ -110,12 +119,48 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
     
     //printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());
   }
-  smTraj.importFromSM_OUTPUT(36, _result);
+  smTraj.importFromSM_OUTPUT(36, _sampling, _result);
   cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE (Feb 2011)" << endl;
 
   if(flagExport==true) {  
     smTraj.save((char*)"Approximation_Seg.traj");
   }
+  /* compare end point */
+std::vector< SM_COND> cond;
+    smTraj.getMotionCond(smTraj.getDuration(), cond);
+printf("tutu1\n");
+  for(unsigned int i=0; i<cond.size(); i++) {
+    double err = fabs(cond[i].x -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+    if( err > 0.001) {
+      printf("ERROR final pose on axis %d , err= %f \n",i, err);
+    }
+  }
+
+  printf("Final Conditions of the Ideal trajectory\n");
+  for(unsigned int i=0; i<cond.size(); i++) {
+
+      printf("%f ",(_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+  }
+printf("\n");
+  printf("Final Conditions of the smTraj trajectory\n");
+  for(unsigned int i=0; i<cond.size(); i++) {
+   
+      printf("%f ",cond[i].x);
+  }
+
+printf("\n");
+//  std::vector< SM_COND> cond;
+//   printf("there are %d segment in the approx traj\n",(int)_result.size());
+//   printf("ERREUR 2222222222222\n");
+
+  
+//   for(unsigned int i=0; i<cond.size(); i++) {
+//     double err = fabs((_curve.front()).traj[ (_curve.front()).traj.size()-1].Pos[i] -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+//     if( err > 0.001) {
+//       printf("ERROR final pose on axis %d , err= %f \n",i, err);
+//     }
+//   }
+
   return 0;
 }
 
@@ -465,14 +510,23 @@ void Sm_Approx::computeTraj(){
 
       iter_divis->motion_par_seg.resize(3);
       Temp_alias.clear();
-      Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
 
-      /***********************************/
+/// HERRRREEEEEE
+      Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
+ //Temp_alias.push_back((iter_temp_divis->traj.size())*tic);
+
+
+
+ //       /***********************************/
       /* approximate the current subTraj */
       /***********************************/
+      //printf("temp alias %f \n", Temp_alias[0]);
       sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
       iter_divis->traj.clear();
       convertMotionToCurve2(iter_divis->motion_par_seg,_nbAxis, tic, 1, iter_divis->traj);
+
+//       printf("segment\n");
+      // printf("T1 %f \n", iter_divis->motion_par_seg[0].Time[0]);
 
       /****************************************/
       /* compute error of the current subTraj */
@@ -480,13 +534,22 @@ void Sm_Approx::computeTraj(){
       // iter_temp_divis->traj --> the ideal traj
       // iter_divis->traj --> the approximated traj
       Calcul_Error_list(iter_temp_divis->traj, iter_divis->traj, &_curve.front().errorMax, error, error_vel, &errMax_pos_subTraj, &errMax_vel_subTraj);
+//printf("Errerur %f \n",errMax_pos_subTraj);
+//printf("##########################################\n");
 
 
-      if ( (errMax_pos_subTraj > err_max_def_pos) || (errMax_vel_subTraj > err_max_def_vel) ){
+
+      if ( ( (errMax_pos_subTraj > err_max_def_pos)|| (errMax_vel_subTraj > err_max_def_vel) )  && (iter_temp_divis->traj.size()> 12)){ 
+
+	// !!!!!!!!!!!!!!! if the subtraj length is less than 12*_sampling, accept the error !!!!!!!!!!!!!!!!!!!
+	
 	/* the trajectory error is too high */
 	for (int i = 0; i < 2; i++){
 	  if(i == 0){
 	    size_segment = int(iter_temp_divis->traj.size()/2);
+	    if(size_segment < 3) {
+	      printf("ERROR size_segment < 3\n");
+	    }
 	    iter_stock->point_depart = iter_temp_divis->point_depart;
 	  }
 	  else{
@@ -508,6 +571,9 @@ void Sm_Approx::computeTraj(){
 	}
       }
       else{
+	if( (errMax_pos_subTraj > err_max_def_pos)){
+	  printf("Cannot approximate the subtraj accept the error %f\n",errMax_pos_subTraj);
+	}
 	/* save the approximated subTraj into curv_stock */
 	if(test_for_circle_only == 0){
 	  _interval_courbure = 2 * M_PI * _rayon_circle_for_courbure / nbIntervals_local ;
@@ -516,10 +582,26 @@ void Sm_Approx::computeTraj(){
 	iter_stock->point_depart = iter_temp_divis->point_depart;
 	premier_point_motionSeg = iter_temp_divis->point_depart;
 	size_segment = iter_divis->traj.size();
-	for(int nb_motionSeg = 0; nb_motionSeg < 3; nb_motionSeg ++){
+	for(int nb_motionSeg = 0; nb_motionSeg < 3; nb_motionSeg ++){ // here 3 represent the 3 segments
+	 
 	  outMotion.premier_point = premier_point_motionSeg + nb_motionSeg * int(iter_divis->motion_par_seg[nb_motionSeg].Time[0]/_sampling);
 	  outMotion.Jerk = iter_divis->motion_par_seg[nb_motionSeg].Jerk;
-	  outMotion.Time = iter_divis->motion_par_seg[nb_motionSeg].Time;
+	  outMotion.Time= iter_divis->motion_par_seg[nb_motionSeg].Time;
+
+          //Xav add copy IC
+	  outMotion.IC = iter_divis->motion_par_seg[nb_motionSeg].IC;
+	  
+	  
+	  //  printf("motionseg %d outMotion.premier_point %f time %f \n", nb_motionSeg, outMotion.premier_point, (double)(outMotion.Time[0] ));
+
+	  for(unsigned int ind = 0; ind<outMotion.Jerk.size(); ind++) {
+	    if(isnan(outMotion.Jerk[ind]) || isnan(outMotion.Time[ind])) {
+	      printf("ERROR isnan on axis %d jerk %f time %f\n",(int)ind, outMotion.Jerk[ind], outMotion.Time[ind]);
+	    }
+	  }
+	  if(outMotion.Time[0]< _sampling) {
+	    printf("time < _sampling on axis \n");
+	  }
 	  _result.push_back(outMotion);
 	}
 	for (int k = 0; k < size_segment; k++){
@@ -592,7 +674,13 @@ void Sm_Approx::computeTraj(){
 
   maxProfile(curv2.traj, &max_jerk, &max_acc, &max_vel);
 
+//   for (unsigned int i = 0; i < _result.size(); i++){
+//      printf("xavvvv index seg %f  time %f\n",(double)(_result[i].premier_point), (double)(_result[i].Time[0]));
+// 
+//   }
 
+
+  
   Calcul_Error(_curve.begin()->traj, curv2.traj, &_curve.begin()->errorMax, _err_traj, &errMax_pos_traj);
     
   //printf("errMax_pos_traj %f\n",errMax_pos_traj);
@@ -601,6 +689,33 @@ void Sm_Approx::computeTraj(){
   curv2.errorMax = _curve.front().errorMax;
   _curve.push_back(curv2);
 
+//   printf("tutu\n");
+// SM_TRAJ smTraj;
+// 
+//   _result[0].IC.resize(_result[0].Time.size());
+// 
+//   for(unsigned int i=0; i<_result[0].Time.size(); i++) {
+//     _result[0].IC[i].x = _curve.begin()->traj[0].Pos[i];
+//     _result[0].IC[i].a = 0;
+//     _result[0].IC[i].v = 0;
+//   }
+// 
+//  
+// 
+//    smTraj.importFromSM_OUTPUT(36, _result);
+// 
+//    smTraj.print();
+//   std::vector< SM_COND> cond;
+//   smTraj.getMotionCond(smTraj.getDuration(), cond);
+// printf("tutu1\n");
+//   for(unsigned int i=0; i<cond.size(); i++) {
+//     double err = fabs(cond[i].x -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+//     if( err > 0.001) {
+//       printf("ERROR final pose on axis %d , err= %f \n",i, err);
+//     }
+//   }
+// 
+//  printf("tutu2\n");
   return;
   
 }
