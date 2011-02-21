@@ -148,33 +148,48 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
   SM_COND IC;
   SM_STATUS resp;
 
-  std::vector<double> t(1);
-  std::vector<double> a(1);
-  std::vector<double> v(1);
-  std::vector<double> x(1);
+  //   std::vector<double> t(1);
+  //   std::vector<double> a(1);
+  //   std::vector<double> v(1);
+  //   std::vector<double> x(1);
 
   cond.clear();
-  // double dt;
-  for(unsigned int i=0;  i< traj.size(); i++) {
+  double dt = 0;
+  SM_COND ICl;
+  int idSeg = 0;
+  double jerk =0;
 
-     t[0] = time;
-     resp = sm_AVX_TimeVar(traj[i], t, a, v, x);
-     IC.a = a[0];
-     IC.v = v[0];
-     IC.x = x[0];
+  this->computeTimeOnTraj();
+  
+  for(unsigned int axis=0;  axis< traj.size(); axis++) {
+
+   // Find segment Index
+   idSeg = (traj[axis].size()) -1;
+   while (time <= traj[axis][idSeg].timeOnTraj) { idSeg = idSeg - 1;}
+
+     dt = time - traj[axis][idSeg].timeOnTraj;
+     ICl.a = traj[axis][idSeg].IC.a;
+     ICl.v = traj[axis][idSeg].IC.v;
+     ICl.x = traj[axis][idSeg].IC.x;
+     jerk =  traj[axis][idSeg].jerk;
+     
+     IC.a =  jerk * dt  + ICl.a;
+     IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
+     IC.x =  jerk * pow(dt,3.0) / 6.0 + ICl.a * pow(dt,2.0) / 2.0 + ICl.v * dt  + ICl.x;
+  
+      if(axis ==1) {
+      //printf("nbseg %d time %f idSeg %d dt %f x %f     X0= %f IC.x= %f\n",traj[axis].size(), time, idSeg, dt, (double)IC.x,(double)traj[axis][0].IC.x, (double)ICl.x );
+      }
      cond.push_back(IC);
-    
-   // for(unsigned int k = 0; k< traj[i].size(); k++) { 
-   //   if(time >= traj[i][k].timeOnTraj && time <( traj[i][k].timeOnTraj + traj[i][k].time)) {
-   //     dt = (time - traj[i][k].timeOnTraj);
-   //     IC.a = traj[i][k].IC.a + traj[i][k].jerk * dt;
-   //     IC.v = traj[i][k].IC.v + traj[i][k].IC.a*dt + 0.5*traj[i][k].jerk*dt*dt;
-   //     IC.x = traj[i][k].IC.x + IC.v*dt + 0.5*traj[i][k].IC.a*dt*dt + (1.0/6.0)*traj[i][k].jerk*dt*dt*dt;
-   //     cond.push_back(IC);
-   //     break;
-   //   }
-   // }
   }
+
+//      t[0] = time;
+//      resp = sm_AVX_TimeVar(traj[i], t, a, v, x);
+//      IC.a = a[0];
+//      IC.v = v[0];
+//      IC.x = x[0];
+//      cond.push_back(IC);
+  
   return 0;
 }
 
@@ -215,6 +230,8 @@ int SM_TRAJ::computeTimeOnTraj()
 
 int SM_TRAJ::updateIC()
 {
+
+//  printf("updateIC\n");
   
   SM_STATUS resp;
   std::vector<double> t(1);
@@ -222,21 +239,43 @@ int SM_TRAJ::updateIC()
   std::vector<double> v(1);
   std::vector<double> x(1);
 
+  SM_COND ICl;
+ double time = 0.0;
+ double jerk = 0.0;
+  
+// printf("number of segment in the trajectory %d\n",(int)traj[0].size() );
   for(unsigned int axis=0;  axis< traj.size(); axis++) {
-    for (unsigned int s = 0; s < (traj[axis].size()) ; s++) {
-      t[0] = traj[axis][s].timeOnTraj;
-      
-      resp = sm_AVX_TimeVar(traj[axis], t, a, v, x);
-      traj[axis][s].IC.a = a[0];
-      traj[axis][s].IC.v = v[0];
-      traj[axis][s].IC.x = x[0];     
-      
-      if (resp != SM_OK) {
-	printf("ERROR: Q interpolation failed (sm_AVX_TimeVar funcion)\n");
-	return 1;
+
+    for (unsigned int s = 1; s < (traj[axis].size()) ; s++) {
+      ICl.a = traj[axis][s-1].IC.a;
+      ICl.v = traj[axis][s-1].IC.v;
+      ICl.x = traj[axis][s-1].IC.x;
+      time =  traj[axis][s-1].time;
+      jerk =  traj[axis][s-1].jerk;
+      traj[axis][s].IC.a =  jerk * time  + ICl.a;
+      traj[axis][s].IC.v =  jerk * pow(time,2.0) / 2.0 + ICl.a * time   + ICl.v;
+      traj[axis][s].IC.x =  jerk * pow(time,3.0) / 6.0 + ICl.a * pow(time,2.0) / 2.0 + ICl.v * time  + ICl.x;
+      if(axis == 1) {
+
+//printf("seg %d IC.a %f IC.v %f IC.x %f \n",s ,traj[axis][s].IC.a,traj[axis][s].IC.v,traj[axis][s].IC.x);
       }
     }
   }
+   
+//     for (unsigned int s = 0; s < (traj[axis].size()) ; s++) {
+//       t[0] = traj[axis][s].timeOnTraj;
+//       
+//       resp = sm_AVX_TimeVar(traj[axis], t, a, v, x);
+//       traj[axis][s].IC.a = a[0];
+//       traj[axis][s].IC.v = v[0];
+//       traj[axis][s].IC.x = x[0];     
+//       
+//       if (resp != SM_OK) {
+// 	printf("ERROR: Q interpolation failed (sm_AVX_TimeVar funcion)\n");
+// 	return 1;
+//       }
+    
+  
   return 0;
 }
 
@@ -473,7 +512,7 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
 }
 
 
-int SM_TRAJ::importFromSM_OUTPUT(int trajId, std::vector<SM_OUTPUT> &trajIn)
+int SM_TRAJ::importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn)
 {
 
 
@@ -494,19 +533,19 @@ int SM_TRAJ::importFromSM_OUTPUT(int trajId, std::vector<SM_OUTPUT> &trajIn)
   //  printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
 
  
-  this->resize(trajIn[0].Time.size());
-  this->trajId = trajId;
+ this->resize(trajIn[0].Time.size());
+ this->trajId = trajId;
  this->timePreserved = 0.0;
  
   for(int i=0; i<nbAxis; i++) {
     traj[i].resize(nbSeg);
     for(int j=0; j<nbSeg; j++) {
       traj[i][j].lpId       = 0;
-      traj[i][j].timeOnTraj = 0.0;
+      traj[i][j].timeOnTraj = trajIn[j].premier_point*sampling;
       traj[i][j].time       =  trajIn[j].Time[i];
-      traj[i][j].IC.a	    =  0.0 ;
-      traj[i][j].IC.v	    =  0.0 ;
-      traj[i][j].IC.x	    =  0.0 ;
+      traj[i][j].IC.a	    =  trajIn[j].IC[i].a;
+      traj[i][j].IC.v	    =  trajIn[j].IC[i].v;
+      traj[i][j].IC.x	    =  trajIn[j].IC[i].x;
       traj[i][j].jerk	    =  trajIn[j].Jerk[i];
     }
   }
@@ -528,7 +567,10 @@ if(trajIn[0].IC.size()) {
       traj[i][0].IC.v	    =  trajIn[0].IC[i].v;
       traj[i][0].IC.x	    =  trajIn[0].IC[i].x;
   }
-  // compute the initial conditions and other variable for all segments
+
+
+
+ // compute the initial conditions and other variable for all segments
    computeTimeOnTraj();
 
 
@@ -634,6 +676,8 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
 
   int nbAxis = (int)trajIn.size();
   int nbSample = trajIn[0].size();
+
+  printf("There are %d points and %d axes\n",nbSample, nbAxis);
   double total_time = nbSample*timeStep;
 
   for(int i=0; i< nbAxis; i++) {
