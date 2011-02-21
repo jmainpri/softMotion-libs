@@ -131,11 +131,10 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
     //printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());
   }
 
-
-
   // importe le resultat _result dans une classe de type SM_TRAJ Attention on recalcule tte les conditions initiales
   // de chaque segment dans cette fonction ainsi que la duree totale de la trajectoire a partir des couples (Ti, Ji)
   smTraj.importFromSM_OUTPUT(36, _sampling, _result);
+
   cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE (Feb 2011)" << endl;
 
   if(flagExport==true) {  
@@ -148,9 +147,9 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   printf("tutu1\n");
   for(unsigned int i=0; i<cond.size(); i++) {
     double err = fabs(cond[i].x -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
-    if( err > 0.001) {
+    //if( err > 0.001) {
       printf("ERROR final pose on axis %d , err= %f \n",i, err);
-    }
+      //}
   }
   
   printf("Final Conditions of the Ideal trajectory\n");
@@ -527,14 +526,14 @@ void Sm_Approx::computeTraj(){
 
 /// HERRRREEEEEE
       Temp_alias.push_back((iter_temp_divis->traj.size()-1)*tic);
- //Temp_alias.push_back((iter_temp_divis->traj.size())*tic);
+      //Temp_alias.push_back((iter_temp_divis->traj.size())*tic);
 
 
 
  //       /***********************************/
       /* approximate the current subTraj */
       /***********************************/
-      //printf("temp alias %f \n", Temp_alias[0]);
+      // printf("temp alias %f \n", Temp_alias[0]);
       sm_SolveWithoutOpt(IC_seg, FC_seg, Temp_alias, iter_divis->motion_par_seg);
       iter_divis->traj.clear();
       convertMotionToCurve2(iter_divis->motion_par_seg,_nbAxis, tic, 1, iter_divis->traj);
@@ -560,16 +559,23 @@ void Sm_Approx::computeTraj(){
 	/* the trajectory error is too high */
 	for (int i = 0; i < 2; i++){
 	  if(i == 0){
-	    size_segment = int(iter_temp_divis->traj.size()/2);
+	    size_segment = int((iter_temp_divis->traj.size()-1)/6)*3 +1;
+
+	    //printf("size segment%d %d \n", i, size_segment);
+
+	
 	    if(size_segment < 3) {
 	      printf("ERROR size_segment < 3\n");
 	    }
 	    iter_stock->point_depart = iter_temp_divis->point_depart;
 	  }
 	  else{
-	    iter_stock->point_depart = iter_temp_divis->point_depart + size_segment;
-	    size_segment = iter_temp_divis->traj.size() - size_segment;
+	    iter_stock->point_depart = iter_temp_divis->point_depart + size_segment -1;
+	    size_segment = iter_temp_divis->traj.size() - size_segment +1 ;
+	    //printf("size segment%d %d mult %f\n", i, size_segment, (double)size_segment/3.0);
 	  }
+
+
 
 	  /* recopy the ideal subTraj */
 	  for (int k=0; k< size_segment; k++) {
@@ -577,12 +583,14 @@ void Sm_Approx::computeTraj(){
 	    iter_stock->traj.push_back(curv_donne);
 	    kkk ++;
 	  }
-
+	  // bug here add kkk--
+	  kkk--;
 	  /* iter_stock->flag_traj = 1 --> the error is BAD */
 	  iter_stock->flag_traj = 1;
 	  iter_stock++;
 	  nouveau_temp_divis ++;
 	}
+
       }
       else{
 	if( (errMax_pos_subTraj > err_max_def_pos)){
@@ -596,15 +604,16 @@ void Sm_Approx::computeTraj(){
 	iter_stock->point_depart = iter_temp_divis->point_depart;
 	premier_point_motionSeg = iter_temp_divis->point_depart;
 	size_segment = iter_divis->traj.size();
+
+
 	for(int nb_motionSeg = 0; nb_motionSeg < 3; nb_motionSeg ++){ // here 3 represent the 3 segments
 	 
-	  outMotion.premier_point = premier_point_motionSeg + nb_motionSeg * int(iter_divis->motion_par_seg[nb_motionSeg].Time[0]/_sampling);
+	  outMotion.premier_point = premier_point_motionSeg + nb_motionSeg * int(iter_divis->motion_par_seg[nb_motionSeg].Time[0]/(double)_sampling);
 	  outMotion.Jerk = iter_divis->motion_par_seg[nb_motionSeg].Jerk;
-	  outMotion.Time= iter_divis->motion_par_seg[nb_motionSeg].Time;
+	  outMotion.Time = iter_divis->motion_par_seg[nb_motionSeg].Time;
 
           //Xav add copy IC
 	  outMotion.IC = iter_divis->motion_par_seg[nb_motionSeg].IC;
-	  
 	  
 	  //  printf("motionseg %d outMotion.premier_point %f time %f \n", nb_motionSeg, outMotion.premier_point, (double)(outMotion.Time[0] ));
 

@@ -282,7 +282,7 @@ int SM_TRAJ::updateIC()
 
 void SM_TRAJ::print() 
 {
-  this->computeTimeOnTraj();
+  //this->computeTimeOnTraj();
   cout.precision(4);
   cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
   cout<<  "             TRAJECTORY               " << std::endl;  
@@ -306,7 +306,7 @@ void SM_TRAJ::print()
     std::cout << "   Duration:           " << duration <<  std::endl; 
     std::cout << "   Segments:" <<  std::endl; 
     for(unsigned int k=0; k<traj[j].size();k++) {
-      std::cout << std::fixed << " (" << k << "){Ti= "<< traj[j][k].timeOnTraj <<" }{T=" << traj[j][k].time << " , J=" <<  traj[j][k].jerk << "}{IC.x="<< traj[j][k].IC.x << "}" << std::endl;
+      std::cout << std::fixed << " (" << k << "){Ti= "<< traj[j][k].timeOnTraj <<" }{T=" << traj[j][k].time << " , J=" <<  traj[j][k].jerk << "}{IC.x="<< traj[j][k].IC.x << "}" <<  "}{IC.v="<< traj[j][k].IC.v << "}" << "}{IC.a="<< traj[j][k].IC.a << "}" << std::endl;
     }
   }
 
@@ -526,20 +526,20 @@ int SM_TRAJ::importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUT
   printf("ERROR: importFromSM_OUTPUT empty traj\n");
   return 1;
  }
-  int nbSeg = (int)trajIn.size();
+  int nbPoint = (int)trajIn.size();
   int nbAxis = (int)trajIn[0].Time.size();
 
 
   //  printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
 
- 
+
  this->resize(trajIn[0].Time.size());
  this->trajId = trajId;
  this->timePreserved = 0.0;
  
   for(int i=0; i<nbAxis; i++) {
-    traj[i].resize(nbSeg);
-    for(int j=0; j<nbSeg; j++) {
+    traj[i].resize(nbPoint);
+    for(int j=0; j<nbPoint; j++) {
       traj[i][j].lpId       = 0;
       traj[i][j].timeOnTraj = trajIn[j].premier_point*sampling;
       traj[i][j].time       =  trajIn[j].Time[i];
@@ -569,11 +569,11 @@ if(trajIn[0].IC.size()) {
   }
 
 
-
+  //this->print();
  // compute the initial conditions and other variable for all segments
    computeTimeOnTraj();
 
-
+   //this->print();
   
  return 0;
 }
@@ -677,8 +677,12 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
   int nbAxis = (int)trajIn.size();
   int nbSample = trajIn[0].size();
 
-  printf("There are %d points and %d axes\n",nbSample, nbAxis);
-  double total_time = nbSample*timeStep;
+  int nbSampleAdjusted = nbSample + (3 - ((nbSample-1)%3)) ;
+
+
+
+  printf("There are %d points, %d point adjusted and %d axes\n",nbSample, nbSampleAdjusted, nbAxis);
+  double total_time = nbSampleAdjusted*timeStep;
 
   for(int i=0; i< nbAxis; i++) {
     this->qStart[i] = trajIn[i][0].x;
@@ -688,7 +692,8 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
   }
 
   Sm_Curve curv; // initialize and fill the ideal curve
-  curv.traj.resize(nbSample);
+  curv.traj.resize(nbSampleAdjusted);
+
   for(unsigned int i=0; i<curv.traj.size(); i++) {
     curv.traj[i].Pos.resize(nbAxis);
     curv.traj[i].Vel.resize(nbAxis);
@@ -706,6 +711,14 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
       curv.traj[i].Pos[j] = trajIn[j][i].x;
       curv.traj[i].Vel[j] = trajIn[j][i].v;
       curv.traj[i].Acc[j] = trajIn[j][i].a;
+    }
+  }
+
+  for (int i = nbSample; i < nbSampleAdjusted; i++){
+    for(int j=0; j< nbAxis; j++) {
+      curv.traj[i].Pos[j] = trajIn[j][nbSample-1].x;
+      curv.traj[i].Vel[j] = 0.0;
+      curv.traj[i].Acc[j] = 0.0;
     }
   }
 
