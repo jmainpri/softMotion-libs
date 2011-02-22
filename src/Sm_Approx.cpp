@@ -31,12 +31,12 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double sampTime,
 
 
 // fonction d'interface avec SM_TRAJ
-int Sm_Approx::approximate(Sm_Curve &curv, double SampTime, double ErrPosMax, double ErrVelMax, SM_TRAJ &smTraj)
+int Sm_Approx::approximate(Sm_Curve &curv, double SampTime, double ErrPosMax, double ErrVelMax, SM_TRAJ &smTraj, bool flag)
 {
   std::string fileName;
   fileName.clear();
   fileName.append("approx.traj");
-  bool flagExport= false;
+  bool flagExport= flag;
   int ExpTime = SampTime;
   int res= approximate(curv, SampTime,  ErrPosMax, ErrVelMax, ExpTime, flagExport, fileName, smTraj);
   return res;
@@ -54,7 +54,9 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   _fileName = fileName;
   _nbAxis = curv.traj[0].Pos.size() ;
   SM_OUTPUT tempo_motion;
-   
+     double tu, ts;
+
+
   /* set limits that are only used to compute the error in velocity on overall the trajectory */
   _lim.maxJerk = 6*fabs(ErrVelMax);
   _lim.maxAcc  = 2*fabs(ErrVelMax);
@@ -68,32 +70,36 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   // _result.size() est la nombre de segment de cubique (c'est la meme pour tout les axes)
 
   // SAUVE LA TRAJCTOIRE IDEALE (sous la forme d'un tableau)
-  //if(flagExport==true) {
-  str2.clear();
-  str2 += "QtIdealTraj.dat";
-  saveTraj(str2, curv.traj);
-  cout << " ... Ideal Trajectory Already Computed and Saved" << endl;
-  //}
+  if(flagExport==true) {
+    str2.clear();
+    str2 += "SmIdealTraj.dat";
+    saveTraj(str2, curv.traj);
+    cout << "INFO Sm_Approx::approximate Ideal Trajectory Already Computed and Saved" << endl;
+  }
 
   /* Handle the path */
   _curve.push_back(curv);
 
-
+  ChronoOn();
+  ChronoTimes(&tu, &ts);
   /// CALCUL DE L'APPROXIMATION //
   computeTraj();
-  
+  std::cout << std::endl;
+  std::cout << "INFO Sm_Approx::approximate Computation Duration : " << std::endl;
+  ChronoPrint("");
+  std::cout << std::endl;
+  ChronoTimes(&tu, &ts);
+  ChronoOff();
 
-  // SAUVE LA TRAJCTOIRE APPROXIMEE (sous la forme d'un tableau)
-  saveTraj("QtApproxTraj.dat", (_curve.back()).traj);
-  printf("Error Max Pos %f \n",(_curve.back()).errorMaxVal);
 
-  
-//   for (unsigned int i = 1; i < _result.size(); i++){
-//      printf("index seg %f\n",_result[i].premier_point);
-// 
-//   }
+  if(flagExport==true) {
+    // SAUVE LA TRAJCTOIRE APPROXIMEE (sous la forme d'un tableau)
+    saveTraj("SmApproxTraj.dat", (_curve.back()).traj);
+    cout << "INFO Sm_Approx::approximate Approximated Trajectory Saved" << endl;
+  }
 
-  
+  printf("INFO Sm_Approx::approximate Error Max Pos %f \n",(_curve.back()).errorMaxVal);
+
   /* fill result */
   for (unsigned int i = 1; i < _result.size(); i++){
     for (unsigned int j = 0; j < _result.size()-i ; j++){
@@ -112,8 +118,8 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   }
 
   if(flagExport==true) {
-    printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());  
-    fp_segMotion = fopen("segMotion.dat", "w");
+    //printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());  
+    fp_segMotion = fopen("SmSegMotion.dat", "w");
     if(fp_segMotion==NULL) {
       std::cout << " cannont open file to write the trajectory" << std::endl;
       return 1;
@@ -126,7 +132,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
       fprintf(fp_segMotion, "\n");
     }
     fclose(fp_segMotion);
-    cout << "motion file exported" << endl;
+    //cout << "motion file exported" << endl;
     
     //printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());
   }
@@ -135,44 +141,39 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   // de chaque segment dans cette fonction ainsi que la duree totale de la trajectoire a partir des couples (Ti, Ji)
   smTraj.importFromSM_OUTPUT(36, _sampling, _result);
 
-  cout << " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE (Feb 2011)" << endl;
+  //cout << " ... Approximated Trajectory Computed --" << endl;
 
   if(flagExport==true) {  
-    smTraj.save((char*)"Approximation_Seg.traj");
+    smTraj.save((char*)"SmApproxTraj_Seg.traj");
+    cout << "INFO Sm_Approx::approximate Series of cubics Trajectory Saved" << endl;
   }
   /* compare end point */
   /* verification du point final atteint par smTraj par rapport a IdealTraj */
   std::vector< SM_COND> cond;
   smTraj.getMotionCond(smTraj.getDuration(), cond);
-  printf("tutu1\n");
+  double errMax =0;
   for(unsigned int i=0; i<cond.size(); i++) {
     double err = fabs(cond[i].x -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
-    //if( err > 0.001) {
-      printf("ERROR final pose on axis %d , err= %f \n",i, err);
-      //}
+    if( err > 0.001) {
+      printf("ERROR Sm_Approx::approximate: final pose on axis %d , err= %f \n",i, err);
+    }
+    if(err > errMax){
+      errMax = err;
+    }
   }
-  
-  printf("Final Conditions of the Ideal trajectory\n");
-  for(unsigned int i=0; i<cond.size(); i++) {
-    printf("%f ",(_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+  if(errMax < 0.001) {
+    printf("INFO Sm_Approx::approximate runs successfully ... Algo Written by Xavier BROQUERE (Feb 2011)\n");
   }
-  printf("\n"); 
-  printf("Final Conditions of the smTraj trajectory\n");
-  for(unsigned int i=0; i<cond.size(); i++) {
-    printf("%f ",cond[i].x);
-  }
-  printf("\n");
-//  std::vector< SM_COND> cond;
-//   printf("there are %d segment in the approx traj\n",(int)_result.size());
-//   printf("ERREUR 2222222222222\n");
-
-  
-//   for(unsigned int i=0; i<cond.size(); i++) {
-//     double err = fabs((_curve.front()).traj[ (_curve.front()).traj.size()-1].Pos[i] -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
-//     if( err > 0.001) {
-//       printf("ERROR final pose on axis %d , err= %f \n",i, err);
-//     }
-//   }
+  //printf("Final Conditions of the Ideal trajectory\n");
+  //for(unsigned int i=0; i<cond.size(); i++) {
+  //  printf("%f ",(_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
+  //}
+  //printf("\n"); 
+  //printf("Final Conditions of the smTraj trajectory\n");
+  //for(unsigned int i=0; i<cond.size(); i++) {
+  //  printf("%f ",cond[i].x);
+  //}
+  //printf("\n");
 
   return 0;
 }

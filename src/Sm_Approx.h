@@ -39,15 +39,13 @@ class Sm_Approx {
   void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, 
 		   bool flagExport, std::string fileName);
 
-  //void approximate(Sm_Curve curv, double SampTime,  double ErrMax,int ExpTime, bool flagExport, std::string fileName);
-  int approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, double ErrVelMax, int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &smTraj);
-
-
   void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, 
 		   bool flagExport, std::string fileName, SM_TRAJ &traj);
 
 
-  int approximate(Sm_Curve &curv, double SampTime, double ErrPosMax, double ErrVelMax, SM_TRAJ &smTraj);
+  /* the function called by Sm_Traj */
+  int approximate(Sm_Curve &curv, double SampTime, double ErrPosMax, double ErrVelMax, SM_TRAJ &smTraj, bool flag);
+  int approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, double ErrVelMax, int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &smTraj);
 
   /** @brief load the file
    *

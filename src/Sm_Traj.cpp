@@ -436,7 +436,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     nbAxis = doubleVector[0];
     
     this->resize(nbAxis);
-    printf("there are %d axes\n",nbAxis);
+
     /* Read qStart */
     doubleVector.clear();
     getline(file, contenu);
@@ -444,7 +444,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     for(unsigned int i=0; i <doubleVector.size(); i++) {
       qStart[i] = doubleVector[i];
     }
-    printf("toto1\n");
+ 
     /* Read qGoal */
     doubleVector.clear();
     getline(file, contenu);
@@ -452,7 +452,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     for(unsigned int i=0; i <doubleVector.size(); i++) {
       qGoal[i] = doubleVector[i];
     }
-   printf("toto2\n"); 
+ 
    for(int a=0; a<nbAxis; a++) {
       
       doubleVector.clear();
@@ -471,7 +471,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
       }
     file.close();
     this->computeTimeOnTraj();
-    cout << "SM_TRAJ::load file " << name << " loaded" << endl;  
+    cout << "SM_TRAJ::load file " << name << " loaded with " << nbAxis << " axes" << endl;  
 
   } else {
     std::cout << "Cannot open the file " << name << " !" << endl;
@@ -656,7 +656,7 @@ int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  doubl
 }
 
 
-int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id)
+int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id, bool flag)
 {
 
   this->clear();
@@ -677,11 +677,17 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
   int nbAxis = (int)trajIn.size();
   int nbSample = trajIn[0].size();
 
-  int nbSampleAdjusted = nbSample + (3 - ((nbSample-1)%3)) ;
+  double reste = ((nbSample-1)%3);
+  int nbSampleAdjusted = 0;
+
+  if(reste == 0) {
+    nbSampleAdjusted = nbSample;
+  } else {
+    nbSampleAdjusted = nbSample + (3 - ((nbSample-1)%3)) ;
+  }
 
 
-
-  printf("There are %d points, %d point adjusted and %d axes\n",nbSample, nbSampleAdjusted, nbAxis);
+  printf("INFO SM_TRAJ:: There are %d points, %d points adjusted and %d axes\n",nbSample, nbSampleAdjusted, nbAxis);
   double total_time = nbSampleAdjusted*timeStep;
 
   for(int i=0; i< nbAxis; i++) {
@@ -724,7 +730,7 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
 
   // utilise la classe SM_Approx pour effectuer l'approximation
   Sm_Approx approx;
-  int res = approx.approximate(curv, timeStep, errorPosMax, errorVelMax, *this);
+  int res = approx.approximate(curv, timeStep, errorPosMax, errorVelMax, *this, flag);
 
   return res;
 }

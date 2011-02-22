@@ -79,7 +79,7 @@ class SM_TRAJ {
 
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
-  int approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id);
+  int approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id, bool flag);
 
 
  private:
