@@ -165,24 +165,27 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
 
    // Find segment Index
    idSeg = (traj[axis].size()) -1;
-   while (time <= traj[axis][idSeg].timeOnTraj) { idSeg = idSeg - 1;}
-
-     dt = time - traj[axis][idSeg].timeOnTraj;
-     ICl.a = traj[axis][idSeg].IC.a;
-     ICl.v = traj[axis][idSeg].IC.v;
-     ICl.x = traj[axis][idSeg].IC.x;
-     jerk =  traj[axis][idSeg].jerk;
-     
-     IC.a =  jerk * dt  + ICl.a;
-     IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
+   while (time < traj[axis][idSeg].timeOnTraj) { idSeg = idSeg - 1;}
+   if(idSeg <0) {
+     printf("ERROR Big up, not possible!!\n");
+   }
+   
+   dt = time - traj[axis][idSeg].timeOnTraj;
+   ICl.a = traj[axis][idSeg].IC.a;
+   ICl.v = traj[axis][idSeg].IC.v;
+   ICl.x = traj[axis][idSeg].IC.x;
+   jerk =  traj[axis][idSeg].jerk;
+   
+   IC.a =  jerk * dt  + ICl.a;
+   IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
      IC.x =  jerk * pow(dt,3.0) / 6.0 + ICl.a * pow(dt,2.0) / 2.0 + ICl.v * dt  + ICl.x;
-  
-      if(axis ==1) {
-      //printf("nbseg %d time %f idSeg %d dt %f x %f     X0= %f IC.x= %f\n",traj[axis].size(), time, idSeg, dt, (double)IC.x,(double)traj[axis][0].IC.x, (double)ICl.x );
+     
+     if(axis ==1) {
+       //printf("nbseg %d time %f idSeg %d dt %f x %f     X0= %f IC.x= %f\n",traj[axis].size(), time, idSeg, dt, (double)IC.x,(double)traj[axis][0].IC.x, (double)ICl.x );
       }
      cond.push_back(IC);
   }
-
+  
 //      t[0] = time;
 //      resp = sm_AVX_TimeVar(traj[i], t, a, v, x);
 //      IC.a = a[0];
