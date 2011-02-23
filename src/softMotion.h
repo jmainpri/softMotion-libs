@@ -262,6 +262,8 @@ extern SM_STATUS Vel_Profile(std::vector<SM_CURVE_DATA3>  &IdealTraj, std::vecto
 extern SM_STATUS Calcul_Error(std::vector<SM_CURVE_DATA3>  &IdealTraj,std::vector<SM_CURVE_DATA3> &ApproxTraj, kinPoint3 *errorMax, std::vector<double>& error, double *val_err_max);
 extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA3> &IdealTraj,std::vector<kinPoint3> &discPoint, std::vector<SM_COND_DIM3> &IC, std::vector<SM_COND_DIM3> &FC, std::vector<double> &Timp, std::vector<int>
 				     &IntervIndex);
+
+extern int sm_ComputeSmoothedStepVel(double vel, double tic, SM_LIMITS limitsGoto, SM_COND* cond);
 #endif
 #endif
 

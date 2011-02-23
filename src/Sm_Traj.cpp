@@ -737,3 +737,179 @@ int SM_TRAJ::approximate(std::vector< std::vector<SM_COND> > &trajIn, double tim
 
   return res;
 }
+
+int SM_TRAJ::computeMaxTimeScaleVectorTest(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits)
+{
+  SM_COND condTs;
+  std::vector<double> tsVectTmp;
+  std::vector<SM_COND> cond;
+  std::vector<double> tsForward;
+  std::vector<double> tsBackward;
+  FILE* file = NULL;
+
+  tsVectTmp.clear();
+  tsVectTmp.resize(1000);
+
+  for(int i=0; i<20; i++) {
+    tsVectTmp[i] = 1.0;
+  }
+  for(int i=20; i<200; i++) {
+    tsVectTmp[i] = 0.2;
+  }
+  for(int i=200; i<350; i++) {
+    tsVectTmp[i] = 0.25;
+  }
+  for(int i=350; i<400; i++) {
+    tsVectTmp[i] =1.0;
+  }
+
+  for(int i=400; i<700; i++) {
+    tsVectTmp[i] = 0.25;
+  }
+
+  for(int i=700; i<1000; i++) {
+    tsVectTmp[i] = 1.0;
+  }
+
+
+  file = fopen("toto.dat", "w");
+  tsForward.resize(tsVectTmp.size());
+  tsBackward.resize(tsVectTmp.size());
+
+  /* compute the forward timeScale */
+  condTs.a = 0.0;
+  condTs.v = tsVectTmp[0];
+  condTs.x = 0.0;
+  tsForward[0] = tsVectTmp[0];
+
+  for(uint i= 1; i< tsVectTmp.size(); i++) {
+    if(tsVectTmp[i] > tsForward[i-1]) {
+      sm_ComputeSmoothedStepVel(tsVectTmp[i] , tic, timeLimits, &condTs);
+      tsForward[i] = condTs.v;
+    } else {
+      condTs.a = 0.0;
+      condTs.v = tsVectTmp[i];
+      condTs.x = 0.0;  
+      tsForward[i] = tsVectTmp[i];
+    }
+  }
+
+  /* compute the backward timeScale */
+  condTs.a = 0.0;
+  condTs.v = tsVectTmp[tsVectTmp.size()-1];
+  condTs.x = 0.0;
+  tsBackward[tsVectTmp.size()-1] = tsVectTmp[tsVectTmp.size()-1];
+
+  for(int i= tsVectTmp.size()-2; i >=0; i--) {
+    if(tsVectTmp[i] > tsBackward[i+1]) {
+      sm_ComputeSmoothedStepVel(tsVectTmp[i] , tic, timeLimits, &condTs);
+      tsBackward[i] = condTs.v;
+    } else {
+      condTs.a = 0.0;
+      condTs.v = tsVectTmp[i];
+      condTs.x = 0.0;  
+      tsBackward[i] = tsVectTmp[i];
+    }
+  }
+
+  tsVec.clear();
+  tsVec.resize(tsVectTmp.size());
+
+  for(uint i= 0; i< tsVectTmp.size(); i++) {
+    tsVec[i] = MIN( tsForward[i],tsBackward[i]); 
+  }
+
+  for(uint i=0; i< tsVectTmp.size(); i++) {
+    fprintf(file, "%f %f \n",tsVectTmp[i], tsVec[i] );
+  }
+
+  fclose(file);
+  return 0;
+}
+
+
+
+
+int SM_TRAJ::computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits)
+{
+  SM_COND condTs;
+
+  if(maxVel.size() <= 0 || maxVel.size() > this->traj.size()) {
+    printf("ERROR: SM_TRAJ::computeMaxTimeScaleVector wrong maxVel.size()\n");
+    return 1;
+  }
+  std::vector<double> tsVectTmp;
+  tsVectTmp.resize(duration/tic+1);
+  
+  for(uint i =0; i < tsVectTmp.size(); i++) {
+    tsVectTmp[i] = 1.0;
+  }
+
+  double alpha, alphaMax;
+  std::vector<SM_COND> cond;
+
+  for(double time =0; time < duration; time = time + tic) {
+    this->getMotionCond(time, cond);
+    alphaMax = 1.0;
+    for(uint i =0; i < maxVel.size(); i++) {
+     alpha = cond[i].v / maxVel[i];
+     if(alpha > alphaMax) {
+      
+      alphaMax = alpha;
+     }
+    }
+    tsVectTmp[time] = 1 / alphaMax;
+  }
+
+  std::vector<double> tsForward;
+  std::vector<double> tsBackward;
+  tsForward.resize(tsVectTmp.size());
+  tsBackward.resize(tsVectTmp.size());
+
+  /* compute the forward timeScale */
+  condTs.a = 0.0;
+  condTs.v = tsVectTmp[0];
+  condTs.x = 0.0;
+
+  tsForward[0] = tsVectTmp[0];
+
+  for(uint i= 1; i< tsVectTmp.size(); i++) {
+    if(tsVectTmp[i] > tsForward[i-1]) {
+      sm_ComputeSmoothedStepVel(tsVectTmp[i] , tic, timeLimits, &condTs);
+      tsForward[i] = condTs.v;
+    } else {
+      condTs.a = 0.0;
+      condTs.v = tsVectTmp[i];
+      condTs.x = 0.0;  
+      tsForward[i] = tsVectTmp[i];
+    }
+  }
+
+  /* compute the backward timeScale */
+  condTs.a = 0.0;
+  condTs.v = tsVectTmp[tsVectTmp.size()-1];
+  condTs.x = 0.0;
+
+  tsBackward[tsVectTmp.size()-1] = tsVectTmp[tsVectTmp.size()-1];
+
+  for(int i= tsVectTmp.size()-2; i >=0; i--) {
+    if(tsVectTmp[i] > tsBackward[i+1]) {
+      sm_ComputeSmoothedStepVel(tsVectTmp[i] , tic, timeLimits, &condTs);
+      tsBackward[i] = condTs.v;
+    } else {
+      condTs.a = 0.0;
+      condTs.v = tsVectTmp[i];
+      condTs.x = 0.0;  
+      tsBackward[i] = tsVectTmp[i];
+    }
+  }
+
+  tsVec.clear();
+  tsVec.resize(tsVectTmp.size());
+
+  for(uint i= 0; i< tsVectTmp.size(); i++) {
+    tsVec[i] = MIN( tsForward[i],tsBackward[i]); 
+  }
+
+  return 0;
+}

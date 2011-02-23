@@ -40,6 +40,7 @@ class SM_TRAJ {
   int trajId;
   double timePreserved;
   double duration;
+  std::vector<double> tsVec;
 
  public:
   std::vector<double> qStart;
@@ -80,7 +81,9 @@ class SM_TRAJ {
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
   int approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id, bool flag);
-
+ 
+  int computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
+  int computeMaxTimeScaleVectorTest(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
 
  private:
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);

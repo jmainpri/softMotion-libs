@@ -9454,3 +9454,87 @@ cout<<"break point"<<endl;
     return SM_OK;
 }
 */
+
+
+
+int sm_ComputeSmoothedStepVel(double vel, double tic, SM_LIMITS limitsGoto, SM_COND* cond) {
+  
+  double dc = 0.0;
+  SM_COND FC;
+  SM_STATUS resp;
+
+  SM_TIMES T_Jerk;
+  int dir = 0;
+  double timeTrajDuration = 0.0;
+  std::vector<double> I(3);
+  std::vector<double> T(SM_NB_SEG);
+  std::vector<double> J(SM_NB_SEG);
+  std::vector<double> t(1);
+  std::vector<double> a(1);
+  std::vector<double> v(1);
+  std::vector<double> x(1);
+
+  FC.a = 0.0;
+  FC.v = vel;
+  FC.x = 1.0;
+
+  cond->x = 0.0;
+
+  if(ABS(FC.v - cond->v) > 0.001) {
+    sm_CalculOfCriticalLength(*cond, FC, limitsGoto, &dc);
+    if (isnan(dc)) {
+      printf("isnan dc\n");
+      printf("IC.a = %f    IC.v = %f    IC.x = %f\n", cond->a, cond->v, cond->x);
+      printf("FC.a = %f    FC.v = %f    FC.x = %f\n",FC.a, FC.v, FC.x);
+    }
+	   
+    FC.x = dc;
+	    	    
+    /* compute the motion */
+    resp = sm_ComputeSoftMotion(*cond, FC, limitsGoto, &T_Jerk, &dir);
+    if (resp != SM_OK) {
+      printf("ERROR sm_ComputeSoftMotion\n");
+    }
+
+    /* get the  position at the next tick */       
+    I[0] = cond->a;
+    I[1] = cond->v;
+    I[2] = cond->x;
+      
+    T[0] = T_Jerk.Tjpa;
+    T[1] = T_Jerk.Taca;
+    T[2] = T_Jerk.Tjna;
+    T[3] = T_Jerk.Tvc;
+    T[4] = T_Jerk.Tjnb;
+    T[5] = T_Jerk.Tacb;
+    T[6] = T_Jerk.Tjpb;
+      
+    J[0] =   dir*limitsGoto.maxJerk;
+    J[1] =   0.0;
+    J[2] = - dir*limitsGoto.maxJerk;
+    J[3] =   0.0;
+    J[4] = - dir*limitsGoto.maxJerk;
+    J[5] =   0.0;
+    J[6] =   dir*limitsGoto.maxJerk;
+
+    timeTrajDuration = 0.0;
+    for (int p=0; p < SM_NB_SEG; p++) {
+      timeTrajDuration += T[p];
+    }
+
+    if(timeTrajDuration < tic) {
+      t[0] = (double)timeTrajDuration; 
+    } else {
+      t[0] = (double)tic; 
+    }
+    resp = sm_AVX_TimeVar(I, T, J, t, a, v, x);
+    cond->x = x[0];
+    cond->v  = v[0];
+    cond->a  = a[0];
+    //printf("cond->v %f \n",cond->v); 
+  } else {
+    cond->v = vel;
+  }
+  return 0;
+}
+
