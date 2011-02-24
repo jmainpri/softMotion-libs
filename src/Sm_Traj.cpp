@@ -52,6 +52,7 @@
 #include <stdlib.h>
 #ifdef __APPLE__
 #include <cstdlib>
+#define uint unsigned int
 #endif
 
 #include "Sm_Traj.h"
