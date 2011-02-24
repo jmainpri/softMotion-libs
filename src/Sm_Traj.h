@@ -56,6 +56,9 @@ class SM_TRAJ {
   /*
    * Setters / Getters
    */
+  std::vector<double> getTsVec() {
+    return tsVec;
+  }
   int getTrajId();
   void setTrajId(int id);
   int getTimePreserved();

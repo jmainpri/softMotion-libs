@@ -83,6 +83,7 @@ void SM_TRAJ::clear()
   qStart.clear();
   qGoal.clear();
   traj.clear();
+  tsVec.clear();
   duration = 0.0;
   trajId = 0.0;
   return;
@@ -852,13 +853,16 @@ int SM_TRAJ::computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic,
     this->getMotionCond(time, cond);
     alphaMax = 1.0;
     for(uint i =0; i < maxVel.size(); i++) {
-     alpha = cond[i].v / maxVel[i];
-     if(alpha > alphaMax) {
-      
-      alphaMax = alpha;
-     }
+      if(cond[i].v > maxVel[i]) {
+	  alpha =  maxVel[i] / cond[i].v;
+      } else {
+	alpha = 1.0;
+      }
+      if(alpha < alphaMax) {
+	alphaMax = alpha;
+      }
     }
-    tsVectTmp[time] = 1 / alphaMax;
+    tsVectTmp[time] = alphaMax;
   }
 
   std::vector<double> tsForward;
