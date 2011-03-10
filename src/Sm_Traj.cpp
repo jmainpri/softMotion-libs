@@ -72,6 +72,7 @@ void SM_TRAJ::sm_traj()
 void SM_TRAJ::sm_traj(const SM_TRAJ &traj)
 {
   this->trajId = traj.trajId;
+  this->timePreserved = traj.timePreserved;
   this->duration = traj.duration;
   this->qStart = traj.qStart;
   this->qGoal = traj.qGoal;
@@ -86,6 +87,7 @@ void SM_TRAJ::clear()
   traj.clear();
   tsVec.clear();
   duration = 0.0;
+  timePreserved = 0.0;;
   trajId = 0.0;
   return;
 }
