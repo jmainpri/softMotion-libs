@@ -1090,18 +1090,45 @@ int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
   SM_TIMES T_Jerk;
   int dir = 0;
 
+
+  SM_COND icl, fcl, fco;
+  double GD;
+
+
+  icl.a = IC.a;
+  icl.v = IC.v;
+  icl.x = 0.0;
+  
+  fcl.a = FC.a;
+  fcl.v = FC.v;
+  fcl.x = FC.x - IC.x;
   this->clear();
   this->resize(1);
-  traj.clear();
  
   std::vector<double> I(3);
   std::vector<double> T(SM_NB_SEG);
   std::vector<double> J(SM_NB_SEG);
 
+  SM_JERKS Jerks;
+  SM_TIMES acc ;
+  SM_TIMES vel ;
+  SM_TIMES pos ;
+
+  Jerks.sel = 1;
+  Jerks.J1 = limits.maxJerk;
+  Jerks.J2 = 0.0;
+  Jerks.J3 = 0.0;
+  Jerks.J4 = 0.0;
+
   /* compute the motion */
-  resp = sm_ComputeSoftMotion(IC, FC, limits, &T_Jerk, &dir);
+  resp = sm_ComputeSoftMotion(icl, fcl, limits, &T_Jerk, &dir);
   if (resp != SM_OK) {
     printf("ERROR sm_ComputeSoftMotion\n");
+  }
+  GD =  fcl.x * dir;
+  if (sm_VerifyTimes(SM_DISTANCE_TOLERANCE_LINEAR , GD, Jerks, IC, dir, T_Jerk, &fco, &(acc), &(vel), &(pos), SM_ON)!=0) {
+      printf("ERROR  Verify Times \n");
+      return 1;
   }
 
   /* get the  position at the next tick */       
