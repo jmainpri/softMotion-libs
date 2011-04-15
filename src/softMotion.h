@@ -264,6 +264,8 @@ extern SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA3> &IdealTraj,std:
 				     &IntervIndex);
 
 extern int sm_ComputeSmoothedStepVel(double vel, double tic, SM_LIMITS limitsGoto, SM_COND* cond);
+
+extern int sm_ConvertPTPSM_MOTIONtoSM_TRAJ( SM_MOTION_MONO motion[], int nbJoints, SM_TRAJ &traj);
 #endif
 #endif
 

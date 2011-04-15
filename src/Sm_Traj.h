@@ -80,15 +80,19 @@ class SM_TRAJ {
   int importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj);
   
   int importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT>  &trajIn);
-
+int convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn);
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
   int approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id, bool flag);
  
   int computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
   int computeMaxTimeScaleVectorTest(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
+int extract(double t1, double t2, SM_TRAJ &trajIn);
+ int computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits);
 
  private:
+   
+   int getSegmentIndex(double t1);
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);
   std::vector<double> parseFrame(std::string& line);
  

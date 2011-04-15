@@ -585,6 +585,70 @@ if(trajIn[0].IC.size()) {
  return 0;
 }
 
+
+int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn)
+{
+    computeTimeOnTraj();
+ trajIn.clear();
+ 
+ trajIn.resize(this->traj[0].size());
+ trajIn[0].Time.resize(this->traj.size());
+ 
+  int nbPoint = (int)trajIn.size();
+  int nbAxis = (int)trajIn[0].Time.size();
+
+
+  //  printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
+
+
+ this->resize(trajIn[0].Time.size());
+ this->trajId = trajId;
+ this->timePreserved = 0.0;
+ 
+  for(int i=0; i<nbAxis; i++) {
+    traj[i].resize(nbPoint);
+    for(int j=0; j<nbPoint; j++) {
+      
+      trajIn[j].premier_point= traj[i][j].timeOnTraj/sampling  ;
+      trajIn[j].Time[i] = traj[i][j].time;
+      trajIn[j].IC[i].a = traj[i][j].IC.a;
+      trajIn[j].IC[i].v = traj[i][j].IC.v;
+      trajIn[j].IC[i].x = traj[i][j].IC.x;
+      trajIn[j].Jerk[i] = traj[i][j].jerk;
+    }
+  }
+
+
+  
+if(trajIn[0].IC.size()) {
+  for(int i=0; i<nbAxis; i++) {
+    trajIn[0].IC[i].x = this->qStart[i];
+  }
+//   for(int i=0; i<nbAxis; i++) {
+//     this->qGoal[i] = 0.0;
+//   }
+}
+
+  /*set the initial condition in the first segment */
+  for(int i=0; i<nbAxis; i++) {
+      trajIn[0].IC[i].a = traj[i][0].IC.a ;
+     trajIn[0].IC[i].v=  traj[i][0].IC.v ;
+     trajIn[0].IC[i].x =  traj[i][0].IC.x ;
+  }
+
+
+  //this->print();
+ // compute the initial conditions and other variable for all segments
+
+
+   //this->print();
+  
+ return 0;
+}
+
+
+
+
 int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
 {
   //if(smTraj->nbAxis != SM_TRAJ_NB_AXIS) {
@@ -645,6 +709,103 @@ int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
 //
 //
 //}
+
+int SM_TRAJ::extract(double t1, double t2, SM_TRAJ &trajIn)
+{
+  SM_TRAJ_STR trajStr;
+  SM_TRAJ_STR trajStrOut;
+    
+  trajIn.computeTimeOnTraj();
+  trajIn.convertToSM_TRAJ_STR(&trajStr);
+  
+  this->trajId = trajIn.trajId;
+  this->timePreserved = trajIn.timePreserved;
+
+  int id1 = trajIn.getSegmentIndex(t1);
+  printf("t1 %f durtation %f\n", t1, trajIn.getDuration());
+  int id2 = trajIn.getSegmentIndex(t2);
+  printf("id1 %d id2 %d\n", id1, id2);
+  double dt1 = t1 - trajStr.traj[0].seg[id1].timeOnTraj;
+  double dt2 = t2 - trajStr.traj[0].seg[id2].timeOnTraj;
+  
+  std::vector< SM_COND > cond1;
+  trajIn.getMotionCond(t1, cond1);
+  
+  std::vector< SM_COND > cond2;
+  trajIn.getMotionCond(t2, cond2);
+  
+  int nbSeg = id2-id1 +1;
+  
+  trajStrOut.nbAxis = trajStr.nbAxis;
+  for(int i=0; i< trajStr.nbAxis; i++) {
+   trajStrOut.traj[i].nbSeg = nbSeg;
+    for(int j=0; j< nbSeg; j++) {
+      if(id1 < id2) {
+      if(j ==0) {
+	  trajStrOut.traj[i].seg[j].lpId      =0;
+	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
+	  trajStrOut.traj[i].seg[j].time      = trajStr.traj[i].seg[id1].time  - dt1;
+	  trajStrOut.traj[i].seg[j].ic_a      = cond1[i].a;
+	  trajStrOut.traj[i].seg[j].ic_v      = cond1[i].v;
+	  trajStrOut.traj[i].seg[j].ic_x      = cond1[i].x;
+	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1].jerk;
+      } else if(j ==nbSeg-1) {
+      	  trajStrOut.traj[i].seg[j].lpId      =0;
+	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
+	  trajStrOut.traj[i].seg[j].time      = dt2;
+	  trajStrOut.traj[i].seg[j].ic_a      = cond2[i].a;
+	  trajStrOut.traj[i].seg[j].ic_v      = cond2[i].v;
+	  trajStrOut.traj[i].seg[j].ic_x      = cond2[i].x;
+	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id2].jerk;
+      } else {
+	  trajStrOut.traj[i].seg[j].lpId      =0;
+	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
+	  trajStrOut.traj[i].seg[j].time      = trajStr.traj[i].seg[id1+j].time;
+	  trajStrOut.traj[i].seg[j].ic_a      = trajStr.traj[i].seg[id1+j].ic_a;
+	  trajStrOut.traj[i].seg[j].ic_v      = trajStr.traj[i].seg[id1+j].ic_v;
+	  trajStrOut.traj[i].seg[j].ic_x      = trajStr.traj[i].seg[id1+j].ic_x;
+	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1+j].jerk;
+      }
+      
+      } else {
+	 trajStrOut.traj[i].seg[j].lpId      =0;
+	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
+	  trajStrOut.traj[i].seg[j].time      = t2  - t1;
+	  trajStrOut.traj[i].seg[j].ic_a      = cond1[i].a;
+	  trajStrOut.traj[i].seg[j].ic_v      = cond1[i].v;
+	  trajStrOut.traj[i].seg[j].ic_x      = cond1[i].x;
+	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1].jerk;
+      }
+
+    }
+  }
+ this->clear();
+ this->importFromSM_TRAJ_STR(&trajStrOut);
+ this->computeTimeOnTraj();
+  return 0;
+}
+
+int SM_TRAJ::getSegmentIndex(double t1)
+{
+ int id = 0;
+  SM_TRAJ_STR trajStr;
+  
+  
+  if(t1 > this->getDuration())
+  {
+      printf("ERROR getSegmentIndex: t1 > this.getDuration()\n");
+   return 0 ;
+  }
+  
+ this->convertToSM_TRAJ_STR(&trajStr);
+  
+ for(int i=0; i<  trajStr.traj[0].nbSeg; i++) {
+    if((t1 >= trajStr.traj[0].seg[i].timeOnTraj) && (t1 < (trajStr.traj[0].seg[i].timeOnTraj + trajStr.traj[0].seg[i].time) ) ) {
+     return i; 
+    }
+ } 
+ return id; 
+}
 
 int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName)
 {
@@ -920,3 +1081,62 @@ int SM_TRAJ::computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic,
 
   return 0;
 }
+
+
+int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
+{ 
+  SM_SEG seg;
+  SM_STATUS resp;
+  SM_TIMES T_Jerk;
+  int dir = 0;
+
+  this->clear();
+  this->resize(1);
+  traj.clear();
+ 
+  std::vector<double> I(3);
+  std::vector<double> T(SM_NB_SEG);
+  std::vector<double> J(SM_NB_SEG);
+
+  /* compute the motion */
+  resp = sm_ComputeSoftMotion(IC, FC, limits, &T_Jerk, &dir);
+  if (resp != SM_OK) {
+    printf("ERROR sm_ComputeSoftMotion\n");
+  }
+
+  /* get the  position at the next tick */       
+  I[0] = IC.a;
+  I[1] = IC.v;
+  I[2] = IC.x;
+  
+  T[0] = T_Jerk.Tjpa;
+  T[1] = T_Jerk.Taca;
+  T[2] = T_Jerk.Tjna;
+  T[3] = T_Jerk.Tvc;
+  T[4] = T_Jerk.Tjnb;
+  T[5] = T_Jerk.Tacb;
+  T[6] = T_Jerk.Tjpb;
+    
+  J[0] =   dir*limits.maxJerk;
+  J[1] =   0.0;
+  J[2] = - dir*limits.maxJerk;
+  J[3] =   0.0;
+  J[4] = - dir*limits.maxJerk;
+  J[5] =   0.0;
+  J[6] =   dir*limits.maxJerk;
+
+  for (int j = 0; j < SM_NB_SEG; j++) {
+    seg.IC = IC;
+    seg.time = T[j];
+    seg.jerk = J[j];
+    traj[0].push_back(seg);     
+  }
+  qStart.push_back(IC.x);
+  qGoal.push_back(FC.x);
+
+  computeTimeOnTraj();
+  return 0;
+}
+
+
+//int SM_TRAJ::computePTPmotion(std::vector< double > start, std::vector< double > goal, std::vector< double > jmax,  std::vector< double > amax,  std::vector< double > vmax)

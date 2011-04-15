@@ -8162,6 +8162,8 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   J[5] = 0.0;
   J[6] = Lim.maxJerk;
 
+  printf("Lmits: %f %f %f\n", Lim.maxJerk, Lim.maxAcc, Lim.maxVel);
+
   for (i = 0; i < 7; i++){
     total_time = total_time + Time[i]; // total_time is the time for 7 segment
   }
@@ -8552,6 +8554,9 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   J[5] = 0.0;
   J[6] = Lim.maxJerk;
 
+
+  printf("Lmits: %f %f %f\n", Lim.maxJerk, Lim.maxAcc, Lim.maxVel);
+
   for (i = 0; i < 7; i++){
     total_time = total_time + Time[i]; // total_time is the time for 7 segment
   }
@@ -8577,12 +8582,17 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
     }
     t.at(i) = IdealTraj[i].t;
   }
+  //printf("IC %f %f %f\n", IC[0],  IC[1],  IC[2]);
+  //
+  //printf("Time %f %f %f %f %f %f %f\n",Time[0], Time[1], Time[2], Time[3],Time[4], Time[5], Time[6]);
+  //printf("J %f %f %f %f %f %f %f\n",J[0], J[1], J[2], J[3], J[4], J[5], J[6]);
 
   sm_AVX_TimeVar(IC, Time, J, t, ddu, du, u);
   for (int i = 0; i < nbPoints; i++){
     IdealTraj[i].u_Mlaw = u[i];
     IdealTraj[i].du_Mlaw = du[i];
     IdealTraj[i].ddu_Mlaw = ddu[i];
+    //    printf("%f \n", ddu[i]);
   }
 
   // --------------------------- 3D evolution ---------------------------------------------
@@ -9535,6 +9545,98 @@ int sm_ComputeSmoothedStepVel(double vel, double tic, SM_LIMITS limitsGoto, SM_C
   } else {
     cond->v = vel;
   }
+  return 0;
+}
+
+/* Return 0: OK
+ * return 1: error
+*/
+int sm_ConvertPTPSM_MOTIONtoSM_TRAJ( SM_MOTION_MONO motion[], int nbJoints, SM_TRAJ &traj) {
+  SM_STATUS resp;
+  SM_COND IC[nbJoints][SM_NB_SEG];
+  double  Time[nbJoints][SM_NB_SEG];
+  double  Jerk[nbJoints][SM_NB_SEG];
+  SM_SEG seg;
+  std::vector<SM_SEG> traj_i;
+  std::vector<double> I(3);
+  std::vector<double> T(SM_NB_SEG);
+  std::vector<double> J(SM_NB_SEG);
+  std::vector<double> t(1);
+  std::vector<double> a(1);
+  std::vector<double> v(1);
+  std::vector<double> x(1);
+
+  for (int i = 0; i < nbJoints; i++)
+    {
+
+      I[0] = motion[i].IC.a;
+      I[1] = motion[i].IC.v;
+      I[2] = motion[i].IC.x;
+
+      T[0] = motion[i].Times.Tjpa;
+      T[1] = motion[i].Times.Taca;
+      T[2] = motion[i].Times.Tjna;
+      T[3] = motion[i].Times.Tvc;
+      T[4] = motion[i].Times.Tjnb;
+      T[5] = motion[i].Times.Tacb;
+      T[6] = motion[i].Times.Tjpb;
+
+      J[0] =   motion[i].Dir*motion[i].jerk.J1;
+      J[1] =   0.0;
+      J[2] = - motion[i].Dir*motion[i].jerk.J1;
+      J[3] =   0.0;
+      J[4] = - motion[i].Dir*motion[i].jerk.J1;
+      J[5] =   0.0;
+      J[6] =   motion[i].Dir*motion[i].jerk.J1;
+
+      Time[i][0] = T[0];
+      Time[i][1] = T[1];
+      Time[i][2] = T[2];
+      Time[i][3] = T[3];
+      Time[i][4] = T[4];
+      Time[i][5] = T[5];
+      Time[i][6] = T[6];
+
+      Jerk[i][0] = J[0];
+      Jerk[i][1] = J[1];
+      Jerk[i][2] = J[2];
+      Jerk[i][3] = J[3];
+      Jerk[i][4] = J[4];
+      Jerk[i][5] = J[5];
+      Jerk[i][6] = J[6];
+
+      IC[i][0].a = I[0];
+      IC[i][0].v = I[1];
+      IC[i][0].x = I[2];
+      t[0] = 0.0;
+      for (int smp = 0; smp < SM_NB_SEG ; smp++) {
+	resp = sm_AVX_TimeVar(I, T, J, t, a, v, x);
+	IC[i][smp].a = a[0];
+	IC[i][smp].v = v[0];
+	IC[i][smp].x = x[0];     
+	if (resp != SM_OK) {
+	  printf("ERROR: Q interpolation failed (sm_AVX_TimeVar funcion)\n");
+	  return 1;
+	}
+	t[0] += Time[i][smp];
+      }
+    }
+
+  traj.clear();
+  for (int i = 0; i < nbJoints; i++) {
+    traj_i.clear();
+    for (int j = 0; j < SM_NB_SEG; j++) {
+      seg.IC = IC[i][j];
+      seg.time = Time[i][j];
+      seg.jerk = Jerk[i][j];
+      traj_i.push_back(seg);     
+    }
+    traj.traj.push_back(traj_i);
+    traj.qStart.push_back(motion[i].IC.x);
+    traj.qGoal.push_back(motion[i].FC.x);
+  }
+  traj.computeTimeOnTraj();
+
   return 0;
 }
 
