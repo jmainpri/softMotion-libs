@@ -72,6 +72,8 @@ class SM_TRAJ {
   int computeTimeOnTraj();
   int updateIC();
   void print();
+  void printQStart();
+  void printQGoal();
   void resize(int size);
   int append(SM_TRAJ_STR inTraj);
   int save(char *name);

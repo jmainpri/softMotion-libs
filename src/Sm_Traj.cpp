@@ -319,6 +319,36 @@ void SM_TRAJ::print()
 
 }
 
+void SM_TRAJ::printQStart() 
+{
+  cout.precision(4);
+  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
+  cout<<  "          TRAJECTORY QSTART           " << std::endl;  
+  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
+  cout << " Number of joints: " << traj.size() <<  std::endl;
+  cout << " trajId: " << trajId <<  std::endl; 
+  cout << " qStart: " <<  std::endl; 
+  for(unsigned int j = 0; j < qStart.size(); j++){
+    cout << std::fixed << " (" << j << "){" << qStart[j] << "}" ;
+  }
+  cout <<  std::endl; 
+}
+
+void SM_TRAJ::printQGoal() 
+{
+  cout.precision(4);
+  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
+  cout<<  "          TRAJECTORY QGOAL            " << std::endl;  
+  cout << "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%" << std::endl; 
+  cout << " Number of joints: " << traj.size() <<  std::endl;
+  cout << " trajId: " << trajId <<  std::endl; 
+  cout << " qGoal: " <<  std::endl; 
+  for(unsigned int j = 0; j < qGoal.size(); j++){
+    cout << std::fixed << " (" << j << "){" << qGoal[j] << "}" ;
+  }
+  cout <<  std::endl; 
+}
+
 int SM_TRAJ::append(SM_TRAJ_STR inTraj) 
 {
   SM_SEG seg;
