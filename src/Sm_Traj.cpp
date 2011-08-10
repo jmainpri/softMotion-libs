@@ -163,7 +163,7 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
   int idSeg = 0;
   double jerk =0;
 
-  this->computeTimeOnTraj();
+  //this->computeTimeOnTraj();
   
   for(unsigned int axis=0;  axis< traj.size(); axis++) {
 
@@ -708,6 +708,9 @@ int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
       traj[i][j].jerk	    = smTraj->traj[i].seg[j].jerk      ;
     }
   }
+
+  this->computeTimeOnTraj();
+
   return 0;
 }
 
