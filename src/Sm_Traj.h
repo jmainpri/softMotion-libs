@@ -40,6 +40,8 @@ class SM_TRAJ {
   int trajId;
   double timePreserved;
   double duration;
+  /* time scale vector needed to slow the motion law at the execution 
+     this vector is computed by  computeMaxTimeScaleVector Voir these chapitre 5 (fin)*/
   std::vector<double> tsVec;
 
  public:

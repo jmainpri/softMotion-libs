@@ -3220,17 +3220,19 @@ SM_STATUS sm_ComputeSoftMotionLocal(SM_COND IC_e, SM_COND FC_e, SM_LIMITS limits
   FC.a = TRUNC(FC_e.a);
   FC.v = TRUNC(FC_e.v);
   FC.x = TRUNC(FC_e.x);
-  // printf("Nouvel Appel\n");
 
+  /* Check if IC and FC are inside the valid acceleration/velocity frame and 
+     if not, IC and FC are projeted to be valid
+     then compute the particular velocities */
   sm_VerifyInitialAndFinalConditions(&limitsGoto, &IC, &FC, &PartVel, &ICm, &FCm);
+
+  /* Compute the critical length and the zone */
   sm_CalculOfCriticalLengthLocal(&limitsGoto, &PartVel, &ICm, &FCm, &dc, &zone);
   *dcOut = dc;
   *zoneOut = zone;
-  //    printf("Zone : %d\n",zone);
-  //   printf("Critical length : %f\n",dc);
 
   if (ABS(FCm.x - dc) < epsilon_dc) {
-    //       printf("cas dc\n");
+    // The motion is the critical motion
     sm_Jerk_Profile_dc(&limitsGoto, &ICm, &FCm, &PartVel, &zone, &Time);
     *dcOut = dc;
     *zoneOut = zone;
@@ -3292,6 +3294,7 @@ SM_STATUS sm_ComputeSoftMotionLocal(SM_COND IC_e, SM_COND FC_e, SM_LIMITS limits
     else {
       //    printf("Xf < Critical length => Trajectory type:2\n");
       *TrajectoryType = -1;
+      // inverse the initial and final conditions, dc, and zones
       ICmInv.a = -ICm.a;
       ICmInv.v = -ICm.v;
       ICmInv.x = -ICm.x;
@@ -3306,7 +3309,7 @@ SM_STATUS sm_ComputeSoftMotionLocal(SM_COND IC_e, SM_COND FC_e, SM_LIMITS limits
       if (zone==4) {zoneInv =3;}
       if (zone==5) {zoneInv =6;}
       if (zone==6) {zoneInv =5;}
-      // printf("zone %d\n",zoneInv);
+
       sm_VerifyInitialAndFinalConditions(&limitsGoto, &ICmInv, &FCmInv, &PartVelInv, &ICmInv, &FCmInv);
 
       if( sm_Jerk_Profile_Type_1(&limitsGoto, &ICmInv, &FCmInv, &PartVelInv, &dcInv, &zoneInv, &Tinv)!=0) {
@@ -3320,6 +3323,7 @@ SM_STATUS sm_ComputeSoftMotionLocal(SM_COND IC_e, SM_COND FC_e, SM_LIMITS limits
       Time.Tacb = Tinv.Tacb;
       Time.Tjnb = Tinv.Tjpb;
 
+      // sort the seven times as a type 2 motion
       T_Jerk->Tjpa = ABS(Time.Tjna);
       T_Jerk->Taca = ABS(Time.Taca);
       T_Jerk->Tjna = ABS(Time.Tjpa);
