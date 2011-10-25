@@ -28,7 +28,7 @@
   Fonctions            : Define and Adjust Time Profile of Jerk
   Date de creation     : June 2007
   Date de modification : June 2007
-  Auteur               : Xavier BROQUERE49
+  Auteur               : Xavier BROQUERE
 
   ----------------------------------------------------------------------*/
 
@@ -59,6 +59,8 @@
 #include "Sm_Curve.h"
 #include "Sm_Approx.h"
 //#include "QSoftMotionPlanner.h"
+
+#include "gnuplot_i.hpp"
 
 
 using namespace std;
@@ -150,7 +152,7 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
 {
 
   SM_COND IC;
-  SM_STATUS resp;
+  //  SM_STATUS resp;
 
   //   std::vector<double> t(1);
   //   std::vector<double> a(1);
@@ -167,35 +169,42 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
   
   for(unsigned int axis=0;  axis< traj.size(); axis++) {
 
-   // Find segment Index
-   idSeg = (traj[axis].size()) -1;
-   while (time < traj[axis][idSeg].timeOnTraj) { idSeg = idSeg - 1;}
-   if(idSeg <0) {
-     printf("ERROR Big up, not possible!!\n");
-   }
-   
-   dt = time - traj[axis][idSeg].timeOnTraj;
-   ICl.a = traj[axis][idSeg].IC.a;
-   ICl.v = traj[axis][idSeg].IC.v;
-   ICl.x = traj[axis][idSeg].IC.x;
-   jerk =  traj[axis][idSeg].jerk;
-   
-   IC.a =  jerk * dt  + ICl.a;
-   IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
-     IC.x =  jerk * pow(dt,3.0) / 6.0 + ICl.a * pow(dt,2.0) / 2.0 + ICl.v * dt  + ICl.x;
-     
-     if(axis ==1) {
-       //printf("nbseg %d time %f idSeg %d dt %f x %f     X0= %f IC.x= %f\n",traj[axis].size(), time, idSeg, dt, (double)IC.x,(double)traj[axis][0].IC.x, (double)ICl.x );
+    // Find segment Index
+    idSeg = (traj[axis].size()) -1;
+    while (time < traj[axis][idSeg].timeOnTraj) { idSeg = idSeg - 1;}
+    if(idSeg <0) {
+      printf("ERROR Big up, not possible!!\n");
+    } 
+
+    dt = time - traj[axis][idSeg].timeOnTraj;
+
+    if(idSeg ==  (traj[axis].size()) -1) {
+      if( dt >   traj[axis][idSeg].time) {
+	dt =  traj[axis][idSeg].time;
       }
-     cond.push_back(IC);
+    }
+
+    ICl.a = traj[axis][idSeg].IC.a;
+    ICl.v = traj[axis][idSeg].IC.v;
+    ICl.x = traj[axis][idSeg].IC.x;
+    jerk =  traj[axis][idSeg].jerk;
+   
+    IC.a =  jerk * dt  + ICl.a;
+    IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
+    IC.x =  jerk * pow(dt,3.0) / 6.0 + ICl.a * pow(dt,2.0) / 2.0 + ICl.v * dt  + ICl.x;
+     
+    if(axis ==1) {
+      //printf("nbseg %d time %f idSeg %d dt %f x %f     X0= %f IC.x= %f\n",traj[axis].size(), time, idSeg, dt, (double)IC.x,(double)traj[axis][0].IC.x, (double)ICl.x );
+    }
+    cond.push_back(IC);
   }
   
-//      t[0] = time;
-//      resp = sm_AVX_TimeVar(traj[i], t, a, v, x);
-//      IC.a = a[0];
-//      IC.v = v[0];
-//      IC.x = x[0];
-//      cond.push_back(IC);
+  //      t[0] = time;
+  //      resp = sm_AVX_TimeVar(traj[i], t, a, v, x);
+  //      IC.a = a[0];
+  //      IC.v = v[0];
+  //      IC.x = x[0];
+  //      cond.push_back(IC);
   
   return 0;
 }
@@ -207,9 +216,9 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
 //
 int SM_TRAJ::computeTimeOnTraj()
 {
-  std::vector<double> durationArray;
-  durationArray.clear();
-  durationArray.resize(traj.size());
+  std::vector<double> duration_axis;
+  duration_axis.clear();
+  duration_axis.resize(traj.size());
   this->duration = 0.0;
 
   for(unsigned int i=0;  i< traj.size(); i++) {
@@ -223,12 +232,12 @@ int SM_TRAJ::computeTimeOnTraj()
       }
     }
     if(traj[i].size() > 0.0) {
-     durationArray[i] = traj[i][traj[i].size()-1].timeOnTraj + traj[i][traj[i].size()-1].time;
+      duration_axis[i] = traj[i][traj[i].size()-1].timeOnTraj + traj[i][traj[i].size()-1].time;
     } else {
-     durationArray[i] = 0.0;
+      duration_axis[i] = 0.0;
     }
-    if(durationArray[i] > this->duration) {
-      this->duration = durationArray[i];
+    if(duration_axis[i] > this->duration) {
+      this->duration = duration_axis[i];
     }
   }
   updateIC();
@@ -238,19 +247,19 @@ int SM_TRAJ::computeTimeOnTraj()
 int SM_TRAJ::updateIC()
 {
 
-//  printf("updateIC\n");
+  //  printf("updateIC\n");
   
-  SM_STATUS resp;
+  //  SM_STATUS resp;
   std::vector<double> t(1);
   std::vector<double> a(1);
   std::vector<double> v(1);
   std::vector<double> x(1);
 
   SM_COND ICl;
- double time = 0.0;
- double jerk = 0.0;
+  double time = 0.0;
+  double jerk = 0.0;
   
-// printf("number of segment in the trajectory %d\n",(int)traj[0].size() );
+  // printf("number of segment in the trajectory %d\n",(int)traj[0].size() );
   for(unsigned int axis=0;  axis< traj.size(); axis++) {
 
     for (unsigned int s = 1; s < (traj[axis].size()) ; s++) {
@@ -264,23 +273,23 @@ int SM_TRAJ::updateIC()
       traj[axis][s].IC.x =  jerk * pow(time,3.0) / 6.0 + ICl.a * pow(time,2.0) / 2.0 + ICl.v * time  + ICl.x;
       if(axis == 1) {
 
-//printf("seg %d IC.a %f IC.v %f IC.x %f \n",s ,traj[axis][s].IC.a,traj[axis][s].IC.v,traj[axis][s].IC.x);
+	//printf("seg %d IC.a %f IC.v %f IC.x %f \n",s ,traj[axis][s].IC.a,traj[axis][s].IC.v,traj[axis][s].IC.x);
       }
     }
   }
    
-//     for (unsigned int s = 0; s < (traj[axis].size()) ; s++) {
-//       t[0] = traj[axis][s].timeOnTraj;
-//       
-//       resp = sm_AVX_TimeVar(traj[axis], t, a, v, x);
-//       traj[axis][s].IC.a = a[0];
-//       traj[axis][s].IC.v = v[0];
-//       traj[axis][s].IC.x = x[0];     
-//       
-//       if (resp != SM_OK) {
-// 	printf("ERROR: Q interpolation failed (sm_AVX_TimeVar funcion)\n");
-// 	return 1;
-//       }
+  //     for (unsigned int s = 0; s < (traj[axis].size()) ; s++) {
+  //       t[0] = traj[axis][s].timeOnTraj;
+  //       
+  //       resp = sm_AVX_TimeVar(traj[axis], t, a, v, x);
+  //       traj[axis][s].IC.a = a[0];
+  //       traj[axis][s].IC.v = v[0];
+  //       traj[axis][s].IC.x = x[0];     
+  //       
+  //       if (resp != SM_OK) {
+  // 	printf("ERROR: Q interpolation failed (sm_AVX_TimeVar funcion)\n");
+  // 	return 1;
+  //       }
     
   
   return 0;
@@ -398,13 +407,13 @@ int SM_TRAJ::save(char *name)
   fprintf(fileptr, "\n");
   for(unsigned int i=0; i<traj.size(); i++) {
     for(unsigned int j=0; j<traj[i].size(); j++) {
-	fprintf(fileptr, "%d\t", traj[i][j].lpId);
-	fprintf(fileptr, "%f\t", traj[i][j].timeOnTraj);
-	fprintf(fileptr, "%f\t", traj[i][j].time);
-	fprintf(fileptr, "%f\t", traj[i][j].IC.a);
-	fprintf(fileptr, "%f\t", traj[i][j].IC.v);
-	fprintf(fileptr, "%f\t", traj[i][j].IC.x);
-	fprintf(fileptr, "%f\t", traj[i][j].jerk);
+      fprintf(fileptr, "%d\t", traj[i][j].lpId);
+      fprintf(fileptr, "%f\t", traj[i][j].timeOnTraj);
+      fprintf(fileptr, "%f\t", traj[i][j].time);
+      fprintf(fileptr, "%f\t", traj[i][j].IC.a);
+      fprintf(fileptr, "%f\t", traj[i][j].IC.v);
+      fprintf(fileptr, "%f\t", traj[i][j].IC.x);
+      fprintf(fileptr, "%f\t", traj[i][j].jerk);
     }
     fprintf(fileptr, "\n");
   }
@@ -416,8 +425,8 @@ int SM_TRAJ::save(char *name)
 
 
 void SM_TRAJ::tokenize(const std::string& str,
-                         std::vector<std::string>& tokens,
-                         const std::string& delimiters = " "){
+		       std::vector<std::string>& tokens,
+		       const std::string& delimiters = " "){
   // Skip delimiters at beginning.
   std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
   // Find first "non-delimiter".
@@ -490,7 +499,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
       qGoal[i] = doubleVector[i];
     }
  
-   for(int a=0; a<nbAxis; a++) {
+    for(int a=0; a<nbAxis; a++) {
       
       doubleVector.clear();
       getline(file, contenu);
@@ -505,7 +514,7 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
 	traj[a][segIndex].IC.x       = doubleVector[7*segIndex +5];
 	traj[a][segIndex].jerk       = doubleVector[7*segIndex +6];	
       }
-      }
+    }
     file.close();
     this->computeTimeOnTraj();
     cout << "SM_TRAJ::load file " << name << " loaded with " << nbAxis << " axes" << endl;  
@@ -551,28 +560,24 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
 
 int SM_TRAJ::importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn)
 {
+  this->clear();
 
-
- this->clear();
-
- if(trajIn.size() == 0) {
-  printf("ERROR: importFromSM_OUTPUT empty traj\n");
-  return 1;
- }
- if(trajIn[0].Time.size() == 0) {
-  printf("ERROR: importFromSM_OUTPUT empty traj\n");
-  return 1;
- }
+  if(trajIn.size() == 0) {
+    printf("ERROR: importFromSM_OUTPUT empty traj\n");
+    return 1;
+  }
+  if(trajIn[0].Time.size() == 0) {
+    printf("ERROR: importFromSM_OUTPUT empty traj\n");
+    return 1;
+  }
   int nbPoint = (int)trajIn.size();
   int nbAxis = (int)trajIn[0].Time.size();
 
-
   //  printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
 
-
- this->resize(trajIn[0].Time.size());
- this->trajId = trajId;
- this->timePreserved = 0.0;
+  this->resize(trajIn[0].Time.size());
+  this->trajId = trajId;
+  this->timePreserved = 0.0;
  
   for(int i=0; i<nbAxis; i++) {
     traj[i].resize(nbPoint);
@@ -587,42 +592,40 @@ int SM_TRAJ::importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUT
     }
   }
 
-
-  
-if(trajIn[0].IC.size()) {
-  for(int i=0; i<nbAxis; i++) {
-    this->qStart[i] = trajIn[0].IC[i].x;
+  if(trajIn[0].IC.size()) {
+    for(int i=0; i<nbAxis; i++) {
+      this->qStart[i] = trajIn[0].IC[i].x;
+    }
+    for(int i=0; i<nbAxis; i++) {
+      this->qGoal[i] = 0.0;
+    }
   }
-  for(int i=0; i<nbAxis; i++) {
-    this->qGoal[i] = 0.0;
-  }
-}
 
   /*set the initial condition in the first segment */
   for(int i=0; i<nbAxis; i++) {
-      traj[i][0].IC.a	    =  trajIn[0].IC[i].a;
-      traj[i][0].IC.v	    =  trajIn[0].IC[i].v;
-      traj[i][0].IC.x	    =  trajIn[0].IC[i].x;
+    traj[i][0].IC.a	    =  trajIn[0].IC[i].a;
+    traj[i][0].IC.v	    =  trajIn[0].IC[i].v;
+    traj[i][0].IC.x	    =  trajIn[0].IC[i].x;
   }
 
 
   //this->print();
- // compute the initial conditions and other variable for all segments
-   computeTimeOnTraj();
+  // compute the initial conditions and other variable for all segments
+  computeTimeOnTraj();
 
-   //this->print();
+  //this->print();
   
- return 0;
+  return 0;
 }
 
 
 int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn)
 {
-    computeTimeOnTraj();
- trajIn.clear();
+  computeTimeOnTraj();
+  trajIn.clear();
  
- trajIn.resize(this->traj[0].size());
- trajIn[0].Time.resize(this->traj.size());
+  trajIn.resize(this->traj[0].size());
+  trajIn[0].Time.resize(this->traj.size());
  
   int nbPoint = (int)trajIn.size();
   int nbAxis = (int)trajIn[0].Time.size();
@@ -631,9 +634,9 @@ int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTP
   //  printf("importFromSM_OUTPUT: There are %f axes and %f segments\n", (double)trajIn[0].Time.size(), (double)trajIn.size());
 
 
- this->resize(trajIn[0].Time.size());
- this->trajId = trajId;
- this->timePreserved = 0.0;
+  this->resize(trajIn[0].Time.size());
+  this->trajId = trajId;
+  this->timePreserved = 0.0;
  
   for(int i=0; i<nbAxis; i++) {
     traj[i].resize(nbPoint);
@@ -648,32 +651,28 @@ int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTP
     }
   }
 
-
-  
-if(trajIn[0].IC.size()) {
-  for(int i=0; i<nbAxis; i++) {
-    trajIn[0].IC[i].x = this->qStart[i];
+  if(trajIn[0].IC.size()) {
+    for(int i=0; i<nbAxis; i++) {
+      trajIn[0].IC[i].x = this->qStart[i];
+    }
+    //   for(int i=0; i<nbAxis; i++) {
+    //     this->qGoal[i] = 0.0;
+    //   }
   }
-//   for(int i=0; i<nbAxis; i++) {
-//     this->qGoal[i] = 0.0;
-//   }
-}
 
   /*set the initial condition in the first segment */
   for(int i=0; i<nbAxis; i++) {
-      trajIn[0].IC[i].a = traj[i][0].IC.a ;
-     trajIn[0].IC[i].v=  traj[i][0].IC.v ;
-     trajIn[0].IC[i].x =  traj[i][0].IC.x ;
+    trajIn[0].IC[i].a = traj[i][0].IC.a ;
+    trajIn[0].IC[i].v=  traj[i][0].IC.v ;
+    trajIn[0].IC[i].x =  traj[i][0].IC.x ;
   }
 
+  //this->print();
+  // compute the initial conditions and other variable for all segments
 
   //this->print();
- // compute the initial conditions and other variable for all segments
-
-
-   //this->print();
   
- return 0;
+  return 0;
 }
 
 
@@ -771,10 +770,10 @@ int SM_TRAJ::extract(double t1, double t2, SM_TRAJ &trajIn)
   
   trajStrOut.nbAxis = trajStr.nbAxis;
   for(int i=0; i< trajStr.nbAxis; i++) {
-   trajStrOut.traj[i].nbSeg = nbSeg;
+    trajStrOut.traj[i].nbSeg = nbSeg;
     for(int j=0; j< nbSeg; j++) {
       if(id1 < id2) {
-      if(j ==0) {
+	if(j ==0) {
 	  trajStrOut.traj[i].seg[j].lpId      =0;
 	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
 	  trajStrOut.traj[i].seg[j].time      = trajStr.traj[i].seg[id1].time  - dt1;
@@ -782,7 +781,7 @@ int SM_TRAJ::extract(double t1, double t2, SM_TRAJ &trajIn)
 	  trajStrOut.traj[i].seg[j].ic_v      = cond1[i].v;
 	  trajStrOut.traj[i].seg[j].ic_x      = cond1[i].x;
 	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1].jerk;
-      } else if(j ==nbSeg-1) {
+	} else if(j ==nbSeg-1) {
       	  trajStrOut.traj[i].seg[j].lpId      =0;
 	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
 	  trajStrOut.traj[i].seg[j].time      = dt2;
@@ -790,7 +789,7 @@ int SM_TRAJ::extract(double t1, double t2, SM_TRAJ &trajIn)
 	  trajStrOut.traj[i].seg[j].ic_v      = cond2[i].v;
 	  trajStrOut.traj[i].seg[j].ic_x      = cond2[i].x;
 	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id2].jerk;
-      } else {
+	} else {
 	  trajStrOut.traj[i].seg[j].lpId      =0;
 	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
 	  trajStrOut.traj[i].seg[j].time      = trajStr.traj[i].seg[id1+j].time;
@@ -798,58 +797,58 @@ int SM_TRAJ::extract(double t1, double t2, SM_TRAJ &trajIn)
 	  trajStrOut.traj[i].seg[j].ic_v      = trajStr.traj[i].seg[id1+j].ic_v;
 	  trajStrOut.traj[i].seg[j].ic_x      = trajStr.traj[i].seg[id1+j].ic_x;
 	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1+j].jerk;
-      }
+	}
       
       } else {
-	 trajStrOut.traj[i].seg[j].lpId      =0;
-	  trajStrOut.traj[i].seg[j].timeOnTraj=0;
-	  trajStrOut.traj[i].seg[j].time      = t2  - t1;
-	  trajStrOut.traj[i].seg[j].ic_a      = cond1[i].a;
-	  trajStrOut.traj[i].seg[j].ic_v      = cond1[i].v;
-	  trajStrOut.traj[i].seg[j].ic_x      = cond1[i].x;
-	  trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1].jerk;
+	trajStrOut.traj[i].seg[j].lpId      =0;
+	trajStrOut.traj[i].seg[j].timeOnTraj=0;
+	trajStrOut.traj[i].seg[j].time      = t2  - t1;
+	trajStrOut.traj[i].seg[j].ic_a      = cond1[i].a;
+	trajStrOut.traj[i].seg[j].ic_v      = cond1[i].v;
+	trajStrOut.traj[i].seg[j].ic_x      = cond1[i].x;
+	trajStrOut.traj[i].seg[j].jerk      = trajStr.traj[i].seg[id1].jerk;
       }
 
     }
   }
- this->clear();
- this->importFromSM_TRAJ_STR(&trajStrOut);
- this->computeTimeOnTraj();
+  this->clear();
+  this->importFromSM_TRAJ_STR(&trajStrOut);
+  this->computeTimeOnTraj();
   return 0;
 }
 
 int SM_TRAJ::getSegmentIndex(double t1)
 {
- int id = 0;
+  int id = 0;
   SM_TRAJ_STR trajStr;
   
   
   if(t1 > this->getDuration())
-  {
+    {
       printf("ERROR getSegmentIndex: t1 > this.getDuration()\n");
-   return 0 ;
-  }
-  
- this->convertToSM_TRAJ_STR(&trajStr);
-  
- for(int i=0; i<  trajStr.traj[0].nbSeg; i++) {
-    if((t1 >= trajStr.traj[0].seg[i].timeOnTraj) && (t1 < (trajStr.traj[0].seg[i].timeOnTraj + trajStr.traj[0].seg[i].time) ) ) {
-     return i; 
+      return 0 ;
     }
- } 
- return id; 
+  
+  this->convertToSM_TRAJ_STR(&trajStr);
+  
+  for(int i=0; i<  trajStr.traj[0].nbSeg; i++) {
+    if((t1 >= trajStr.traj[0].seg[i].timeOnTraj) && (t1 < (trajStr.traj[0].seg[i].timeOnTraj + trajStr.traj[0].seg[i].time) ) ) {
+      return i; 
+    }
+  } 
+  return id; 
 }
 
 int SM_TRAJ::approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName)
 {
 
 #ifdef QT_LIBRARY
- // bool flagExport = true;
- // QSoftMotionPlanner w;
- // int ExpTime = 10;
- // SM_TRAJ traj,
- // w.approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, flagExport, fileName, traj);
- // this->clear();
+  // bool flagExport = true;
+  // QSoftMotionPlanner w;
+  // int ExpTime = 10;
+  // SM_TRAJ traj,
+  // w.approximate(jmax, amax, vmax, SampTime,  ErrMax,  ExpTime, flagExport, fileName, traj);
+  // this->clear();
 #else
   printf("ERROR: softMotion-libs is not compiled with the QT_LIBRARY flag\n");
 #endif
@@ -1051,7 +1050,7 @@ int SM_TRAJ::computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic,
     alphaMax = 1.0;
     for(uint i =0; i < maxVel.size(); i++) {
       if(cond[i].v > maxVel[i]) {
-	  alpha =  maxVel[i] / cond[i].v;
+	alpha =  maxVel[i] / cond[i].v;
       } else {
 	alpha = 1.0;
       }
@@ -1160,8 +1159,8 @@ int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
   }
   GD =  fcl.x * dir;
   if (sm_VerifyTimes(SM_DISTANCE_TOLERANCE_LINEAR , GD, Jerks, IC, dir, T_Jerk, &fco, &(acc), &(vel), &(pos), SM_ON)!=0) {
-      printf("ERROR  Verify Times \n");
-      return 1;
+    printf("ERROR  Verify Times \n");
+    return 1;
   }
 
   /* get the  position at the next tick */       
@@ -1200,3 +1199,342 @@ int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
 
 
 //int SM_TRAJ::computePTPmotion(std::vector< double > start, std::vector< double > goal, std::vector< double > jmax,  std::vector< double > amax,  std::vector< double > vmax)
+
+
+int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode) {
+
+  std::vector<SM_MOTION_AXIS> motion_arr;
+  int nb_dofs = IC.size();
+
+  if(FC.size() != nb_dofs) {
+    printf("ERROR SM_TRAJ::computeTraj FC.size() != nb_dofs\n");
+    return 1;
+  }
+  if(limits.size() != nb_dofs) {
+    printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs\n");
+    return 1;
+  }
+
+  /* resize the array to store the motions */
+  motion_arr.resize(IC.size());
+
+  /* Fill the motion_arr */
+  for (int i=0; i < nb_dofs; i++) {    
+    motion_arr[i].limits = limits[i];
+    motion_arr[i].jerk.J1 = limits[i].maxJerk;
+    motion_arr[i].jerk.sel = 1;
+    motion_arr[i].ic = IC[i];
+    motion_arr[i].fc = FC[i];
+    motion_arr[i].ic_rel.a =  IC[i].a;
+    motion_arr[i].ic_rel.v =  IC[i].v;
+    motion_arr[i].ic_rel.x =  0.0;
+    motion_arr[i].fc_rel.a =  FC[i].a;
+    motion_arr[i].fc_rel.v =  FC[i].v;
+    motion_arr[i].fc_rel.x =  FC[i].x - IC[i].x;
+  }
+  
+  if(computeUnsynchronizedMotion(motion_arr) != 0) {
+    printf("ERROR cannot compute unsynchronized motion\n");
+    return 1;
+  }
+  
+  switch(mode) {
+  case SM_INDEPENDANT:
+    /* Each independant motion are already computed */
+    break;
+  case SM_SYNCHRONIZED:
+    if(synchronizeMotion(motion_arr)!= 0) {
+      printf("ERROR SM_TRAJ::synchronizeMotion\n");
+      return 1;
+    }
+    break;
+  default:
+    printf("ERROR  SM_TRAJ::computeTra wrong mode\n");
+    return 1;
+  }
+
+  if(fillFromMotionArr(motion_arr) != 0) {
+    printf("ERROR SM_TRAJ::fillFromMotionArr\n");
+    return 1;
+  }
+  return 0;
+}
+
+int SM_TRAJ::computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr)
+{
+  int nb_dofs = motion_arr.size();
+  SM_COND FCm;
+
+  if(nb_dofs <= 0) {
+    printf("ERROR  SM_TRAJ::computeUnsynchronizedMotion nb_dofs <= 0\n");
+    return 1;
+  }
+  
+  for (int i=0; i < nb_dofs; i++) {    
+    /* Compute the monodimensional trajectory */
+    if (sm_ComputeSoftMotion( motion_arr[i].ic_rel, motion_arr[i].fc_rel, 
+			      motion_arr[i].limits, &(motion_arr[i].times), 
+			      &(motion_arr[i].dir))!=0) {
+      printf("ERROR Jerk Profile on dim %d\n",i);
+      return 1;
+    }
+
+    /* Compute trajectory lenght */
+    sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+
+    /* Get initial conditions for each vectors Acc Vel and Pos */
+    double GD =  motion_arr[i].fc_rel.x * motion_arr[i].dir;
+    if (sm_VerifyTimes( SM_DISTANCE_TOLERANCE, GD,  motion_arr[i].jerk, 
+			motion_arr[i].ic, motion_arr[i].dir, 
+			motion_arr[i].times, &FCm, &(motion_arr[i].acc), 
+			&(motion_arr[i].vel), &(motion_arr[i].pos), SM_ON)!=0) {
+      printf(" Verify Times on dim %d\n",i);
+      return 1;
+    } 
+  }
+  return 0;
+}
+
+int SM_TRAJ::synchronizeMotion(std::vector<SM_MOTION_AXIS>  &motion_arr)
+{
+
+  //  int axis_motion_max = 0;
+  //  double GD = 0.0;
+  //  int i = 0;
+  //  double time_motion_max = 0.0;
+  //  int adjustTimeError = 0;
+  //  SM_MOTION_MONO *motion3seg = NULL;
+  //
+  //
+  //  SM_COND FCm;
+  //
+  //
+  //
+  //  motion3seg = new SM_MOTION_MONO[nb_dofs];
+  //
+  //
+  //  for(i=0; i< nb_dofs; i++) { 
+  //    
+  //    if (motion_arr[i].motion_duration > time_motion_max) {
+  //      time_motion_max = motion_arr[i].motion_duration;
+  //      axis_motion_max = i;
+  //    }
+  //  }
+  //
+  //  /* Adjust Motion Times */
+  //  adjustTimeError = 0;
+  //
+  //  for (i=0; i < nb_dofs; i++) {
+  //    //if (i != axis_motion_max) {
+  //
+  //      ICm.a = IC[i].a;
+  //      ICm.v = IC[i].v;
+  //      ICm.x =  0.0;
+  //      FCm.a = FC[i].a;
+  //      FCm.v = FC[i].v;
+  //      FCm.x = (FC[i].x - IC[i].x);
+  //
+  //      if(sm_adjustMotionWith3seg(motion_arr[i].ic_rel, motion_arr[i].fc_rel, , time_motion_max, &motion3seg[i])!= 0) {
+  //	printf("sm_AdjustTime ERROR 3seg at axis %d\n",i);
+  //	adjustTimeError ++;
+  //      }
+  //    // }
+  //  }
+  //
+  //
+  //  if (adjustTimeError > 0) {
+  //    printf("ERROR can't adjust time motion \n");
+  //    return 1;
+  //  }
+  //
+  //  for (i=0; i < nb_dofs; i++) {
+  //    ICm.a =  IC[i].a;
+  //    ICm.v =  IC[i].v;
+  //    ICm.x =  IC[i].x;
+  //    FCm.a =  FC[i].a;
+  //    FCm.v =  FC[i].v;
+  //    FCm.x = (FC[i].x - IC[i].x);
+  //    /* Verify Times */
+  //    if (sm_VerifyTimes_Dir_ab(SM_DISTANCE_TOLERANCE, FCm.x, t_jerk[i], ICm,
+  //			      softMotion_data->specific->motion[i].Dir_a, softMotion_data->specific->motion[i].Dir_b,
+  //			      softMotion_data->specific->motion[i].Times, &FC, &(softMotion_data->specific->motion[i].Acc),
+  //			      &(softMotion_data->specific->motion[i].Vel), &(softMotion_data->specific->motion[i].Pos)) != 0) {
+  //      printf("lm_compute_softMotion_for_r6Arm ERROR Verify Times on axis [%d] \n",i);
+  //      return FALSE;
+  //    }
+  //    // 				softMotion_data->freeflyer->motion.motionIsAdjusted[i] = 1;
+  //  }
+  //
+
+  return 0;
+}
+
+
+int SM_TRAJ::fillFromMotionArr(std::vector<SM_MOTION_AXIS> &motion_arr)
+{
+  int nb_dofs = motion_arr.size();
+  SM_SEG seg;
+  if(nb_dofs <= 0) {
+    printf("ERROR  SM_TRAJ::fillFromMotionArr nb_dofs <= 0\n");
+    return 1;
+  }
+
+  this->clear();
+  this->resize(nb_dofs);
+  
+  for (int i=0; i < nb_dofs; i++) {
+    this->qStart[i] = motion_arr[i].ic.x;
+    this->qGoal[i] = motion_arr[i].fc.x;
+    
+    this->traj[i].clear();
+
+    /* Fill first segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0;
+    seg.time =  motion_arr[i].times.Tjpa;
+    seg.IC.a =  motion_arr[i].ic.a ;
+    seg.IC.v =  motion_arr[i].ic.v;
+    seg.IC.x =  motion_arr[i].ic.x;
+    seg.jerk =  motion_arr[i].jerk.J1 *   motion_arr[i].dir;
+    this->traj[i].push_back(seg);
+
+    /* Fill second segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0.0;
+    seg.time =  motion_arr[i].times.Taca;
+    seg.IC.a =  motion_arr[i].acc.Tjpa ;
+    seg.IC.v =  motion_arr[i].vel.Tjpa;
+    seg.IC.x =  motion_arr[i].pos.Tjpa;
+    seg.jerk =  0.0;
+    this->traj[i].push_back(seg);
+
+    /* Fill third segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0.0;
+    seg.time =  motion_arr[i].times.Tjna;
+    seg.IC.a =  motion_arr[i].acc.Taca ;
+    seg.IC.v =  motion_arr[i].vel.Taca;
+    seg.IC.x =  motion_arr[i].pos.Taca;
+    seg.jerk =  -motion_arr[i].jerk.J1 *  motion_arr[i].dir;
+    this->traj[i].push_back(seg);
+
+    /* Fill fourth segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0.0;
+    seg.time =  motion_arr[i].times.Tvc;
+    seg.IC.a =  motion_arr[i].acc.Tjna ;
+    seg.IC.v =  motion_arr[i].vel.Tjna;
+    seg.IC.x =  motion_arr[i].pos.Tjna;
+    seg.jerk =  0.0;
+    this->traj[i].push_back(seg);
+
+    /* Fill fifth segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0.0;
+    seg.time =  motion_arr[i].times.Tjnb;
+    seg.IC.a =  motion_arr[i].acc.Tvc ;
+    seg.IC.v =  motion_arr[i].vel.Tvc;
+    seg.IC.x =  motion_arr[i].pos.Tvc;
+    seg.jerk =  -motion_arr[i].jerk.J1 *   motion_arr[i].dir;
+    this->traj[i].push_back(seg);
+
+    /* Fill sixth segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0.0;
+    seg.time =  motion_arr[i].times.Tacb;
+    seg.IC.a =  motion_arr[i].acc.Tjnb ;
+    seg.IC.v =  motion_arr[i].vel.Tjnb;
+    seg.IC.x =  motion_arr[i].pos.Tjnb;
+    seg.jerk =  0.0;
+    this->traj[i].push_back(seg);
+
+    /* Fill seventh segment */
+    seg.lpId = 0;
+    seg.timeOnTraj = 0.0;
+    seg.time =  motion_arr[i].times.Tjpb;
+    seg.IC.a =  motion_arr[i].acc.Tacb ;
+    seg.IC.v =  motion_arr[i].vel.Tacb;
+    seg.IC.x =  motion_arr[i].pos.Tacb;
+    seg.jerk =  motion_arr[i].jerk.J1 *  motion_arr[i].dir;
+    this->traj[i].push_back(seg);
+  }
+  this->computeTimeOnTraj();
+  this->updateIC();
+  return 0;
+}
+
+/*
+Plot evolution of the position for each axis
+ */
+int SM_TRAJ::plot()
+{
+  ofstream myfile;
+  myfile.open ("smTemp.dat");
+  std::vector<SM_COND> cond;
+  for(double tps=0.0; tps < this->duration; tps += 0.01) {
+    this->getMotionCond(tps, cond);
+    myfile << tps ;
+    for(int i=0; i<cond.size(); i++) {
+      myfile << " " << cond[i].x ;
+    }
+    myfile << endl;
+  }
+  myfile.close();
+  
+  try
+    {
+      Gnuplot g1("lines");
+      g1.reset_plot();
+      g1.cmd((char*)"set term wxt");
+      //    g1.set_xrange(0, width);
+      //    g1.set_yrange(0, -1*height);
+      g1.cmd("set size ratio -1");
+      g1.set_xautoscale();
+      g1.set_yautoscale();
+      g1.set_grid();
+      for(int i=0; i<cond.size(); i++) {
+	g1.plotfile_xy("smTemp.dat", 1, i+2);
+      }
+      wait_for_key();
+    }
+  catch (GnuplotException ge)
+    {
+      cout << ge.what() << endl;
+    }
+  return 0;
+
+}
+
+int SM_TRAJ::plot(int i)
+{
+  ofstream myfile;
+  myfile.open ("smTemp.dat");
+  std::vector<SM_COND> cond;
+  for(double tps=0.0; tps < this->duration; tps += 0.01) {
+    this->getMotionCond(tps, cond);
+    myfile << tps << " " << cond[i].a << " " << cond[i].v << " " << cond[i].x << endl;
+  }
+  myfile.close();
+  
+  try
+    {
+      Gnuplot g1("lines");
+      g1.reset_plot();
+      g1.cmd((char*)"set term wxt");
+      //    g1.set_xrange(0, width);
+      //    g1.set_yrange(0, -1*height);
+      g1.cmd("set size ratio -1");
+      g1.set_xautoscale();
+      g1.set_yautoscale();
+      g1.set_grid();
+      g1.plotfile_xy("smTemp.dat", 1, 2);
+      g1.plotfile_xy("smTemp.dat", 1, 3);
+      g1.plotfile_xy("smTemp.dat", 1, 4);
+      wait_for_key();
+    }
+  catch (GnuplotException ge)
+    {
+      cout << ge.what() << endl;
+    }
+  return 0;
+}

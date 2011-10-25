@@ -263,6 +263,25 @@ typedef struct SM_MOTION_MONO {
 	int      motionIsAdjusted;
 } SM_MOTION_MONO;
 
+typedef struct SM_MOTION_AXIS {
+  SM_TIMES times; /* en seconde */
+  SM_TIMES acc;
+  SM_TIMES vel;
+  SM_TIMES pos;
+  SM_JERKS jerk;
+  SM_COND  ic;
+  SM_COND  fc;
+  SM_COND ic_rel;
+  SM_COND fc_rel;
+  SM_LIMITS limits;
+  int      dir;
+  int      dir_a;
+  int      dir_b;
+  double   motion_duration;
+  double   time_cumul[SM_NB_SEG];
+  int      motion_is_adjusted;
+} SM_MOTION_AXIS;
+
 typedef struct SM_TRANSITION_MOTION {
   SM_TIMES Times[SM_NB_DIM]; /* en seconde */
   SM_TIMES TimesM[SM_NB_DIM];
