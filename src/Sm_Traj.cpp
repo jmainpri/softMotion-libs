@@ -78,6 +78,9 @@ void SM_TRAJ::sm_traj(const SM_TRAJ &traj)
   this->duration = traj.duration;
   this->qStart = traj.qStart;
   this->qGoal = traj.qGoal;
+  this->jmax = traj.jmax;
+  this->amax = traj.amax;
+  this->vmax = traj.vmax;
   this->traj = traj.traj;
   return;
 }
@@ -86,6 +89,9 @@ void SM_TRAJ::clear()
 {
   qStart.clear();
   qGoal.clear();
+  jmax.clear();
+  amax.clear();
+  vmax.clear();
   traj.clear();
   tsVec.clear();
   duration = 0.0;
@@ -144,6 +150,9 @@ void SM_TRAJ::resize(int size)
   this->clear();
   qStart.resize(size);
   qGoal.resize(size);
+  jmax.resize(size);
+  amax.resize(size);
+  vmax.resize(size);
   traj.resize(size);
   return;
 }
@@ -316,6 +325,21 @@ void SM_TRAJ::print()
     cout << std::fixed << " (" << j << "){" << qGoal[j] << "}" ;
   }
   cout <<  std::endl; 
+  cout << " jmax: " <<  std::endl; 
+  for(unsigned int j = 0; j < jmax.size(); j++){
+    cout << std::fixed << " (" << j << "){" << jmax[j] << "}" ;
+  }
+  cout <<  std::endl; 
+  cout << " amax: " <<  std::endl; 
+  for(unsigned int j = 0; j < amax.size(); j++){
+    cout << std::fixed << " (" << j << "){" << amax[j] << "}" ;
+  }
+  cout <<  std::endl; 
+  cout << " vmax: " <<  std::endl; 
+  for(unsigned int j = 0; j < vmax.size(); j++){
+    cout << std::fixed << " (" << j << "){" << vmax[j] << "}" ;
+  }
+  cout <<  std::endl; 
   for(unsigned int j = 0; j < traj.size(); j++){
     std::cout << "===========  Traj on axis " << j <<" ==========" <<  std::endl; 
     std::cout << "   Number of segments: " << traj[j].size() <<  std::endl; 
@@ -403,6 +427,18 @@ int SM_TRAJ::save(char *name)
   fprintf(fileptr, "\n");
   for(unsigned int i=0; i<qGoal.size(); i++) {
     fprintf(fileptr, "%f\t", qGoal[i]);
+  }
+  fprintf(fileptr, "\n");
+  for(unsigned int i=0; i<jmax.size(); i++) {
+    fprintf(fileptr, "%f\t", jmax[i]);
+  }
+  fprintf(fileptr, "\n");
+  for(unsigned int i=0; i<amax.size(); i++) {
+    fprintf(fileptr, "%f\t", amax[i]);
+  }
+  fprintf(fileptr, "\n");
+  for(unsigned int i=0; i<vmax.size(); i++) {
+    fprintf(fileptr, "%f\t", vmax[i]);
   }
   fprintf(fileptr, "\n");
   for(unsigned int i=0; i<traj.size(); i++) {
@@ -498,6 +534,30 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
     for(unsigned int i=0; i <doubleVector.size(); i++) {
       qGoal[i] = doubleVector[i];
     }
+
+   /* Read jmax */
+    doubleVector.clear();
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    for(unsigned int i=0; i <doubleVector.size(); i++) {
+      jmax[i] = doubleVector[i];
+    }
+
+   /* Read amax */
+    doubleVector.clear();
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    for(unsigned int i=0; i <doubleVector.size(); i++) {
+      amax[i] = doubleVector[i];
+    }
+
+   /* Read vmax */
+    doubleVector.clear();
+    getline(file, contenu);
+    doubleVector = parseFrame(contenu);
+    for(unsigned int i=0; i <doubleVector.size(); i++) {
+      vmax[i] = doubleVector[i];
+    }
  
     for(int a=0; a<nbAxis; a++) {
       
@@ -540,6 +600,18 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
   }
   for(int i=0; i<smTraj->nbAxis; i++) {
     smTraj->qGoal[i] =  this->qGoal[i];
+  }
+
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    smTraj->jmax[i] =  this->jmax[i];
+  }
+
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    smTraj->amax[i] =  this->amax[i];
+  }
+
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    smTraj->vmax[i] =  this->vmax[i];
   }
 
   for(int i=0; i<smTraj->nbAxis; i++) {
@@ -598,6 +670,15 @@ int SM_TRAJ::importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUT
     }
     for(int i=0; i<nbAxis; i++) {
       this->qGoal[i] = 0.0;
+    }
+    for(int i=0; i<nbAxis; i++) {
+      this->jmax[i] = 0.0;
+    }
+    for(int i=0; i<nbAxis; i++) {
+      this->amax[i] = 0.0;
+    }
+    for(int i=0; i<nbAxis; i++) {
+      this->vmax[i] = 0.0;
     }
   }
 
@@ -693,6 +774,15 @@ int SM_TRAJ::importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
   }
   for(int i=0; i<smTraj->nbAxis; i++) {
     this->qGoal[i] = smTraj->qGoal[i];
+  }
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    this->jmax[i] = smTraj->jmax[i];
+  }
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    this->amax[i] = smTraj->amax[i];
+  }
+  for(int i=0; i<smTraj->nbAxis; i++) {
+    this->vmax[i] = smTraj->vmax[i];
   }
   
   for(int i=0; i<smTraj->nbAxis; i++) {
@@ -1192,6 +1282,9 @@ int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
   }
   qStart.push_back(IC.x);
   qGoal.push_back(FC.x);
+  jmax.push_back(limits.maxJerk);
+  amax.push_back(limits.maxAcc);
+  vmax.push_back(limits.maxVel);
 
   computeTimeOnTraj();
   return 0;
@@ -1217,7 +1310,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
 
   /* resize the array to store the motions */
   motion_arr.resize(IC.size());
-
+ 
   /* Fill the motion_arr */
   for (int i=0; i < nb_dofs; i++) {    
     motion_arr[i].limits = limits[i];
@@ -1256,6 +1349,12 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
   if(fillFromMotionArr(motion_arr) != 0) {
     printf("ERROR SM_TRAJ::fillFromMotionArr\n");
     return 1;
+  }
+
+  for (int i=0; i < qStart.size(); i++) {
+    this->jmax[i] = limits[i].maxJerk;
+    this->amax[i] = limits[i].maxAcc;
+    this->vmax[i] = limits[i].maxVel;
   }
   return 0;
 }

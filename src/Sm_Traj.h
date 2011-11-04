@@ -48,6 +48,9 @@ class SM_TRAJ {
  public:
   std::vector<double> qStart;
   std::vector<double> qGoal;
+  std::vector<double> jmax;
+  std::vector<double> amax;
+  std::vector<double> vmax;
   std::vector< std::vector<SM_SEG> > traj;
 
 

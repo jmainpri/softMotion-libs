@@ -64,6 +64,9 @@ typedef struct SM_TRAJ_STR {
   double timePreserved;
   double qStart[SM_TRAJ_NB_AXIS];
   double qGoal[SM_TRAJ_NB_AXIS];
+  double jmax[SM_TRAJ_NB_AXIS];
+  double amax[SM_TRAJ_NB_AXIS];
+  double vmax[SM_TRAJ_NB_AXIS];
   SM_TRAJ_AXIS_STR traj[SM_TRAJ_NB_AXIS];
 } SM_TRAJ_STR ;
 
