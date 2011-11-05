@@ -22,8 +22,8 @@ camera()->setPosition(qglviewer::Vec( 0., 0., 0.5));
 
 void Viewer::keyPressEvent(QKeyEvent *e)
 {
-//  switch (e->key())
-//    {
+  switch (e->key())
+   {
 //    case Qt::Key_Left :
 //      curve[0].setCurrentKf( (curve[0].currentKf()+curve[0].nbKeyFrames()-1) % curve[0].nbKeyFrames() );
 //      curve[0].setManipulatedFrame(curve[0].keyFrame_[curve[0].currentKf()]);
@@ -55,9 +55,9 @@ void Viewer::keyPressEvent(QKeyEvent *e)
 //	curve[0].kfi_.setLoopInterpolation();
 //	curve[0].kfi_.startInterpolation();
 //      break;
-//    default:
-//      QGLViewer::keyPressEvent(e);
-//    }
+    default:
+      QGLViewer::keyPressEvent(e);
+    }
 }
 
 void Viewer::draw()

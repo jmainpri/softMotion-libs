@@ -187,7 +187,7 @@ int SM_TRAJ::getMotionCond(double time,std::vector<SM_COND> & cond)
 
     dt = time - traj[axis][idSeg].timeOnTraj;
 
-    if(idSeg ==  (traj[axis].size()) -1) {
+    if(idSeg ==  ((int)traj[axis].size()) -1) {
       if( dt >   traj[axis][idSeg].time) {
 	dt =  traj[axis][idSeg].time;
       }
@@ -1296,14 +1296,16 @@ int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
 
 int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode) {
 
+  this->clear();
+
   std::vector<SM_MOTION_AXIS> motion_arr;
   int nb_dofs = IC.size();
 
-  if(FC.size() != nb_dofs) {
+  if((int)FC.size() != nb_dofs) {
     printf("ERROR SM_TRAJ::computeTraj FC.size() != nb_dofs\n");
     return 1;
   }
-  if(limits.size() != nb_dofs) {
+  if((int)limits.size() != nb_dofs) {
     printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs\n");
     return 1;
   }
@@ -1342,7 +1344,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     }
     break;
   default:
-    printf("ERROR  SM_TRAJ::computeTra wrong mode\n");
+    printf("ERROR  SM_TRAJ::computeTraj wrong mode\n");
     return 1;
   }
 
@@ -1351,7 +1353,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     return 1;
   }
 
-  for (int i=0; i < qStart.size(); i++) {
+  for (unsigned int i=0; i < qStart.size(); i++) {
     this->jmax[i] = limits[i].maxJerk;
     this->amax[i] = limits[i].maxAcc;
     this->vmax[i] = limits[i].maxVel;
@@ -1573,7 +1575,7 @@ int SM_TRAJ::plot()
   for(double tps=0.0; tps < this->duration; tps += 0.01) {
     this->getMotionCond(tps, cond);
     myfile << tps ;
-    for(int i=0; i<cond.size(); i++) {
+    for(unsigned int i=0; i<cond.size(); i++) {
       myfile << " " << cond[i].x ;
     }
     myfile << endl;
@@ -1591,7 +1593,7 @@ int SM_TRAJ::plot()
       g1.set_xautoscale();
       g1.set_yautoscale();
       g1.set_grid();
-      for(int i=0; i<cond.size(); i++) {
+      for(unsigned int i=0; i<cond.size(); i++) {
 	g1.plotfile_xy("smTemp.dat", 1, i+2);
       }
       wait_for_key();

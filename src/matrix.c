@@ -868,13 +868,13 @@ int File2Mat(const char *file, dmat A)
 /* Find how many repeated rows, TOLerance */
 int findNORepeatedRows(dmat Mat, double TOL,  int *NORR)
 {
-  register int rowsize, colsize;
-  register int i, j;
+  //register int rowsize, colsize;
+  int i, j;
   double SumQ, Dif;
   int Nor;
 
-  rowsize = Mat.ub1 - Mat.lb1;
-  colsize = Mat.ub2 - Mat.lb2;
+  //rowsize = Mat.ub1 - Mat.lb1;
+  //colsize = Mat.ub2 - Mat.lb2;
   Nor = 0;
 
   for (i = Mat.lb1; i <= Mat.ub1-1; i++) {

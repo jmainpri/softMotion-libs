@@ -135,7 +135,7 @@ void MyPlot::plotIdealProfile(Curve &curv,QwtPlot * qwtPlot_PosXideal,QwtPlot *q
 
 
 void MyPlot::plotGraph(QwtPlot *p, double xData[], double yData[], int size, char* xName, char *yName, char *title) {
-  QwtPlotCurve *curve_ay_tra = new QwtPlotCurve("plot");
+  QwtPlotCurve *curve_ay_tra = new QwtPlotCurve(title);
   QwtPlotZoomer *zoom = NULL;
   QwtPlotGrid *g = NULL;
   curve_ay_tra->setData(xData,yData, size);

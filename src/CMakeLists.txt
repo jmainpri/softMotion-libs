@@ -22,7 +22,8 @@ file(GLOB source_files ./*.c ./*.cpp)
 
 
 
-SET(CMAKE_CXX_FLAGS " -lm ")
+SET(CMAKE_CXX_FLAGS " -lm")
+
 
 SET(CMAKE_C_COMPILER g++)
 SET(CMAKE_CXX_COMPILER g++)
@@ -44,6 +45,8 @@ ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
   ADD_DEFINITIONS(-O2 -Wall -Wno-unknown-pragmas)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
+
+ADD_DEFINITIONS(-Wno-unused-but-set-variable)
 
 add_library(
 softMotion

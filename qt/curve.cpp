@@ -34,7 +34,8 @@ Curve::Curve()
 
 }
 
-Curve::Curve (const Curve& c)
+Curve::Curve (const Curve& c):
+  QGLViewer()
 {
 #ifdef ENABLE_DISPLAY
   _isDraw = c._isDraw;

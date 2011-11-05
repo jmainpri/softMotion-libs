@@ -114,14 +114,7 @@ public:
 
     void approximate(double jmax,double amax,double vmax,double sampTime, double ErrMax, int ExpTime, bool flagExport, std::string fileName, SM_TRAJ &traj);
 
-    /** @brief load the file
-     *
-     * load a file .svg
-     *
-     * @param str : file name
-     */
-    void loadSvgFile(std::string str);
-
+    
 
     /** @brief definition of lines
      *

@@ -594,11 +594,11 @@ void QSoftMotionPlanner::changeEvent(QEvent *e)
 }
 #endif
 
-void QSoftMotionPlanner::loadSvgFile(std::string str)
-{
-  Curve curv;
-  this->_curve.push_back(curv);
-}
+//void QSoftMotionPlanner::loadSvgFile(std::string str)
+//{
+//  Curve curv;
+//  this->_curve.push_back(curv);
+//}
 
 void QSoftMotionPlanner::initializeApproxVariables()
 {
@@ -1406,7 +1406,7 @@ void QSoftMotionPlanner::computeTraj()
         nb_seg_total ++;
         starting_point_each_seg = iter_stock->point_depart;
         for (unsigned int k = starting_point_each_seg; k < (iter_stock->traj.size() + starting_point_each_seg); k++) {
-          if(k == starting_point_each_seg){
+          if((int)k == starting_point_each_seg){
             kc_subTraj.t = k * tic;
             kc_subTraj.kc[0].x = iter_stock->traj[k-starting_point_each_seg].Pos[0];
             kc_subTraj.kc[1].x = iter_stock->traj[k-starting_point_each_seg].Pos[1];

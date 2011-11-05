@@ -166,7 +166,7 @@ SM_STATUS sm_VerifyInitialAndFinalConditions( SM_LIMITS* limitsGoto, SM_COND* IC
 
 SM_STATUS sm_CalculOfCriticalLengthLocal( SM_LIMITS* limitsGoto, SM_PARTICULAR_VELOCITY* PartVel, SM_COND* IC, SM_COND* FC, double* dc, int* zone)
 {
-  double Jmax, Amax, Vmax;
+  double Jmax, Amax;
   double Tjpa, Taca, Tjna, Tvc, Tjnb, Tacb, Tjpb,Tjp,Tjn,Tac;
   double Vsmp, Vsmm, Vfmp, Vfmm;
   double Vs0p, Vs0m, Vf0p, Vf0m;
@@ -177,7 +177,6 @@ SM_STATUS sm_CalculOfCriticalLengthLocal( SM_LIMITS* limitsGoto, SM_PARTICULAR_V
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
   Amax  = limitsGoto->maxAcc;
-  Vmax  = limitsGoto->maxVel;
 
   /* Init Times */
   Tjpa = 0;

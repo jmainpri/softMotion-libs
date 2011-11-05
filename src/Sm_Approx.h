@@ -16,7 +16,6 @@ class Sm_Approx {
    *
    * The constructor of class QSoftMotionPlanner
    *
-   * @param *parent : Null
    */
   Sm_Approx();
   /** @brief Destructor
