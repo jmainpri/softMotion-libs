@@ -45,7 +45,7 @@
 #include <sstream>
 #include "time_proto.h"
 
-#include <libxml2/libxml/xmlreader.h>
+#include <libxml/xmlreader.h>
 #include <time.h>
 #include <stdlib.h>
 #ifdef __APPLE__
