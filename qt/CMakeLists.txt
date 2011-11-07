@@ -190,7 +190,7 @@ ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
   ADD_DEFINITIONS(-O2 -Wall -Wunused -Wno-unknown-pragmas)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
-ADD_DEFINITIONS(-Wno-unused-but-set-variable)
+#ADD_DEFINITIONS(-Wno-unused-but-set-variable)
 
 ADD_EXECUTABLE(QSoftMotionPlanner ${source_files} ${SMP_QT_MOC} ${SMP_QT_UI_HEADERS})
 SET_TARGET_PROPERTIES(QSoftMotionPlanner PROPERTIES LINKER_LANGUAGE CXX)

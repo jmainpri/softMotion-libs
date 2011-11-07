@@ -46,7 +46,7 @@ ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
 
-ADD_DEFINITIONS(-Wno-unused-but-set-variable)
+#ADD_DEFINITIONS(-Wno-unused-but-set-variable)
 
 add_library(
 softMotion
