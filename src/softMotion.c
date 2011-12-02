@@ -3156,16 +3156,28 @@ SM_STATUS sm_Jerk_Profile_Type_1(SM_LIMITS* limitsGoto, SM_COND* ICm, SM_COND* F
     }
     else if (*zone == 4) {
 
-      sm_Calcul_Of_DSAmax2_4_Type1(limitsGoto,ICm,  FCm,  PartVel, dc, &DSAmaxT12_4);
-      //  printf("DSAmaxT12_4 %f\n",DSAmaxT12_4);
+      if( PartVel->Vsmp <  PartVel->Vfmp) {
+	//printf("Sm nouveau bug A1 is Amax before A5\n");
+	sm_Calcul_Of_DSAmax2_31_Type1(limitsGoto, ICm, FCm, PartVel, &DSAmaxT12_31);
+	if(FCm->x >= DSAmaxT12_31) {
+	  //printf("Amax atteind pour A1\n");
+	  sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_31_Z3(limitsGoto, ICm, FCm, PartVel, Time);
+	} else {
+	  sm_JerkProfile_Type1_inf_DSAmax_Z3(limitsGoto, ICm, FCm, Time);
+	}
 
-      if (FCm->x > DSAmaxT12_4) {
-	sm_JerkProfile_Type1_inf_DSAmax_Z2(limitsGoto, ICm, FCm, PartVel, Time, dc);
-      }
-      else {
-
-	sm_JerkProfile_Type1_inf_DSAmax_Z3(limitsGoto, ICm, FCm, Time);
-      }
+      } else {
+	sm_Calcul_Of_DSAmax2_4_Type1(limitsGoto,ICm,  FCm,  PartVel, dc, &DSAmaxT12_4);
+	//  printf("DSAmaxT12_4 %f\n",DSAmaxT12_4);
+	
+	if (FCm->x > DSAmaxT12_4) {
+	  sm_JerkProfile_Type1_inf_DSAmax_Z2(limitsGoto, ICm, FCm, PartVel, Time, dc);
+	}
+	else {
+	  
+	  sm_JerkProfile_Type1_inf_DSAmax_Z3(limitsGoto, ICm, FCm, Time);
+	}
+      } // fin bug else ici
     }
     else if (*zone == 5) {
 
