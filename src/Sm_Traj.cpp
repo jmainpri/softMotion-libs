@@ -253,6 +253,30 @@ int SM_TRAJ::computeTimeOnTraj()
   return 0;
 }
 
+int SM_TRAJ::checkTrajBounds(double time_step, std::vector<SM_COND> IC, std::vector<SM_COND> FC)
+{
+  std::vector<SM_COND> cond;
+  std::vector<SM_COND> condic;
+  double EPS04 = 0.0001;
+this->getMotionCond(0.0, condic);
+  for(double t=0; t<this->getDuration(); t = t + time_step) {
+    cond.clear();
+    this->getMotionCond(t, cond);
+    for(unsigned int a=0; a<cond.size(); ++a) {
+      if(fabs(cond.at(a).a) > this->amax.at(a)) {
+	if(fabs(cond.at(a).a) - this->amax.at(a) > EPS04)
+	  printf("Acceleration overshoot on axis %i at time %f acc = %f IC(a:%f v:%f x:%f) FC(a:%f v:%f x:%f)\n",a , t, cond.at(a).a,  IC.at(a).a,  IC.at(a).v, IC.at(a).x,   FC.at(a).a,  FC.at(a).v, FC.at(a).x);
+      }
+      if(fabs(cond.at(a).v) > this->vmax.at(a)) {
+	if(fabs(cond.at(a).v) - this->vmax.at(a) > EPS04)
+	printf("Velocity overshoot on axis %i at time %f vel = %f  IC(a:%f v:%f x:%f) FC(a:%f v:%f x:%f)\n",a , t, cond.at(a).v,   IC.at(a).a,  IC.at(a).v, IC.at(a).x,   FC.at(a).a,  FC.at(a).v, FC.at(a).x);
+      }
+      //printf("t %f \n",t);
+    }
+  }
+  return 0;
+}
+
 int SM_TRAJ::updateIC()
 {
 
@@ -267,7 +291,7 @@ int SM_TRAJ::updateIC()
   SM_COND ICl;
   double time = 0.0;
   double jerk = 0.0;
-  
+
   // printf("number of segment in the trajectory %d\n",(int)traj[0].size() );
   for(unsigned int axis=0;  axis< traj.size(); axis++) {
 
@@ -280,6 +304,7 @@ int SM_TRAJ::updateIC()
       traj[axis][s].IC.a =  jerk * time  + ICl.a;
       traj[axis][s].IC.v =  jerk * pow(time,2.0) / 2.0 + ICl.a * time   + ICl.v;
       traj[axis][s].IC.x =  jerk * pow(time,3.0) / 6.0 + ICl.a * pow(time,2.0) / 2.0 + ICl.v * time  + ICl.x;
+
       if(axis == 1) {
 
 	//printf("seg %d IC.a %f IC.v %f IC.x %f \n",s ,traj[axis][s].IC.a,traj[axis][s].IC.v,traj[axis][s].IC.x);
@@ -1358,6 +1383,9 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     this->amax[i] = limits[i].maxAcc;
     this->vmax[i] = limits[i].maxVel;
   }
+
+
+  checkTrajBounds(0.1, IC, FC);
   return 0;
 }
 

@@ -59,6 +59,11 @@ class SM_TRAJ {
     SM_INDEPENDANT
   };
 
+  enum SM_TRAJ_TYPE {
+    SM_PTP,
+    SM_SMOOTH
+  };
+
 
  public:
   void sm_traj();
@@ -108,9 +113,12 @@ class SM_TRAJ {
 
   /* compute a multidimensional trajectory */
   int computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode);
+
+
+   int computeTraj(std::vector< std::vector<double> > pos, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE mode);
   int plot(int i);
   int plot();
-
+  int checkTrajBounds(double time_step, std::vector<SM_COND> IC, std::vector<SM_COND> FC);
  private:
    
   int getSegmentIndex(double t1);
