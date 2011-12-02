@@ -58,9 +58,9 @@ ${source_files}
 #softMotionPlannerTest
 #${source_files}
 #)
-IF(APPLE)
+
 TARGET_LINK_LIBRARIES(softMotion ${LIBS})
-ENDIF(APPLE)
+
 #TARGET_LINK_LIBRARIES(softMotionPlannerTest ${LIBS})
 
 SET_TARGET_PROPERTIES(softMotion PROPERTIES LINKER_LANGUAGE CXX)
