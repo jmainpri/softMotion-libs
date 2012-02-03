@@ -612,7 +612,6 @@ int SM_TRAJ::load(char *name, int (*fct(void)))
 
 int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
 {
-  //if(traj.size() != SM_TRAJ_NB_AXIS) {
   //  printf("ERROR nbAxis in traj : (%d) != SM_TRAJ_NB_AXIS\n", (int)traj.size());
   //  return 1;
   //}
@@ -620,6 +619,16 @@ int SM_TRAJ::convertToSM_TRAJ_STR(SM_TRAJ_STR *smTraj)
   smTraj->timePreserved = this->timePreserved;
   smTraj->nbAxis = (int)traj.size();
 
+  if((int)this->traj.size() > SM_TRAJ_NB_AXIS) {
+    printf("ERROR convertToSM_TRAJ_STR(): too many axes in traj: %d > %d\n", this->traj.size(), SM_TRAJ_NB_AXIS) ;
+    return 1;
+  }
+  for(unsigned int i = 0; i< this->traj.size(); ++i) {
+    if((int)this->traj[i].size() > SM_SEGMENT_TRACK_MAX_SIZE) {
+      printf("ERROR convertToSM_TRAJ_STR(): too many segment in traj for axis %d : %d > %d\n",i, this->traj[i].size(), SM_SEGMENT_TRACK_MAX_SIZE); 
+      return 1;
+    }
+  }
   for(int i=0; i<smTraj->nbAxis; i++) {
     smTraj->qStart[i] =  this->qStart[i];
   }
