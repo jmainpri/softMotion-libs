@@ -432,6 +432,37 @@ int SM_TRAJ::append(SM_TRAJ_STR inTraj)
   return 0;
 }
 
+int SM_TRAJ::append(SM_TRAJ &smTraj) 
+{
+  SM_SEG seg;
+
+  SM_TRAJ_STR inTraj;
+
+  smTraj.convertToSM_TRAJ_STR(&inTraj);
+
+  if(traj.size() != (unsigned int)inTraj.nbAxis) {
+    printf("ERROR SM_TRAJ:append() diffrent size in trajs\n");
+    traj.clear();
+    traj.resize(inTraj.nbAxis);
+  }
+  for(unsigned int i=0; i<traj.size(); i++) {
+    for(int j=0; j<inTraj.traj[i].nbSeg; j++) {
+      seg.timeOnTraj = 0.0;
+      seg.lpId = inTraj.traj[i].seg[j].lpId;
+      seg.timeOnTraj = inTraj.traj[i].seg[j].timeOnTraj;
+      seg.time = inTraj.traj[i].seg[j].time;
+      seg.jerk = inTraj.traj[i].seg[j].jerk;
+      seg.IC.a = inTraj.traj[i].seg[j].ic_a;
+      seg.IC.v = inTraj.traj[i].seg[j].ic_v;
+      seg.IC.x = inTraj.traj[i].seg[j].ic_x;
+      traj[i].push_back(seg);
+    }
+  }
+  computeTimeOnTraj();
+  return 0;
+}
+
+
 
 int SM_TRAJ::save(char *name)
 {
@@ -513,7 +544,7 @@ std::vector<double> SM_TRAJ::parseFrame(std::string& line){
   return frame;
 }
 
-int SM_TRAJ::load(char *name, int (*fct(void))) 
+int SM_TRAJ::load(char *name) 
 {
   ifstream file(name, ios::in);  // on ouvre en lecture
   std::vector<std::string> stringVector;
@@ -1362,16 +1393,20 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     motion_arr[i].fc_rel.x =  FC[i].x - IC[i].x;
   }
   
-  if(computeUnsynchronizedMotion(motion_arr) != 0) {
-    printf("ERROR cannot compute unsynchronized motion\n");
-    return 1;
-  }
+
   
   switch(mode) {
   case SM_INDEPENDANT:
-    /* Each independant motion are already computed */
+    if(computeUnsynchronizedMotion(motion_arr) != 0) {
+      printf("ERROR cannot compute unsynchronized motion\n");
+      return 1;
+    }
     break;
   case SM_SYNCHRONIZED:
+    if(computeUnsynchronizedMotion(motion_arr) != 0) {
+      printf("ERROR cannot compute unsynchronized motion\n");
+      return 1;
+    }
     if(synchronizeMotion(motion_arr)!= 0) {
       printf("ERROR SM_TRAJ::synchronizeMotion\n");
       return 1;
@@ -1387,7 +1422,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     return 1;
   }
 
-  for (unsigned int i=0; i < qStart.size(); i++) {
+  for (int i=0; i < (int)nb_dofs; i++) {
     this->jmax[i] = limits[i].maxJerk;
     this->amax[i] = limits[i].maxAcc;
     this->vmax[i] = limits[i].maxVel;
@@ -1430,6 +1465,57 @@ int SM_TRAJ::computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr
       return 1;
     } 
   }
+  return 0;
+}
+
+
+int SM_TRAJ::computeTraj(std::vector< std::vector<double> > via_points, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE type)
+{
+  std::vector<SM_TRAJ> smTrajs;
+  SM_TRAJ smTraj;
+  
+
+  if(via_points.size() < 2) {
+    cout << "ERROR computeTraj via_points.size() < 2 " << endl;
+    return 1;
+  }
+
+  smTrajs.clear();
+  for(unsigned int i=0; i< via_points.size()-1; i++) {
+    smTraj.clear();
+    //    if(smTraj.computeTraj(conds[i], conds[i+1], limits, SM_PTP) != 0) {
+    // cout << "ERROR computeTraj cannot compute traj betewwen configs "<< i << " and " << i+1 << endl; 
+      //  return 1;
+      // }
+    smTrajs.push_back(smTraj);
+  }
+
+
+  this->clear();
+ // for (unsigned int i=0; i < nb_dofs; i++) {
+ //   this->jmax[i] = limits[i].maxJerk;
+ //   this->amax[i] = limits[i].maxAcc;
+ //   this->vmax[i] = limits[i].maxVel;
+ // }
+
+  switch(type) { 
+  case SM_STOP_AT_VIA_POINT:
+    // concat all the ptp trajectories
+    for(unsigned int i=0; i<smTrajs.size(); i++) {
+      this->append(smTrajs[i]);
+    }
+    break;
+  case SM_SMOOTH_AT_VIA_POINT:
+
+    break;
+  default:
+    cout << "ERROR computeTraj wrong SM_TRAJ_TYPE" << endl;
+    return 1;
+  }
+
+
+
+
   return 0;
 }
 
