@@ -28,6 +28,33 @@
 
   ----------------------------------------------------------------------*/
 
+
+/** @mainpage Soft Motion Planner
+ *
+ * @section Copyright
+ *
+ * Copyright (c) 2012 LAAS/CNRS
+ * All rights reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software for any purpose
+ * with or without   fee is hereby granted, provided   that the above  copyright
+ * notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+ * REGARD TO THIS  SOFTWARE INCLUDING ALL  IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS. IN NO EVENT SHALL THE AUTHOR  BE LIABLE FOR ANY SPECIAL, DIRECT,
+ * INDIRECT, OR CONSEQUENTIAL DAMAGES OR  ANY DAMAGES WHATSOEVER RESULTING  FROM
+ * LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION,   ARISING OUT OF OR IN    CONNECTION WITH THE USE   OR
+ * PERFORMANCE OF THIS SOFTWARE.
+ *
+ *                                           Xavier BROQUERE on Feb 01 2010
+ *
+ * @section Introduction
+ *
+ * Software description here
+ */
+
 #ifndef SM_TRAJ_H
 #define SM_TRAJ_H
 
@@ -36,7 +63,7 @@
 #include "softMotionStructGenom.h"
 
 class SM_TRAJ {
- private:
+private:
   int trajId;
   double timePreserved;
   double duration;
@@ -45,7 +72,7 @@ class SM_TRAJ {
   std::vector<double> tsVec;
   std::vector<double> duration_axis;
 
- public:
+public:
   std::vector<double> qStart;
   std::vector<double> qGoal;
   std::vector<double> jmax;
@@ -65,10 +92,14 @@ class SM_TRAJ {
   };
 
 
- public:
+public:
   void sm_traj();
   void sm_traj(const SM_TRAJ &traj);
   
+
+  /*! clear the trajectory
+    */
+
   void clear();
   /**********************
    * Setters / Getters
@@ -80,11 +111,19 @@ class SM_TRAJ {
   void setTrajId(int id);
   int getTimePreserved();
   void setTimePreserved(int t);
+
+  /*! get the duration of the trajectory
+    */
   double getDuration();
   void setQStart(std::vector<double> &qs);
   void setQGoal(std::vector<double> &qg);
   void setTraj(std::vector<std::vector<SM_SEG> > &t);
 
+  /*!  getMotionCond()
+    *  once the trajectory is computed, getMotionCond() gets the kinematic state of each axis
+    *  @param time the instant wanted
+    *  @param cond the kinematic state filled and resized the number of axes
+    */
   int getMotionCond(double time, std::vector<SM_COND> & cond);
   int computeTimeOnTraj();
   int updateIC();
@@ -102,8 +141,18 @@ class SM_TRAJ {
   int convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn);
   int approximateSVGFile( double jmax,  double amax,  double vmax,  double SampTime, double ErrMax, char *fileName);
 
+
+  /** approximate a discrete trajectory
+    * @param trajIn the discrete trajectory in a array of SM_COND
+    * @param timeStep the sampling time of the discretized trajIn
+    * @param errorPosMax the desired maximun error in position for each axis
+    * @param errorVelMax the desired maximun error in velocity for each axis
+    * @param id the id that you want for the output traj
+    * @param flag enable exporting the approximated traj in a file (advice: put true)
+    * @return 1: error 0: OK
+    */
   int approximate(std::vector< std::vector<SM_COND> > &trajIn, double timeStep, double errorPosMax,double errorVelMax, int id, bool flag);
- 
+
   int computeMaxTimeScaleVector(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
   int computeMaxTimeScaleVectorTest(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
   int extract(double t1, double t2, SM_TRAJ &trajIn);
@@ -111,16 +160,24 @@ class SM_TRAJ {
   /* Obsolete use computeTraj instead */
   int computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits);
 
-  /* compute a multidimensional trajectory */
+  /** compute a multidimensional trajectory
+   *
+   */
   int computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode);
+  int computeTraj(std::vector< std::vector<double> > pos, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE mode);
 
-
-   int computeTraj(std::vector< std::vector<double> > pos, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE mode);
+  /*! plot the evolution of the position, velocity and acceleration of the specified axis using gnuplot
+    * @param i the axis id
+    */
   int plot(int i);
+  /*! plot the evolution of the position of all axes using gnuplot
+    */
   int plot();
+  /*! check if the trajectory is valid considering the kinematic constraints, the initial and final conditions
+    */
   int checkTrajBounds(double time_step, std::vector<SM_COND> IC, std::vector<SM_COND> FC);
- private:
-   
+private:
+
   int getSegmentIndex(double t1);
   void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters);
   std::vector<double> parseFrame(std::string& line);
