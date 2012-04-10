@@ -43,6 +43,8 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+
+
 #include "time_proto.h"
 
 #include <libxml/xmlreader.h>
@@ -8819,6 +8821,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
 
 
+
 void wait_for_key ()
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__)  // every keypress registered, also arrow keys
@@ -8827,11 +8830,20 @@ void wait_for_key ()
   FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
   _getch();
 #elif defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__)
-  std::cout << std::endl << "Press ENTER to continue..." << std::endl;
 
-  std::cin.clear();
-  std::cin.ignore(std::cin.rdbuf()->in_avail());
-  std::cin.get();
+
+
+ int temps = 3;
+ std::cout << std::endl<< "Wait "<<temps<< " secondes"<<std::endl;
+ clock_t arrivee=clock()+(temps*CLOCKS_PER_SEC); // On calcule le moment ou l'attente devra s'arreter
+ while(clock()<arrivee);
+
+    //   std::cout << std::endl << "Press ENTER to continue..." << std::endl;
+   // std::cin.clear(); //on clear le buffer d'entrer
+   // std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n'); //on ignore toute les touches qui sont taper avant la touche entrer
+   //std::cin.get(); // on
+
+
 #endif
   return;
 }

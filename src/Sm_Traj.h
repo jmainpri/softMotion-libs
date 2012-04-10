@@ -266,12 +266,22 @@ class SM_TRAJ {
     return tsVec;
   }
 
-  /*! testing function
+   int mergetwotrajectories( SM_TRAJ &Trajfinal, SM_TRAJ &Trajinitial);
+
+
+  /*!
    */
   int computeMaxTimeScaleVectorTest(std::vector<double> & maxVel, double tic, SM_LIMITS timeLimits);
 
+
+
+
   int importFromSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT>  &trajIn);
   int convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTPUT> &trajIn);
+
+
+
+
 
  private:
   /*! the user specified trajectory index

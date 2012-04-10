@@ -95,7 +95,7 @@ void SM_TRAJ::clear()
   traj.clear();
   tsVec.clear();
   duration = 0.0;
-  timePreserved = 0.0;;
+  timePreserved = 0.0;
   trajId = 0.0;
   return;
 }
@@ -550,7 +550,7 @@ int SM_TRAJ::load(char *name)
   std::vector<std::string> stringVector;
   int nbAxis = 0;
   //int nbSeg  = 0;
-  string contenu;  // déclaration d'une chaîne qui contiendra la ligne lue
+  string contenu;  // declaration d'une chaîne qui contiendra la ligne lue
   std::vector<double> doubleVector ;
   
 
@@ -769,10 +769,10 @@ int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTP
 {
   computeTimeOnTraj();
   trajIn.clear();
- 
+
   trajIn.resize(this->traj[0].size());
   trajIn[0].Time.resize(this->traj.size());
- 
+
   int nbPoint = (int)trajIn.size();
   int nbAxis = (int)trajIn[0].Time.size();
 
@@ -783,11 +783,11 @@ int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTP
   this->resize(trajIn[0].Time.size());
   this->trajId = trajId;
   this->timePreserved = 0.0;
- 
+
   for(int i=0; i<nbAxis; i++) {
     traj[i].resize(nbPoint);
     for(int j=0; j<nbPoint; j++) {
-      
+
       trajIn[j].premier_point= traj[i][j].timeOnTraj/sampling  ;
       trajIn[j].Time[i] = traj[i][j].time;
       trajIn[j].IC[i].a = traj[i][j].IC.a;
@@ -817,9 +817,10 @@ int SM_TRAJ::convertToSM_OUTPUT(int trajId, double sampling, std::vector<SM_OUTP
   // compute the initial conditions and other variable for all segments
 
   //this->print();
-  
+
   return 0;
 }
+
 
 
 
@@ -1761,4 +1762,105 @@ int SM_TRAJ::plot(int i)
       cout << ge.what() << endl;
     }
   return 0;
+}
+
+
+int SM_TRAJ::mergetwotrajectories( SM_TRAJ &Trajinitial, SM_TRAJ &Trajfinal)
+{
+   // SM_COND IC; // Conditions initiales
+   // SM_COND FC; // Conditions finales
+   // SM_LIMITS limits; // Valeurs max de Vel Acc et Jerk
+
+    // On donne une ID a la nouvelle trajectoire Id de trajfinal+1 ou +2 si deja prise par Trajinitial
+
+    this->trajId =0;
+
+    // Le nouveau point qStart c'est le qStart de la premiere trajectoire et le nouveau qGoal c'est le qGoal de la seconde traj
+    this->qStart = Trajfinal.qStart;
+    this->qGoal = Trajinitial.qGoal;
+
+    /* On determine jmax amax et vmax de la trajectoire resultante en prenant
+     la plus grande valeur des max des deux trajectoires que l'on veut fusionner*/
+
+        if(Trajfinal.jmax<Trajinitial.jmax)
+            {
+            this->jmax=Trajinitial.jmax;
+            }
+        else if(Trajfinal.jmax>=Trajinitial.jmax) {
+            this->jmax=Trajfinal.jmax;
+        }
+
+        if(Trajfinal.amax<Trajinitial.amax)
+            {
+            this->amax=Trajinitial.amax;
+            }
+        else if(Trajfinal.amax>=Trajinitial.amax) {
+            this->amax=Trajfinal.amax;
+        }
+
+        if(Trajfinal.vmax<Trajinitial.vmax)
+            {
+            this->vmax=Trajinitial.vmax;
+            }
+        else if(Trajfinal.vmax>=Trajinitial.vmax) {
+            this->vmax=Trajfinal.vmax;
+        }
+
+
+     // La on met une traj a la suite de l'autre.
+
+        SM_SEG seg;
+
+        SM_TRAJ_STR inTraj;
+        SM_TRAJ_STR inTraj2;
+
+        Trajfinal.convertToSM_TRAJ_STR(&inTraj);
+
+        if(traj.size() != (unsigned int)inTraj.nbAxis) {
+          traj.clear();
+          traj.resize(inTraj.nbAxis);
+        }
+        for(unsigned int i=0; i<traj.size(); i++) {
+          for(int j=0; j<inTraj.traj[i].nbSeg; j++) {
+            seg.timeOnTraj = 0.0;
+            seg.lpId = inTraj.traj[i].seg[j].lpId;
+            seg.timeOnTraj = inTraj.traj[i].seg[j].timeOnTraj;
+            seg.time = inTraj.traj[i].seg[j].time;
+            seg.jerk = inTraj.traj[i].seg[j].jerk;
+            seg.IC.a = inTraj.traj[i].seg[j].ic_a;
+            seg.IC.v = inTraj.traj[i].seg[j].ic_v;
+            seg.IC.x = inTraj.traj[i].seg[j].ic_x;
+            traj[i].push_back(seg);
+          }
+        }
+
+
+        Trajinitial.convertToSM_TRAJ_STR(&inTraj2);
+
+        for(unsigned int i=0; i<traj.size(); i++) {
+          for(int j=0; j<inTraj2.traj[i].nbSeg; j++) {
+            seg.timeOnTraj = 0.0;
+            seg.lpId = inTraj2.traj[i].seg[j].lpId;
+            seg.timeOnTraj = inTraj2.traj[i].seg[j].timeOnTraj;
+            seg.time = inTraj2.traj[i].seg[j].time;
+            seg.jerk = inTraj2.traj[i].seg[j].jerk;
+            seg.IC.a = inTraj2.traj[i].seg[j].ic_a;
+            seg.IC.v = inTraj2.traj[i].seg[j].ic_v;
+            seg.IC.x = inTraj2.traj[i].seg[j].ic_x;
+            traj[i].push_back(seg);
+          }
+        }
+ // On calcule la duree de la trajectoire
+        this->computeTimeOnTraj();
+
+    this->timePreserved = 0.0;
+
+     // OK ON A LA TRAJECTOIRE EN ENTIER
+
+
+    // Il faut que je determine les valeur de M1 et M2 les deux points de comutations Voir si mon idee est bonne sur le calcule du temps de transitions.
+    // On obtiendra alors les conditions initiales et les conditions finales
+
+    // Et il faut calculer la courbe.
+    return 0;
 }
