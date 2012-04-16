@@ -1359,8 +1359,18 @@ int SM_TRAJ::computeOneDimTraj(SM_COND IC, SM_COND FC, SM_LIMITS limits)
 
 //int SM_TRAJ::computePTPmotion(std::vector< double > start, std::vector< double > goal, std::vector< double > jmax,  std::vector< double > amax,  std::vector< double > vmax)
 
-
 int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode) {
+  //no imposed Duration
+  double imposedDuration = 0.0;
+  if(mode == SM_3SEGMENT) {
+    printf("SM:: Need imposed duration for 3 segments mode \n");
+    return 1;
+  } 
+  return( computeTraj(IC, FC, limits,  mode, imposedDuration));
+
+}
+
+int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode, double imposedDuration) {
 
   this->clear();
 
@@ -1392,6 +1402,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     motion_arr[i].fc_rel.a =  FC[i].a;
     motion_arr[i].fc_rel.v =  FC[i].v;
     motion_arr[i].fc_rel.x =  FC[i].x - IC[i].x;
+    motion_arr[i].motion_duration = imposedDuration;
   }
   
 
@@ -1410,7 +1421,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
    }
   case SM_3SEGMENT:
     if(ThreeSegSynchronizedMotion(motion_arr)!= 0) {
-      printf("ERROR SM_TRAJ::synchronizedMotion\n");
+      printf("ERROR SM_TRAJ::ThreeSegSynchronizedMotion\n");
       return 1;
     }
     break;
@@ -1469,6 +1480,11 @@ int SM_TRAJ::computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr
   }
   return 0;
 }
+
+
+
+
+
 
 int SM_TRAJ::computeSynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr)
 {

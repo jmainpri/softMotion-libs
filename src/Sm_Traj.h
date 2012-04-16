@@ -139,6 +139,7 @@ class SM_TRAJ {
    *      \li SM_INDEPENDANT the duration of trajectories of each axis are not synchronized
    */
   int computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode);
+  int computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode, double imposedDuration);
 
   /*! compute a multidimensional trajectory given n via points
    *  @param pos a vector of N dimensional vectors representing the via points in the N dimensional space
