@@ -65,7 +65,8 @@ class SM_TRAJ {
 
   enum SM_TRAJ_MODE {
     SM_SYNCHRONIZED, // not implemented
-    SM_INDEPENDANT
+    SM_INDEPENDANT,
+    SM_3SEGMENT
   };
 
   enum SM_TRAJ_TYPE {
@@ -306,7 +307,10 @@ class SM_TRAJ {
   std::vector<double> parseFrame(std::string& line);
   int fillFromMotionArr(std::vector<SM_MOTION_AXIS> &motion_arr);
   int computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr);
-  int synchronizeMotion(std::vector<SM_MOTION_AXIS>  &motion_arr);
+  int computeSynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr);
+  int ThreeSegSynchronizedMotion(std::vector<SM_MOTION_AXIS>  &motion_arr);
+  //int synchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr); 
+  //to implement
 };
 
 #endif

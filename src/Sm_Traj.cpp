@@ -550,7 +550,7 @@ int SM_TRAJ::load(char *name)
   std::vector<std::string> stringVector;
   int nbAxis = 0;
   //int nbSeg  = 0;
-  string contenu;  // declaration d'une chaîne qui contiendra la ligne lue
+  string contenu;  // declaration d'une chane qui contiendra la ligne lue
   std::vector<double> doubleVector ;
   
 
@@ -1404,12 +1404,13 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
     }
     break;
   case SM_SYNCHRONIZED:
-    if(computeUnsynchronizedMotion(motion_arr) != 0) {
-      printf("ERROR cannot compute unsynchronized motion\n");
-      return 1;
-    }
-    if(synchronizeMotion(motion_arr)!= 0) {
-      printf("ERROR SM_TRAJ::synchronizeMotion\n");
+    if(computeSynchronizedMotion(motion_arr) != 0) {
+       printf("ERROR cannot compute unsynchronized motion\n");
+       return 1;
+   }
+  case SM_3SEGMENT:
+    if(ThreeSegSynchronizedMotion(motion_arr)!= 0) {
+      printf("ERROR SM_TRAJ::synchronizedMotion\n");
       return 1;
     }
     break;
@@ -1469,6 +1470,11 @@ int SM_TRAJ::computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr
   return 0;
 }
 
+int SM_TRAJ::computeSynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr)
+{
+    //to implement
+    return 0;
+}
 
 int SM_TRAJ::computeTraj(std::vector< std::vector<double> > via_points, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE type)
 {
@@ -1520,8 +1526,173 @@ int SM_TRAJ::computeTraj(std::vector< std::vector<double> > via_points, std::vec
   return 0;
 }
 
-int SM_TRAJ::synchronizeMotion(std::vector<SM_MOTION_AXIS>  &motion_arr)
+
+
+//
+//   compute 3 segments motion
+//
+//   general synchronized motion: to be implemented
+//
+
+
+// implement: to use sm_SolveWithoutOpt() to compute a 3 segments trajectory
+
+
+//SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM3> &IC, std::vector<SM_COND_DIM3> &FC, std::vector<double> &Timp, std::vector<SM_OUTPUT> &motion){
+  /* This funciton compute the motion using 3 segment method without any optimization
+     -- IC[]   : Initial condition array ( already discretized)
+     -- FC[]   : Final condition array ( already discretized)
+     -- Timp[] : Imposed time for each interval
+     -- nbIntervals : number of discretized intervals
+     -- motion[] : array of output command to the robot (composed of jerk and time duration for each axis)
+  */
+//
+
+// which is used in class:
+// used by class Sm_Approx::ComputeTraj()
+// adapt it to SM_Traj
+
+
+int SM_TRAJ::ThreeSegSynchronizedMotion(std::vector<SM_MOTION_AXIS>  &motion_arr)
 {
+
+//input verification
+    int nb_dofs = motion_arr.size();
+   SM_COND FCm;
+
+    if(nb_dofs <= 0) {
+      printf("ERROR  SM_TRAJ::compute3SegSynchronizedMotion nb_dofs <= 0\n");
+      return 1;
+    }
+
+
+//
+
+    //to use sm_SloveWithoutOpt...
+    std::vector<SM_COND_DIM> IC(1);
+
+    std::vector<SM_COND_DIM> FC(1);
+
+    IC[0].Axis.resize(1); //1 as number of axis, in 3 segment case it's 0
+    FC[0].Axis.resize(1);
+
+
+    for (int i=0; i < nb_dofs; i++) {
+
+        IC[0].Axis.at(0) = motion_arr[i].ic;
+        FC[0].Axis.at(0) = motion_arr[i].fc;
+
+        //here to do: for each DOF, copy from motion_arr to get IC and FC
+
+
+      sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+      double trajDuration = motion_arr[i].motion_duration;
+//should it be motion_arr[i].motion_duration - tic?
+
+      std::vector<double> Timp(1);
+      Timp.clear();
+      Timp.push_back(trajDuration);
+
+      std::vector<SM_OUTPUT> motion;
+      //3 segments
+      motion.resize(3);
+
+
+      /* Compute the monodimensional trajectory */
+
+      SM_STATUS status;
+
+      status = sm_SolveWithoutOpt(IC, FC, Timp, motion);
+//replace the next function by the one above
+     // if (sm_ComputeSoftMotion( motion_arr[i].ic_rel, motion_arr[i].fc_rel,
+       //                         motion_arr[i].limits, &(motion_arr[i].times),
+         //                       &(motion_arr[i].dir))!=0) {
+
+      if(status == SM_ERROR) {
+        printf("ERROR Jerk Profile on dim %d\n",i);
+        return 1;
+      }
+
+      //here to do: convert from std::vector<SM_OUTPUT> to motion_arr
+      //major question: how to fit a seven segments by a 3 segments?
+      //
+
+      motion_arr[i].jerk.J1 = motion[i].Jerk[0];
+
+      motion_arr[i].jerk.J2 = motion[i].Jerk[1];
+
+      motion_arr[i].jerk.J3 = motion[i].Jerk[1];
+
+      motion_arr[i].jerk.J4 = motion[i].Jerk[2];
+
+      //seven times
+      //determin the velocity == 0 point
+      double t_vel_zero = (
+                  (motion[i].Time[1] * motion[i].Jerk[2] * motion[i].Time[2]) /
+                  (motion[i].Time[0] * motion[i].Jerk[0] + motion[i].Time[2] * motion[i].Jerk[2])
+              );
+
+
+
+      motion_arr[i].times.Tjpa = motion[i].Time[0];
+      motion_arr[i].times.Taca = 0.0;
+      motion_arr[i].times.Tjna = t_vel_zero;
+      motion_arr[i].times.Tvc = 0.0;
+      motion_arr[i].times.Tjnb = motion[i].Time[1] - t_vel_zero;
+      motion_arr[i].times.Tacb = 0.0;
+      motion_arr[i].times.Tjpb = motion[i].Time[2];
+      /*
+      //seven acc
+      motion_acc[i].acc.Tjpa = ;
+      motion_acc[i].acc.Taca = ;
+      motion_acc[i].acc.Tjna = ;
+      motion_acc[i].acc.Tvc = ;
+      motion_acc[i].acc.Tjnb = ;
+      motion_acc[i].acc.Tacb = ;
+      motion_acc[i].acc.Tjpb = ;
+      //seven vel
+      motion_acc[i].vel.Tjpa = ;
+      motion_acc[i].vel.Taca = ;
+      motion_acc[i].vel.Tjna = ;
+      motion_acc[i].vel.Tvc = ;
+      motion_acc[i].vel.Tjnb = ;
+      motion_acc[i].vel.Tacb = ;
+      motion_acc[i].vel.Tjpb = ;
+      //seven pos
+      motion_acc[i].pos.Tjpa = ;
+      motion_acc[i].pos.Taca = ;
+      motion_acc[i].pos.Tjna = ;
+      motion_acc[i].pos.Tvc = ;
+      motion_acc[i].pos.Tjnb = ;
+      motion_acc[i].pos.Tacb = ;
+      motion_acc[i].pos.Tjpb = ;
+      //seven jerk
+      */
+
+
+
+      motion_arr[i].dir = 1;
+      motion_arr[i].dir_a = 1;
+      motion_arr[i].dir_b = 1;
+
+
+
+      /* Compute trajectory lenght */
+      sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+
+      /* Get initial conditions for each vectors Acc Vel and Pos */
+      double GD =  motion_arr[i].fc_rel.x * motion_arr[i].dir;
+      if (sm_VerifyTimes( SM_DISTANCE_TOLERANCE, GD,  motion_arr[i].jerk,
+                          motion_arr[i].ic, motion_arr[i].dir,
+                          motion_arr[i].times, &FCm, &(motion_arr[i].acc),
+                          &(motion_arr[i].vel), &(motion_arr[i].pos), SM_ON)!=0) {
+        printf(" Verify Times on dim %d\n",i);
+        return 1;
+      }
+    }
+      return 0;
+
+ }
 
   //  int axis_motion_max = 0;
   //  double GD = 0.0;
@@ -1566,6 +1737,16 @@ int SM_TRAJ::synchronizeMotion(std::vector<SM_MOTION_AXIS>  &motion_arr)
   //    // }
   //  }
   //
+
+    //1
+
+    // Sm_Approx approx;
+    // int res = approx.approximate(curv, timeStep, errorPosMax, errorVelMax, *this, flag);
+
+    //2 or
+    //implement as in approx: to use sm_SolveWithoutOpt
+
+
   //
   //  if (adjustTimeError > 0) {
   //    printf("ERROR can't adjust time motion \n");
@@ -1591,8 +1772,8 @@ int SM_TRAJ::synchronizeMotion(std::vector<SM_MOTION_AXIS>  &motion_arr)
   //  }
   //
 
-  return 0;
-}
+
+
 
 
 int SM_TRAJ::fillFromMotionArr(std::vector<SM_MOTION_AXIS> &motion_arr)
