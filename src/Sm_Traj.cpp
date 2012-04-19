@@ -1410,7 +1410,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
 int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode, std::vector<double> imposedDuration) {
 
   
-int nb_dofs = IC.size();
+unsigned int nb_dofs = IC.size();
   
   switch(mode) {
   case SM_INDEPENDANT: {
@@ -1581,6 +1581,62 @@ int nb_dofs = IC.size();
 	break;
 	} else {
           checkTrajBounds(0.1, IC, FC);
+
+          std::vector<double> tmpMaxJerk(nb_dofs);
+        std::vector<double> tmpMaxAcc(nb_dofs);
+        std::vector<double> tmpMaxVel(nb_dofs);
+
+        std::vector<SM_COND> cond_IC(nb_dofs);
+        std::vector<SM_COND> cond_I(nb_dofs);
+        std::vector<SM_COND> cond_II(nb_dofs); // two intermedia points to verify
+        std::vector<SM_COND> cond_FC(nb_dofs);
+
+for (unsigned int j=0; j != nb_dofs; j++) {
+    cond_IC[j] = IC[j];
+    cond_I[j].a = motion[0].Jerk[j] * Timp[j] / 3  + cond_IC[j].a;
+    cond_I[j].v = motion[0].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_IC[j].a * Timp[j]/3 + cond_IC[j].v;
+    cond_I[j].x = motion[0].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_IC[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_IC[j].v * Timp[j]/3 + cond_IC[j].x;
+
+    cond_II[j].a = motion[1].Jerk[j] * Timp[j] / 3  + cond_I[j].a;
+    cond_II[j].v = motion[1].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_I[j].a * Timp[j]/3 + cond_I[j].v;
+    cond_II[j].x = motion[1].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_I[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_I[j].v * Timp[j]/3 + cond_IC[j].x;
+
+    cond_FC[j].a = motion[2].Jerk[j] * Timp[j] / 3  + cond_II[j].a;
+    cond_FC[j].v = motion[2].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_II[j].a * Timp[j]/3 + cond_II[j].v;
+    cond_FC[j].x = motion[2].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_II[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_II[j].v * Timp[j]/3 + cond_IC[j].x;
+
+}
+
+
+//calculate max jerk, acc, and vel
+        for (unsigned int i=0; i != 3; i++) {
+           for (unsigned int j=0; j != nb_dofs; j++) {
+               if(ABS(motion[i].Jerk[j]) > tmpMaxJerk[j])
+                 tmpMaxJerk[j] = ABS(motion[i].Jerk[j]);
+//find max values in cond_I, cond_II, cond_FC, of acc and vel
+               if(ABS(cond_IC[j].a) > tmpMaxAcc[j])
+                   tmpMaxAcc[j] =  ABS(cond_IC[j].a);
+               if(ABS(cond_I[j].a) > tmpMaxAcc[j])
+                   tmpMaxAcc[j] =  ABS(cond_I[j].a);
+               if(ABS(cond_II[j].a) > tmpMaxAcc[j])
+                   tmpMaxAcc[j] =  ABS(cond_II[j].a);
+               if(ABS(cond_FC[j].a) > tmpMaxAcc[j])
+                   tmpMaxAcc[j] =  ABS(cond_FC[j].a);
+
+               if(ABS(cond_IC[j].v) > tmpMaxVel[j])
+                   tmpMaxVel[j] =  ABS(cond_IC[j].v);
+               if(ABS(cond_I[j].v) > tmpMaxVel[j])
+                   tmpMaxVel[j] =  ABS(cond_I[j].v);
+               if(ABS(cond_II[j].v) > tmpMaxVel[j])
+                   tmpMaxVel[j] =  ABS(cond_II[j].v);
+               if(ABS(cond_FC[j].v) > tmpMaxVel[j])
+                   tmpMaxVel[j] =  ABS(cond_FC[j].v);
+
+            }
+        }
+
+
+
           break;
 	}
       }
@@ -1592,7 +1648,7 @@ int nb_dofs = IC.size();
 
       switch(mode) {
       case SM_INDEPENDANT:
-      for (int i=0; i < (int)nb_dofs; i++) {
+      for (unsigned int i=0; i < nb_dofs; i++) {
         this->jmax[i] = limits[i].maxJerk;
         this->amax[i] = limits[i].maxAcc;
         this->vmax[i] = limits[i].maxVel;
@@ -1600,10 +1656,27 @@ int nb_dofs = IC.size();
       break;
   case SM_3SEGMENT:
       // here to calculate jmax, amax and vmax
-      
+/*
+      std::vector<SM_COND> cond_IC(nb_dofs);
+      std::vector<SM_COND> cond_I(nb_dofs);
+      std::vector<SM_COND> cond_II(nb_dofs);
+      std::vector<SM_COND> cond_FC(nb_dofs);
+
+      cond_IC = IC;
+      cond_FC = FC;
+
+      for(unsigned int i=0; i != nb_dofs; ++i){
+          condI[i].a =
+      }
+
+
+      //IC.a =  jerk * dt  + ICl.a;
+      // IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
+      // IC.x =  jerk * pow(dt,3.0) / 6.0 + ICl.a * pow(dt,2.0) / 2.0 + ICl.v * dt  + ICl.x;
+*/
       break;
   case SM_SYNCHRONIZED:
-      for (int i=0; i < (int)nb_dofs; i++) {
+      for (unsigned int i=0; i < nb_dofs; i++) {
         this->jmax[i] = limits[i].maxJerk;
         this->amax[i] = limits[i].maxAcc;
         this->vmax[i] = limits[i].maxVel;
