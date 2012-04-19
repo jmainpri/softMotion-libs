@@ -4433,11 +4433,13 @@ SM_STATUS sm_FindTransitionTime( SM_POSELIMITS limitsGoto, SM_TRANSITION_MOTION*
   for(i=0; i<SM_NB_DIM; i++) {
 
     if (i < 3) {
+      // cartesien
       /*Set Limits*/
       auxLimits.maxVel  = limitsGoto.linear.maxVel;
       auxLimits.maxAcc  = limitsGoto.linear.maxAcc;
       auxLimits.maxJerk = limitsGoto.linear.maxJerk * 3;
     } else {
+      //rotation
       auxLimits.maxVel  = limitsGoto.linear.maxVel;
       auxLimits.maxAcc  = limitsGoto.linear.maxAcc;
       auxLimits.maxJerk = limitsGoto.linear.maxJerk * 3;
