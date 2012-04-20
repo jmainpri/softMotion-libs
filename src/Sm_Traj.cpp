@@ -1420,11 +1420,11 @@ unsigned int nb_dofs = IC.size();
       std::vector<SM_MOTION_AXIS> motion_arr;
 
     
-      if((int)FC.size() != nb_dofs) {
+      if(FC.size() != nb_dofs) {
 	printf("ERROR SM_TRAJ::computeTraj FC.size() != nb_dofs\n");
 	return 1;
       }
-      if((int)limits.size() != nb_dofs) {
+      if(limits.size() != nb_dofs) {
 	printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs\n");
 	return 1;
       }
@@ -1433,7 +1433,7 @@ unsigned int nb_dofs = IC.size();
       motion_arr.resize(IC.size());
     
       /* Fill the motion_arr */
-      for (int i=0; i < nb_dofs; i++) {    
+      for (unsigned i=0; i < nb_dofs; i++) {
 	motion_arr[i].limits = limits[i];
 	motion_arr[i].jerk.J1 = limits[i].maxJerk;
 	motion_arr[i].jerk.sel = 1;
@@ -1466,11 +1466,11 @@ unsigned int nb_dofs = IC.size();
       std::vector<SM_MOTION_AXIS> motion_arr;
       //int nb_dofs = IC.size();
     
-      if((int)FC.size() != nb_dofs) {
+      if(FC.size() != nb_dofs) {
 	printf("ERROR SM_TRAJ::computeTraj FC.size() != nb_dofs\n");
 	return 1;
       }
-      if((int)limits.size() != nb_dofs) {
+      if(limits.size() != nb_dofs) {
 	printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs\n");
 	return 1;
       }
@@ -1479,7 +1479,7 @@ unsigned int nb_dofs = IC.size();
       motion_arr.resize(IC.size());
     
       /* Fill the motion_arr */
-      for (int i=0; i < nb_dofs; i++) {    
+      for (unsigned i=0; i < nb_dofs; i++) {
 	motion_arr[i].limits = limits[i];
 	motion_arr[i].jerk.J1 = limits[i].maxJerk;
 	motion_arr[i].jerk.sel = 1;
@@ -1506,44 +1506,44 @@ unsigned int nb_dofs = IC.size();
       }
     case SM_3SEGMENT: {
       
-	std::vector<SM_COND_DIM> IC_3seg(1);
-	std::vector<SM_COND_DIM> FC_3seg(1);
-	std::vector<double> Timp(1);
-
-
-	std::vector<SM_OUTPUT> motion;
-        //int nb_dofs = IC.size();
-    
-	if((int)FC.size() != nb_dofs) {
-	  printf("ERROR SM_TRAJ::computeTraj FC.size() != nb_dofs\n");
-	  return 1;
-	}
-	if((int)limits.size() != nb_dofs) {
-	  printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs\n");
-	  return 1;
-	}
+      std::vector<SM_COND_DIM> IC_3seg(1);
+      std::vector<SM_COND_DIM> FC_3seg(1);
+      std::vector<double> Timp(1);
+      
+      
+      std::vector<SM_OUTPUT> motion;
+      //int nb_dofs = IC.size();
+      
+      if(FC.size() != nb_dofs) {
+	printf("ERROR SM_TRAJ::computeTraj FC.size() != nb_dofs\n");
+	return 1;
+      }
+      if(limits.size() != nb_dofs) {
+	printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs\n");
+	return 1;
+      }
       
       /* resize the array to store the motions */
-	IC_3seg[0].Axis.resize(nb_dofs);
-	FC_3seg[0].Axis.resize(nb_dofs);
-	IC_3seg[0].Axis = IC;
-	FC_3seg[0].Axis = FC;
-
-	Timp.resize(nb_dofs);
-        if( (int)imposedDuration.size() != nb_dofs) {
-	  std::cout << "Error in SM: imposedDuration for traj different from DOF" << std::endl;
-	  return 1;
-	}
-	
-	for(unsigned int i = 0; i != nb_dofs; ++i) {
-	  Timp.at(i) = imposedDuration.at(i);
-	}
-
-	motion.resize(3); // 3 segment, only one traj
+      IC_3seg[0].Axis.resize(nb_dofs);
+      FC_3seg[0].Axis.resize(nb_dofs);
+      IC_3seg[0].Axis = IC;
+      FC_3seg[0].Axis = FC;
+      
+      Timp.resize(nb_dofs);
+      if( imposedDuration.size() != nb_dofs) {
+	std::cout << "Error in SM: imposedDuration for traj different from DOF" << std::endl;
+	return 1;
+      }
+      
+      for(unsigned int i = 0; i != nb_dofs; ++i) {
+	Timp.at(i) = imposedDuration.at(i);
+      }
+      
+      motion.resize(3); // 3 segment, only one traj
 	// motion.size() is size of segments, so for N traj, gives 3*N segments in total
 	// motion.Jerk.size() is size of DOFs
-
-
+      
+      
 	//
 	// problem: in other usages of vector<SM_OUTPUT>,
 	// like: importFromSM_OUTPUT()
@@ -1551,100 +1551,101 @@ unsigned int nb_dofs = IC.size();
 	// 
 	//
 	//
-
-
-
-
-	SM_STATUS status;
-  
-	status = sm_SolveWithoutOpt(IC_3seg, FC_3seg, Timp, motion);
-	
-	if( status == SM_ERROR) {
-	  std::cout << "Error in SM when computing 3 segments trajectory" << std::endl;
-	  return 1;
-	}
-
-	// trajId?
-	int trajId = 0;
-	// sampling?
-	double sampling = 0.001; //1ms, or to be tic* 1/10
-	// premier_point
-	
-        if(importFromSM_OUTPUT(trajId, sampling, motion)!=0) {
-	  
-
-    //    if(ThreeSegSynchronizedMotion()!= 0) {
-    // printf("ERROR SM_TRAJ::ThreeSegSynchronizedMotion\n");
-    //  return 1;
-    // }
-            std::cout << "Error in SM: import from SM_OUTPUT" << std::endl;
-	break;
-	} else {
-          checkTrajBounds(0.1, IC, FC);
-
-          std::vector<double> tmpMaxJerk(nb_dofs);
-        std::vector<double> tmpMaxAcc(nb_dofs);
-        std::vector<double> tmpMaxVel(nb_dofs);
-
-        std::vector<SM_COND> cond_IC(nb_dofs);
-        std::vector<SM_COND> cond_I(nb_dofs);
-        std::vector<SM_COND> cond_II(nb_dofs); // two intermedia points to verify
-        std::vector<SM_COND> cond_FC(nb_dofs);
-
-for (unsigned int j=0; j != nb_dofs; j++) {
-    cond_IC[j] = IC[j];
-    cond_I[j].a = motion[0].Jerk[j] * Timp[j] / 3  + cond_IC[j].a;
-    cond_I[j].v = motion[0].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_IC[j].a * Timp[j]/3 + cond_IC[j].v;
-    cond_I[j].x = motion[0].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_IC[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_IC[j].v * Timp[j]/3 + cond_IC[j].x;
-
-    cond_II[j].a = motion[1].Jerk[j] * Timp[j] / 3  + cond_I[j].a;
-    cond_II[j].v = motion[1].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_I[j].a * Timp[j]/3 + cond_I[j].v;
-    cond_II[j].x = motion[1].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_I[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_I[j].v * Timp[j]/3 + cond_IC[j].x;
-
-    cond_FC[j].a = motion[2].Jerk[j] * Timp[j] / 3  + cond_II[j].a;
-    cond_FC[j].v = motion[2].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_II[j].a * Timp[j]/3 + cond_II[j].v;
-    cond_FC[j].x = motion[2].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_II[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_II[j].v * Timp[j]/3 + cond_IC[j].x;
-
-}
-
-
-//calculate max jerk, acc, and vel
-        for (unsigned int i=0; i != 3; i++) {
-           for (unsigned int j=0; j != nb_dofs; j++) {
-               if(ABS(motion[i].Jerk[j]) > tmpMaxJerk[j])
-                 tmpMaxJerk[j] = ABS(motion[i].Jerk[j]);
-//find max values in cond_I, cond_II, cond_FC, of acc and vel
-               if(ABS(cond_IC[j].a) > tmpMaxAcc[j])
-                   tmpMaxAcc[j] =  ABS(cond_IC[j].a);
-               if(ABS(cond_I[j].a) > tmpMaxAcc[j])
-                   tmpMaxAcc[j] =  ABS(cond_I[j].a);
-               if(ABS(cond_II[j].a) > tmpMaxAcc[j])
-                   tmpMaxAcc[j] =  ABS(cond_II[j].a);
-               if(ABS(cond_FC[j].a) > tmpMaxAcc[j])
-                   tmpMaxAcc[j] =  ABS(cond_FC[j].a);
-
-               if(ABS(cond_IC[j].v) > tmpMaxVel[j])
-                   tmpMaxVel[j] =  ABS(cond_IC[j].v);
-               if(ABS(cond_I[j].v) > tmpMaxVel[j])
-                   tmpMaxVel[j] =  ABS(cond_I[j].v);
-               if(ABS(cond_II[j].v) > tmpMaxVel[j])
-                   tmpMaxVel[j] =  ABS(cond_II[j].v);
-               if(ABS(cond_FC[j].v) > tmpMaxVel[j])
-                   tmpMaxVel[j] =  ABS(cond_FC[j].v);
-
-            }
-        }
-
-
-
-          break;
-	}
+      
+      
+      
+      
+      SM_STATUS status;
+      
+      status = sm_SolveWithoutOpt(IC_3seg, FC_3seg, Timp, motion);
+      
+      if( status == SM_ERROR) {
+	std::cout << "Error in SM when computing 3 segments trajectory" << std::endl;
+	return 1;
       }
-  default:
-    printf("ERROR  SM_TRAJ::computeTraj wrong mode\n");
-    return 1;
-  }
 
+      // trajId?
+      int trajId = 0;
+      // sampling?
+      double sampling = 0.001; //1ms, or to be tic* 1/10
+      // premier_point
+      
+      if(importFromSM_OUTPUT(trajId, sampling, motion)!=0) {
+	  
+	
+	//    if(ThreeSegSynchronizedMotion()!= 0) {
+	// printf("ERROR SM_TRAJ::ThreeSegSynchronizedMotion\n");
+	//  return 1;
+	// }
+	std::cout << "Error in SM: import from SM_OUTPUT" << std::endl;
+
+      } else {
+	checkTrajBounds(0.1, IC, FC);
+      }
+      
+      
+      std::vector<double> tmpMaxJerk(nb_dofs);
+      std::vector<double> tmpMaxAcc(nb_dofs);
+      std::vector<double> tmpMaxVel(nb_dofs);
+      
+      std::vector<SM_COND> cond_IC(nb_dofs);
+      std::vector<SM_COND> cond_I(nb_dofs);
+      std::vector<SM_COND> cond_II(nb_dofs); // two intermedia points to verify
+      std::vector<SM_COND> cond_FC(nb_dofs);
+      
+      for (unsigned int j=0; j != nb_dofs; j++) {
+	cond_IC[j] = IC[j];
+	cond_I[j].a = motion[0].Jerk[j] * Timp[j] / 3  + cond_IC[j].a;
+	cond_I[j].v = motion[0].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_IC[j].a * Timp[j]/3 + cond_IC[j].v;
+	cond_I[j].x = motion[0].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_IC[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_IC[j].v * Timp[j]/3 + cond_IC[j].x;
+
+	cond_II[j].a = motion[1].Jerk[j] * Timp[j] / 3  + cond_I[j].a;
+	cond_II[j].v = motion[1].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_I[j].a * Timp[j]/3 + cond_I[j].v;
+	cond_II[j].x = motion[1].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_I[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_I[j].v * Timp[j]/3 + cond_IC[j].x;
+
+	cond_FC[j].a = motion[2].Jerk[j] * Timp[j] / 3  + cond_II[j].a;
+	cond_FC[j].v = motion[2].Jerk[j] * pow(Timp[j]/3, 2.0) + cond_II[j].a * Timp[j]/3 + cond_II[j].v;
+	cond_FC[j].x = motion[2].Jerk[j] * pow(Timp[j]/3, 6.0) + cond_II[j].a * pow(Timp[j]/3, 2.0) /2.0 + cond_II[j].v * Timp[j]/3 + cond_IC[j].x;
+
+      }
+	//calculate max jerk, acc, and vel
+	for (unsigned int i=0; i != 3; i++) {
+	  for (unsigned int j=0; j != nb_dofs; j++) {
+	    if(ABS(motion[i].Jerk[j]) > tmpMaxJerk[j])
+	      tmpMaxJerk[j] = ABS(motion[i].Jerk[j]);
+	    //find max values in cond_I, cond_II, cond_FC, of acc and vel
+	    if(ABS(cond_IC[j].a) > tmpMaxAcc[j])
+	      tmpMaxAcc[j] =  ABS(cond_IC[j].a);
+	    if(ABS(cond_I[j].a) > tmpMaxAcc[j])
+	      tmpMaxAcc[j] =  ABS(cond_I[j].a);
+	    if(ABS(cond_II[j].a) > tmpMaxAcc[j])
+	      tmpMaxAcc[j] =  ABS(cond_II[j].a);
+	    if(ABS(cond_FC[j].a) > tmpMaxAcc[j])
+	      tmpMaxAcc[j] =  ABS(cond_FC[j].a);
+	    
+	    if(ABS(cond_IC[j].v) > tmpMaxVel[j])
+	      tmpMaxVel[j] =  ABS(cond_IC[j].v);
+	    if(ABS(cond_I[j].v) > tmpMaxVel[j])
+	      tmpMaxVel[j] =  ABS(cond_I[j].v);
+	    if(ABS(cond_II[j].v) > tmpMaxVel[j])
+	      tmpMaxVel[j] =  ABS(cond_II[j].v);
+	    if(ABS(cond_FC[j].v) > tmpMaxVel[j])
+	      tmpMaxVel[j] =  ABS(cond_FC[j].v);
+	    
+              }
+	}
+	
+	
+	
+	
+	break;
+    }
+    
+    default:
+      printf("ERROR  SM_TRAJ::computeTraj wrong mode\n");
+      return 1;
+    }
+      
 
       switch(mode) {
       case SM_INDEPENDANT:
@@ -1654,48 +1655,50 @@ for (unsigned int j=0; j != nb_dofs; j++) {
         this->vmax[i] = limits[i].maxVel;
       }
       break;
-  case SM_3SEGMENT:
-      // here to calculate jmax, amax and vmax
-/*
-      std::vector<SM_COND> cond_IC(nb_dofs);
-      std::vector<SM_COND> cond_I(nb_dofs);
-      std::vector<SM_COND> cond_II(nb_dofs);
-      std::vector<SM_COND> cond_FC(nb_dofs);
+      case SM_3SEGMENT:
+	
 
+	// here to calculate jmax, amax and vmax
+	/*
+	  std::vector<SM_COND> cond_IC(nb_dofs);
+	  std::vector<SM_COND> cond_I(nb_dofs);
+	  std::vector<SM_COND> cond_II(nb_dofs);
+	  std::vector<SM_COND> cond_FC(nb_dofs);
+	  
       cond_IC = IC;
       cond_FC = FC;
-
+      
       for(unsigned int i=0; i != nb_dofs; ++i){
-          condI[i].a =
+      condI[i].a =
       }
 
-
+      
       //IC.a =  jerk * dt  + ICl.a;
       // IC.v =  jerk * pow(dt,2.0) / 2.0 + ICl.a * dt   + ICl.v;
       // IC.x =  jerk * pow(dt,3.0) / 6.0 + ICl.a * pow(dt,2.0) / 2.0 + ICl.v * dt  + ICl.x;
-*/
+      */
       break;
-  case SM_SYNCHRONIZED:
-      for (unsigned int i=0; i < nb_dofs; i++) {
-        this->jmax[i] = limits[i].maxJerk;
-        this->amax[i] = limits[i].maxAcc;
-        this->vmax[i] = limits[i].maxVel;
+      case SM_SYNCHRONIZED:
+	for (unsigned int i=0; i < nb_dofs; i++) {
+	  this->jmax[i] = limits[i].maxJerk;
+	  this->amax[i] = limits[i].maxAcc;
+	  this->vmax[i] = limits[i].maxVel;
+	}
+      break;
+      default:
+	printf("ERROR  SM_TRAJ::computeTraj wrong mode\n");
+	return 1;
       }
-      break;
-  default:
-      printf("ERROR  SM_TRAJ::computeTraj wrong mode\n");
-      return 1;
-  }
-
+      
   
-  return 0;
-}
-
-int SM_TRAJ::computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr)
-{
-  int nb_dofs = motion_arr.size();
-  SM_COND FCm;
-
+      return 0;
+  }
+  
+  int SM_TRAJ::computeUnsynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr)
+  {
+    int nb_dofs = motion_arr.size();
+    SM_COND FCm;
+  
   if(nb_dofs <= 0) {
     printf("ERROR  SM_TRAJ::computeUnsynchronizedMotion nb_dofs <= 0\n");
     return 1;
