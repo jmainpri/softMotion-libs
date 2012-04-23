@@ -112,7 +112,7 @@ class SM_TRAJ {
    * @see save(char* name)
    */
   int load(char *name);
-
+  int load(char *name, int(*fct(void)) );
   /*! convert the SM_TRAJ to a static struture SM_TRAJ_STR with a fixed maximun size
    * @see importFromSM_TRAJ_STR(const SM_TRAJ_STR *smTraj)
    */
