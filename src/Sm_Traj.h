@@ -63,6 +63,10 @@ class SM_TRAJ {
   std::vector<double> vmax;
   std::vector< std::vector<SM_SEG> > traj;
 
+  // normalizedTime = 0.0 at beginning of the Traj, and 1.0 at the end;
+  // even the axis are not synchronized...
+  std::vector<double> normalizedTime;
+
   enum SM_TRAJ_MODE {
     SM_SYNCHRONIZED, // not implemented
     SM_INDEPENDANT,
@@ -71,7 +75,7 @@ class SM_TRAJ {
 
   enum SM_TRAJ_TYPE {
     SM_STOP_AT_VIA_POINT,
-    SM_SMOOTH_AT_VIA_POINT
+    SM_SMOOTH_AT_VIA_POINT // not implemented
   };
 
   /*! Constructor
@@ -251,11 +255,11 @@ class SM_TRAJ {
 
 //get max values in the vector
 
-  double getVmax() const;
+  std::vector<double> getVmax() const;
 
-  double getAmax() const;
+  std::vector<double> getAmax() const;
 
-  double getJmax() const;
+  std::vector<double> getJmax() const;
 
 
   /*!  set the vector of initial positions (only informative data)

@@ -141,34 +141,19 @@ void  SM_TRAJ::setQGoal(std::vector<double> &qg)
 
 
 
-double SM_TRAJ::getVmax() const {
-   double Vmax = 0.0;
-   for(int i=0; i != 6; ++i){
-       if(ABS(this->vmax[i]) > Vmax) {
-           Vmax = ABS(this->vmax[i]);
-       }
-    }
-    return Vmax;
+std::vector<double> SM_TRAJ::getVmax() const {
+
+    return this->vmax;
 }
 
-double SM_TRAJ::getAmax() const {
-   double Amax = 0.0;
-   for(int i=0; i != 6; ++i){
-       if(ABS(this->amax[i]) > Amax) {
-           Amax = ABS(this->amax[i]);
-       }
-    }
-    return Amax;
+std::vector<double> SM_TRAJ::getAmax() const {
+
+    return this->amax;
 }
 
-double SM_TRAJ::getJmax() const {
-   double Jmax = 0.0;
-   for(int i=0; i != 6; ++i){
-       if(ABS(this->jmax[i]) >= Jmax) {
-           Jmax = ABS(this->jmax[i]);
-       }
-    }
-    return Jmax;
+std::vector<double> SM_TRAJ::getJmax() const {
+
+    return this->jmax;
 }
 
 
@@ -1580,7 +1565,7 @@ unsigned int nb_dofs = IC.size();
 	std::cout << "Error in SM: import from SM_OUTPUT" << std::endl;
 
       } else {
-	checkTrajBounds(0.1, IC, FC);
+        //checkTrajBounds(0.1, IC, FC);
       }
       
       
@@ -1635,8 +1620,9 @@ unsigned int nb_dofs = IC.size();
               }
 	}
 	
-	
-	
+        this->jmax = tmpMaxJerk;
+        this->amax = tmpMaxAcc;
+        this->vmax = tmpMaxVel;
 	
 	break;
     }
