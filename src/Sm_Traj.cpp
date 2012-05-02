@@ -564,6 +564,12 @@ std::vector<double> SM_TRAJ::parseFrame(std::string& line){
   return frame;
 }
 
+int SM_TRAJ::load(char *name, int(*fct(void) )) {
+    printf("WARNING: Obslete interface! \n");
+    this->load(name);
+}
+
+
 int SM_TRAJ::load(char *name) 
 {
   ifstream file(name, ios::in);  // on ouvre en lecture
