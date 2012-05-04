@@ -93,6 +93,7 @@ void SM_TRAJ::clear()
   amax.clear();
   vmax.clear();
   traj.clear();
+  virtualTimeOnTraj.clear();
   tsVec.clear();
   duration = 0.0;
   timePreserved = 0.0;
@@ -174,6 +175,7 @@ void SM_TRAJ::resize(int size)
   amax.resize(size);
   vmax.resize(size);
   traj.resize(size);
+  virtualTimeOnTraj.resize(size);
   return;
 }
 
@@ -250,8 +252,10 @@ int SM_TRAJ::computeTimeOnTraj()
   duration_axis.resize(traj.size());
   this->duration = 0.0;
 
+    virtualTimeOnTraj.resize(traj.size());
   for(unsigned int i=0;  i< traj.size(); i++) {
-    for (unsigned int j = 0; j < traj[i].size(); j++){
+      virtualTimeOnTraj[i].resize(traj[i].size());
+    for (unsigned int j = 0; j < traj[i].size(); j++){        
       if (j == 0) traj[i][j].timeOnTraj = 0.0;
       else {
 	traj[i][j].timeOnTraj = 0.0;
@@ -270,8 +274,38 @@ int SM_TRAJ::computeTimeOnTraj()
     }
   }
   updateIC();
+
+  //compute virtualTimeOnTraj
+  if(this->duration != 0.0){
+     for(unsigned int i=0;  i< traj.size(); i++) {
+          for (unsigned int j = 0; j < traj[i].size(); j++){
+              virtualTimeOnTraj[i][j] = traj[i][j].timeOnTraj / this->duration;
+        }
+       }
+    }
+
   return 0;
 }
+
+double SM_TRAJ::getVirtualTime(double time){
+    if(this->duration != 0.0) {
+    return time/this->duration;
+    } else {
+        return 1;
+    }
+}
+
+ int SM_TRAJ::getMotionCondVT(double vTime, std::vector<SM_COND> &cond){
+     if(vTime < 0.0 || vTime > 1.0) {
+         printf("SM_ERROR: virtual time out of range!");
+         return 1;
+     } else {
+       double time = vTime * this->duration;
+       this->getMotionCond(time, cond);
+    }
+     return 0;
+}
+
 
 int SM_TRAJ::checkTrajBounds(double time_step, std::vector<SM_COND> IC, std::vector<SM_COND> FC)
 {
@@ -567,6 +601,7 @@ std::vector<double> SM_TRAJ::parseFrame(std::string& line){
 int SM_TRAJ::load(char *name, int(*fct(void) )) {
     printf("WARNING: Obslete interface! \n");
     this->load(name);
+    return 0;
 }
 
 

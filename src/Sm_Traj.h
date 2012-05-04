@@ -63,9 +63,9 @@ class SM_TRAJ {
   std::vector<double> vmax;
   std::vector< std::vector<SM_SEG> > traj;
 
-  // normalizedTime = 0.0 at beginning of the Traj, and 1.0 at the end;
-  // even the axis are not synchronized...
-  std::vector<double> normalizedTime;
+  // virtualTime = 0.0 at beginning of the Traj, and 1.0 at the end;
+  // one virtualTime for each SM_SEG
+  std::vector< std::vector<double> > virtualTimeOnTraj;
 
   enum SM_TRAJ_MODE {
     SM_SYNCHRONIZED, // not implemented
@@ -181,8 +181,11 @@ class SM_TRAJ {
    *  @param cond the kinematic state filled and resized the number of axes
    */
   int getMotionCond(double time, std::vector<SM_COND> & cond);
-  
- 
+  int getMotionCondVT(double vTime, std::vector<SM_COND> &cond);
+
+  double getVirtualTime(double time);
+
+
   /*! plot the evolution of the position, velocity and acceleration of the specified axis using gnuplot
    * @param i the axis id
    */
@@ -252,6 +255,7 @@ class SM_TRAJ {
   /*! get the duration of the trajectory
    */
   double getDuration();
+
 
 //get max values in the vector
 
