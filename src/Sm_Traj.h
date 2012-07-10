@@ -80,10 +80,10 @@ class SM_TRAJ {
 
   /*! Constructor
    */
-  void sm_traj();
+  SM_TRAJ();
   /*! Copy construtor
    */
-  void sm_traj(const SM_TRAJ &traj);
+  SM_TRAJ(const SM_TRAJ &traj);
   
   /*! clear the trajectory
    */

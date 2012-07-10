@@ -65,13 +65,13 @@
 
 using namespace std;
 
-void SM_TRAJ::sm_traj()
+SM_TRAJ::SM_TRAJ()
 {
   this->clear();
   return;
 }
 
-void SM_TRAJ::sm_traj(const SM_TRAJ &traj)
+SM_TRAJ::SM_TRAJ(const SM_TRAJ &traj)
 {
   this->trajId = traj.trajId;
   this->timePreserved = traj.timePreserved;
@@ -82,7 +82,7 @@ void SM_TRAJ::sm_traj(const SM_TRAJ &traj)
   this->amax = traj.amax;
   this->vmax = traj.vmax;
   this->traj = traj.traj;
-  return;
+  this->virtualTimeOnTraj = traj.virtualTimeOnTraj;
 }
 
 void SM_TRAJ::clear() 
