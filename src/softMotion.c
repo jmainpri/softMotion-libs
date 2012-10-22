@@ -43,6 +43,8 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+
+
 #include "time_proto.h"
 
 #include <libxml/xmlreader.h>
@@ -1288,7 +1290,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_Z0(SM_LIMITS* limitsGoto, SM_COND* ICm
   double Tj02, Tj022, Tj023, Tj024, Tj025, Tj026;
   double A0, V0, X0, Xf, Af, Vf;
   double x0, x1, i=0, cg, A1;
-  double a,b,c; // Variables intermediaires
+
 
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
@@ -1354,11 +1356,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_Z0(SM_LIMITS* limitsGoto, SM_COND* ICm
 
   for(i=0;i<20;i++) {
     Tj=x0;
-    a=Tj-Tj01;
-    b=Tj+Tj02;
-    c=(A0+Jmax * a);
-
-    cg= (-Xf + V0 * a + A0 * a*a / 2.0 + Jmax * a*a*a / 6.0 + 2.0 * (V0 + A0 * a + Jmax * a*a / 2.0) * Tj + 2.0 * c * Tj * Tj - 4.0 / 3.0 * Jmax * Tj*Tj*Tj + (V0 + A0 * a + Jmax * a*a / 2.0) * b - c * b*b / 2.0 + Jmax * b*b*b / 6.0) / (4.0 * V0 + 4.0 * A0 * a + 2.0 * Jmax * a*a  - 2.0 * Jmax * Tj * Tj + 6.0 * c * Tj);
+    cg = (-Xf + V0 * (Tj - Tj01) + A0 * pow(Tj - Tj01, 0.2e1) / 0.2e1 + Jmax * pow(Tj - Tj01, 0.3e1) / 0.6e1 + 0.2e1 * (V0 + A0 * (Tj - Tj01) + Jmax * pow(Tj - Tj01, 0.2e1) / 0.2e1) * Tj + 0.2e1 * (A0 + Jmax * (Tj - Tj01)) * Tj * Tj - 0.4e1 / 0.3e1 * Jmax * pow(Tj, 0.3e1) + (V0 + A0 * (Tj - Tj01) + Jmax * pow(Tj - Tj01, 0.2e1) / 0.2e1) * (Tj + Tj02) - (A0 + Jmax * (Tj - Tj01)) * pow(Tj + Tj02, 0.2e1) / 0.2e1 + Jmax * pow(Tj + Tj02, 0.3e1) / 0.6e1) / (0.4e1 * V0 + 0.4e1 * A0 * (Tj - Tj01) + 0.2e1 * Jmax * pow(Tj - Tj01, 0.2e1) + 0.2e1 * (A0 + Jmax * (Tj - Tj01)) * Tj - 0.2e1 * Jmax * Tj * Tj + 0.8e1 * (A0 / 0.2e1 + Jmax * (Tj - Tj01) / 0.2e1) * Tj + (A0 + Jmax * (Tj - Tj01)) * (Tj + Tj02) - 0.2e1 * (A0 / 0.2e1 + Jmax * (Tj - Tj01) / 0.2e1) * (Tj + Tj02));
 
     x1 = x0 - cg;
     x0=x1;
@@ -1396,7 +1394,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_Z1(SM_LIMITS* limitsGoto, SM_COND* ICm
   double epsilon=0.00000001;
   double Tjpb_0;
   double x1, x0, cg;
-  double a; // Variables intermediaires 
+
 
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
@@ -1433,9 +1431,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_Z1(SM_LIMITS* limitsGoto, SM_COND* ICm
     i++;
     Tjpb=x0;
     Tjpb_0=Tjpb;
-    a=Vf - 1.0 / Jmax * (Amax * Amax - Af * Af) / 2.0 - V1;
-
-cg = (-Xf + X1 + V1 * (a) / Amax + 1.0 / Amax * a*a / 2.0 + (Vf - 1.0 / Jmax * (Amax * Amax - Af * Af) / 2.0) * Tjn1 + Amax * Tjn1 * Tjn1 / 2.0 - Jmax * Tjn1*Tjn1*Tjn1 / 6.0 + (-Jmax * Tjn1 * Tjn1 / 2.0 - 1.0 / Jmax * Amax * Amax / 2.0 - 2.0 * Af * Tjn1 - 1.0 / Amax * Af*Af*Af / Jmax - 2.0 / Amax * Vf * Af + Amax * Af / Jmax + 2.0 * Vf + 1.0 / Jmax * Af * Af / 2.0 + Amax * Tjn1) * Tjpb + (1.0 / Amax * Vf * Jmax + 5.0 / 2.0 / Amax * Af * Af + Jmax * Tjn1 / 2.0 - 5.0 / 2.0 * Af) * Tjpb * Tjpb + (Jmax - 2.0 / Amax * Af * Jmax) * Tjpb*Tjpb*Tjpb + 1.0 / Amax * Jmax * Jmax * Tjpb*Tjpb*Tjpb*Tjpb / 2.0) / (-Jmax * Tjn1 * Tjn1 / 2.0 - 1.0 / Jmax * Amax * Amax / 2.0 - 2.0 * Af * Tjn1 - 1.0 / Amax * Af*Af*Af / Jmax - 2.0 / Amax * Vf * Af + Amax * Af / Jmax + 2.0 * Vf + 1.0 / Jmax * Af * Af / 2.0 + Amax * Tjn1 + (2.0 / Amax * Vf * Jmax + 5.0 / Amax * Af * Af + Jmax * Tjn1 - 5.0 * Af) * Tjpb + (3.0 * Jmax - 6.0 / Amax * Af * Jmax) * Tjpb * Tjpb + 2.0 / Amax * Jmax * Jmax * Tjpb*Tjpb*Tjpb);
+    cg = (-Xf + X1 + V1 * (Vf - 0.1e1 / Jmax * (Amax * Amax - Af * Af) / 0.2e1 - V1) / Amax + 0.1e1 / Amax * pow(Vf - 0.1e1 / Jmax * (Amax * Amax - Af * Af) / 0.2e1 - V1, 0.2e1) / 0.2e1 + (Vf - 0.1e1 / Jmax * (Amax * Amax - Af * Af) / 0.2e1) * Tjn1 + Amax * Tjn1 * Tjn1 / 0.2e1 - Jmax * pow(Tjn1, 0.3e1) / 0.6e1 + (-Jmax * Tjn1 * Tjn1 / 0.2e1 - 0.1e1 / Jmax * Amax * Amax / 0.2e1 - 0.2e1 * Af * Tjn1 - 0.1e1 / Amax * pow(Af, 0.3e1) / Jmax - 0.2e1 / Amax * Vf * Af + Amax * Af / Jmax + 0.2e1 * Vf + 0.1e1 / Jmax * Af * Af / 0.2e1 + Amax * Tjn1) * Tjpb + (0.1e1 / Amax * Vf * Jmax + 0.5e1 / 0.2e1 / Amax * Af * Af + Jmax * Tjn1 / 0.2e1 - 0.5e1 / 0.2e1 * Af) * Tjpb * Tjpb + (Jmax - 0.2e1 / Amax * Af * Jmax) * pow(Tjpb, 0.3e1) + 0.1e1 / Amax * Jmax * Jmax * pow(Tjpb, 0.4e1) / 0.2e1) / (-Jmax * Tjn1 * Tjn1 / 0.2e1 - 0.1e1 / Jmax * Amax * Amax / 0.2e1 - 0.2e1 * Af * Tjn1 - 0.1e1 / Amax * pow(Af, 0.3e1) / Jmax - 0.2e1 / Amax * Vf * Af + Amax * Af / Jmax + 0.2e1 * Vf + 0.1e1 / Jmax * Af * Af / 0.2e1 + Amax * Tjn1 + (0.2e1 / Amax * Vf * Jmax + 0.5e1 / Amax * Af * Af + Jmax * Tjn1 - 0.5e1 * Af) * Tjpb + (0.3e1 * Jmax - 0.6e1 / Amax * Af * Jmax) * Tjpb * Tjpb + 0.2e1 / Amax * Jmax * Jmax * pow(Tjpb, 0.3e1));
 
     x1 = x0 - cg/4;
     x0=x1;
@@ -1567,7 +1563,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_inf_DSZ1_Z1(SM_LIMITS* limitsGoto, SM_
     Tj=x0;
     Tj_0=Tj;
 
-    cg = (-Xf + V0 * Tjpa + A0 * Tjpa * Tjpa / 2.0 + Jmax * pow(Tjpa, 3.0) / 6.0 +  Vsmp * ( (2 * Vf) -  (2 * Tj * Af) + 2.0 * Jmax *  (Tj * Tj) -  (2 * Vsmp) -  (2 * Amax * Tjndc) -  (2 * Amax * Tj) + Jmax *  (Tjndc * Tjndc) + 2.0 * Jmax *  Tjndc *  Tj) /  Amax / 2.0 + 1.0 /  Amax * pow( (2 * Vf) -  (2 * Tj * Af) + 2.0 * Jmax *  (Tj * Tj) -  (2 * Vsmp) -  (2 * Amax * Tjndc) -  (2 * Amax * Tj) + Jmax *  (Tjndc * Tjndc) + 2.0 * Jmax *  Tjndc *  Tj, 2.0) / 8.0 + ( Vf -  (Tj * Af) + Jmax *  (Tj * Tj) -  (Amax * Tjndc) -  (Amax * Tj) + Jmax *  (Tjndc * Tjndc) / 2.0 + Jmax *  Tjndc *  Tj) *  (Tjndc + Tj) +  (Amax *  pow( (Tjndc + Tj),  2)) / 2.0 - Jmax *   pow( (Tjndc + Tj),  3) / 6.0 + ( Vf -  (Tj * Af) + Jmax *  (Tj * Tj) -  (Amax * Tjndc) -  (Amax * Tj) + Jmax *  (Tjndc * Tjndc) / 2.0 + Jmax *  Tjndc *  Tj +  (Amax * (Tjndc + Tj)) - Jmax *   pow( (Tjndc + Tj),  2) / 2.0) *  Tj + ( Amax - Jmax *  (Tjndc + Tj)) *  (Tj * Tj) / 2.0 + Jmax *   pow( Tj,  3) / 6.0) / (2.0 * Jmax *  Tjndc *  Tj -  (2 * Tj * Af) +  (2 * Vf) + 2.0 * Jmax *  (Tj * Tj) -  (2 * Amax * Tjndc) -  (2 * Amax * Tj) + Jmax *  (Tjndc * Tjndc) +  (2 * Amax * (Tjndc + Tj)) + 1.0 /  Amax * ( Vf -  (Tj * Af) + Jmax *  (Tj * Tj) -  Vsmp -  (Amax * Tjndc) -  (Amax * Tj) + Jmax *  (Tjndc * Tjndc) / 2.0 + Jmax *  Tjndc *  Tj) * (- Af + 2.0 * Jmax *  Tj -  Amax + Jmax *  Tjndc) + 2.0 * ( Amax / 2.0 - Jmax *  (Tjndc + Tj) / 2.0) *  Tj - Jmax *   pow( (Tjndc + Tj),  2) +  Vsmp * (- Af + 2.0 * Jmax *  Tj -  Amax + Jmax *  Tjndc) /  Amax + (- Af + 2.0 * Jmax *  Tj -  Amax + Jmax *  Tjndc) *  (Tjndc + Tj) + (- Af + 2.0 * Jmax *  Tj + Jmax *  Tjndc - Jmax *  (Tjndc + Tj)) *  Tj);
+    cg = (-Xf + V0 * Tjpa + A0 * Tjpa * Tjpa / 0.2e1 + Jmax * pow(Tjpa, 0.3e1) / 0.6e1 +  Vsmp * ( (2 * Vf) -  (2 * Tj * Af) + 0.2e1 * Jmax *  (Tj * Tj) -  (2 * Vsmp) -  (2 * Amax * Tjndc) -  (2 * Amax * Tj) + Jmax *  (Tjndc * Tjndc) + 0.2e1 * Jmax *  Tjndc *  Tj) /  Amax / 0.2e1 + 0.1e1 /  Amax * pow( (2 * Vf) -  (2 * Tj * Af) + 0.2e1 * Jmax *  (Tj * Tj) -  (2 * Vsmp) -  (2 * Amax * Tjndc) -  (2 * Amax * Tj) + Jmax *  (Tjndc * Tjndc) + 0.2e1 * Jmax *  Tjndc *  Tj, 0.2e1) / 0.8e1 + ( Vf -  (Tj * Af) + Jmax *  (Tj * Tj) -  (Amax * Tjndc) -  (Amax * Tj) + Jmax *  (Tjndc * Tjndc) / 0.2e1 + Jmax *  Tjndc *  Tj) *  (Tjndc + Tj) +  (Amax *  pow( (Tjndc + Tj),  2)) / 0.2e1 - Jmax *   pow( (Tjndc + Tj),  3) / 0.6e1 + ( Vf -  (Tj * Af) + Jmax *  (Tj * Tj) -  (Amax * Tjndc) -  (Amax * Tj) + Jmax *  (Tjndc * Tjndc) / 0.2e1 + Jmax *  Tjndc *  Tj +  (Amax * (Tjndc + Tj)) - Jmax *   pow( (Tjndc + Tj),  2) / 0.2e1) *  Tj + ( Amax - Jmax *  (Tjndc + Tj)) *  (Tj * Tj) / 0.2e1 + Jmax *   pow( Tj,  3) / 0.6e1) / (0.2e1 * Jmax *  Tjndc *  Tj -  (2 * Tj * Af) +  (2 * Vf) + 0.2e1 * Jmax *  (Tj * Tj) -  (2 * Amax * Tjndc) -  (2 * Amax * Tj) + Jmax *  (Tjndc * Tjndc) +  (2 * Amax * (Tjndc + Tj)) + 0.1e1 /  Amax * ( Vf -  (Tj * Af) + Jmax *  (Tj * Tj) -  Vsmp -  (Amax * Tjndc) -  (Amax * Tj) + Jmax *  (Tjndc * Tjndc) / 0.2e1 + Jmax *  Tjndc *  Tj) * (- Af + 0.2e1 * Jmax *  Tj -  Amax + Jmax *  Tjndc) + 0.2e1 * ( Amax / 0.2e1 - Jmax *  (Tjndc + Tj) / 0.2e1) *  Tj - Jmax *   pow( (Tjndc + Tj),  2) +  Vsmp * (- Af + 0.2e1 * Jmax *  Tj -  Amax + Jmax *  Tjndc) /  Amax + (- Af + 0.2e1 * Jmax *  Tj -  Amax + Jmax *  Tjndc) *  (Tjndc + Tj) + (- Af + 0.2e1 * Jmax *  Tj + Jmax *  Tjndc - Jmax *  (Tjndc + Tj)) *  Tj);
 
     x1 = x0 - cg;
     x0=x1;
@@ -1575,7 +1571,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_inf_DSZ1_Z1(SM_LIMITS* limitsGoto, SM_
     if (i > 150) { break;}
   } while (ABS(Tj_0 -Tj) > epsilon);
 
-  Taca =  ((2 * Vf - 2 * Tj * Af + 2 * Jmax * Tj * Tj - 2 * Vsmp - 2 * Amax * Tjndc - 2 * Amax * Tj + Jmax * Tjndc * Tjndc + 2 * Jmax * Tjndc * Tj) / Amax) / 2.0;
+  Taca =  ((2 * Vf - 2 * Tj * Af + 2 * Jmax * Tj * Tj - 2 * Vsmp - 2 * Amax * Tjndc - 2 * Amax * Tj + Jmax * Tjndc * Tjndc + 2 * Jmax * Tjndc * Tj) / Amax) / 0.2e1;
 
   Tjna = Tjndc + Tj;
   Tvc = 0;
@@ -1829,7 +1825,6 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_inf_DSAmaxT12_22_Z2(SM_LIMITS* limitsG
   double A0, V0, X0, Xf, Af, Vf;
   double x1, x0,  cg;
   double epsilon=0.00000001;
-  double k; // variable intermediaire
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
   Amax  = limitsGoto->maxAcc;
@@ -1863,8 +1858,8 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_inf_DSAmaxT12_22_Z2(SM_LIMITS* limitsG
     i++;
     Tj=x0;
     Tj_0=Tj;
-  k= Tj + Tjndc;
-  cg = (-Xf + V0 * Tj + A0 * Tj * Tj / 2.0 + Jmax * Tj*Tj*Tj / 6.0 + (V0 + A0 * Tj + Jmax * Tj * Tj / 2.0) * k + (A0 + Jmax * Tj) * k*k / 2.0 - Jmax * k*k*k / 6.0 + (V0 + A0 * Tj + Jmax * Tj * Tj / 2.0 + (A0 + Jmax * Tj) * k - Jmax * k*k / 2.0) * (-2.0 * Vf * Jmax + 2.0 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 4.0 * A0 * Jmax * Tj + 2.0 * Jmax * Jmax * Tj * Tj + 2.0 * V0 * Jmax) / Jmax / Amax / 2.0 - 1.0 / Amax * (-2.0 * Vf * Jmax + 2.0 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 4.0 * A0 * Jmax * Tj + 2.0 * Jmax * Jmax * Tj * Tj + 2.0 * V0 * Jmax)*(-2.0 * Vf * Jmax + 2.0 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 4.0 * A0 * Jmax * Tj + 2.0 * Jmax * Jmax * Tj * Tj + 2.0 * V0 * Jmax) * pow(Jmax, -2.0) / 8.0 + (V0 + A0 * Tj + Jmax * Tj * Tj / 2.0 + (A0 + Jmax * Tj) * k - Jmax * k*k / 2.0 - (-2.0 * Vf * Jmax + 2.0 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 4.0 * A0 * Jmax * Tj + 2.0 * Jmax * Jmax * Tj * Tj + 2.0 * V0 * Jmax) / Jmax / 2.0) * Tjpb - Amax * Tjpb * Tjpb / 2.0 + Jmax * Tjpb*Tjpb*Tjpb / 6.0) / (2.0 * V0 + 2.0 * A0 * Tj + Jmax * Tj * Tj + (A0 + Jmax * Tj) * k + 2.0 * (A0 / 2.0 + Jmax * Tj / 2.0) * k + (2.0 * A0 + 2.0 * Jmax * Tj) * (-Vf * Jmax + Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb / 2.0 - Amax * Amax / 2.0 + A0 * A0 / 2.0 + 2.0 * A0 * Jmax * Tj + Jmax * Jmax * Tj * Tj + V0 * Jmax) / Jmax / Amax + (V0 + A0 * Tj + Jmax * Tj * Tj / 2.0 + (A0 + Jmax * Tj) * (Tj + Tjndc) - Jmax * k*k / 2.0) * (2.0 * A0 * Jmax + 2.0 * Jmax * Jmax * Tj) / Jmax / Amax - 1.0 / Amax * (-Vf * Jmax + Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb / 2.0 - Amax * Amax / 2.0 + A0 * A0 / 2.0 + 2.0 * A0 * Jmax * Tj + Jmax * Jmax * Tj * Tj + V0 * Jmax) * pow(Jmax, -2.0) * (2.0 * A0 * Jmax + 2.0 * Jmax * Jmax * Tj) + (2.0 * A0 + 2.0 * Jmax * Tj - (2.0 * A0 * Jmax + 2.0 * Jmax * Jmax * Tj) / Jmax) * Tjpb);
+
+    cg = (-Xf + V0 * Tj + A0 * Tj * Tj / 0.2e1 + Jmax * pow(Tj, 0.3e1) / 0.6e1 + (V0 + A0 * Tj + Jmax * Tj * Tj / 0.2e1) * (Tj + Tjndc) + (A0 + Jmax * Tj) * pow(Tj + Tjndc, 0.2e1) / 0.2e1 - Jmax * pow(Tj + Tjndc, 0.3e1) / 0.6e1 + (V0 + A0 * Tj + Jmax * Tj * Tj / 0.2e1 + (A0 + Jmax * Tj) * (Tj + Tjndc) - Jmax * pow(Tj + Tjndc, 0.2e1) / 0.2e1) * (-0.2e1 * Vf * Jmax + 0.2e1 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 0.4e1 * A0 * Jmax * Tj + 0.2e1 * Jmax * Jmax * Tj * Tj + 0.2e1 * V0 * Jmax) / Jmax / Amax / 0.2e1 - 0.1e1 / Amax * pow(-0.2e1 * Vf * Jmax + 0.2e1 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 0.4e1 * A0 * Jmax * Tj + 0.2e1 * Jmax * Jmax * Tj * Tj + 0.2e1 * V0 * Jmax, 0.2e1) * pow(Jmax, -0.2e1) / 0.8e1 + (V0 + A0 * Tj + Jmax * Tj * Tj / 0.2e1 + (A0 + Jmax * Tj) * (Tj + Tjndc) - Jmax * pow(Tj + Tjndc, 0.2e1) / 0.2e1 - (-0.2e1 * Vf * Jmax + 0.2e1 * Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb - Amax * Amax + A0 * A0 + 0.4e1 * A0 * Jmax * Tj + 0.2e1 * Jmax * Jmax * Tj * Tj + 0.2e1 * V0 * Jmax) / Jmax / 0.2e1) * Tjpb - Amax * Tjpb * Tjpb / 0.2e1 + Jmax * pow(Tjpb, 0.3e1) / 0.6e1) / (0.2e1 * V0 + 0.2e1 * A0 * Tj + Jmax * Tj * Tj + (A0 + Jmax * Tj) * (Tj + Tjndc) + 0.2e1 * (A0 / 0.2e1 + Jmax * Tj / 0.2e1) * (Tj + Tjndc) + (0.2e1 * A0 + 0.2e1 * Jmax * Tj) * (-Vf * Jmax + Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb / 0.2e1 - Amax * Amax / 0.2e1 + A0 * A0 / 0.2e1 + 0.2e1 * A0 * Jmax * Tj + Jmax * Jmax * Tj * Tj + V0 * Jmax) / Jmax / Amax + (V0 + A0 * Tj + Jmax * Tj * Tj / 0.2e1 + (A0 + Jmax * Tj) * (Tj + Tjndc) - Jmax * pow(Tj + Tjndc, 0.2e1) / 0.2e1) * (0.2e1 * A0 * Jmax + 0.2e1 * Jmax * Jmax * Tj) / Jmax / Amax - 0.1e1 / Amax * (-Vf * Jmax + Jmax * Tjpb * Af - Jmax * Jmax * Tjpb * Tjpb / 0.2e1 - Amax * Amax / 0.2e1 + A0 * A0 / 0.2e1 + 0.2e1 * A0 * Jmax * Tj + Jmax * Jmax * Tj * Tj + V0 * Jmax) * pow(Jmax, -0.2e1) * (0.2e1 * A0 * Jmax + 0.2e1 * Jmax * Jmax * Tj) + (0.2e1 * A0 + 0.2e1 * Jmax * Tj - (0.2e1 * A0 * Jmax + 0.2e1 * Jmax * Jmax * Tj) / Jmax) * Tjpb);
 
     x1 = x0 - cg/10;
     x0=x1;
@@ -1886,7 +1881,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_inf_DSAmaxT12_22_Z2(SM_LIMITS* limitsG
   Tjnb = 0;
   //Tacb = (1/2*(-2*Vf*Jmax+2*Jmax*Tjpb*Af-Jmax^2*Tjpb^2-Amax^2+A0^2+4*A0*Jmax*Tj+2*Jmax^2*Tj^2+2*V0*Jmax)/Jmax/Amax);
 
-  Tacb=((-2*Vf*Jmax+2*Jmax*Tjpb*Af-Jmax*Jmax*Tjpb*Tjpb-Amax*Amax+A0*A0+4*A0*Jmax*Tj+2*Jmax*Jmax*Tj*Tj+2*V0*Jmax)/Jmax/Amax)/2.0;
+  Tacb=((-2*Vf*Jmax+2*Jmax*Tjpb*Af-Jmax*Jmax*Tjpb*Tjpb-Amax*Amax+A0*A0+4*A0*Jmax*Tj+2*Jmax*Jmax*Tj*Tj+2*V0*Jmax)/Jmax/Amax)/0.2e1;
 
 
   Time->Tjpa = Tjpa;
@@ -1914,7 +1909,6 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_Z3(SM_LIMITS* limitsGoto, SM_COND* ICm
   double x0, x1, cg;
   double Tj1_0;
   double epsilon = 0.00000000001;
-  double a,b,b2,c,d,e,f,g;
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
   Amax  = limitsGoto->maxAcc;
@@ -1949,16 +1943,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_Z3(SM_LIMITS* limitsGoto, SM_COND* ICm
     i++;
     Tj1=x0;
     Tj1_0=Tj1;
-    a=Jmax * Tj1;
-    b=Tjpdc + Tj1;
-    b2=b*b / 2.0;
-    c=(2 * Af * Af) - 4.0 * Vf * Jmax + 4.0 * Jmax * a * Tj1 + 4.0 * V1dc * Jmax + 8.0* A1dc * a + 2.0 * A1dc * A1dc;
-    d=Af + sqrt( c) / 2.0;
-    e=Tjndc + Tj1;
-    f=e + ( d) / Jmax;
-    g=8.0* Jmax * a + 8.0* A1dc * Jmax;
-    
-    cg = (-Xf + X0 + V0 * (b) + A0 * b2 + Jmax * b*b*b / 6.0 + (V0 + A0 * (b) + Jmax * b2) * (f) + (A0 / 2.0 + Jmax * (b) / 2.0) * f*f - Jmax * f*f*f / 6.0 + (Vf + sqrt( c) * ( d) / Jmax / 2.0 - 1.0 / Jmax * d*d / 2.0) * ( d) / Jmax - sqrt( c) * d*d * pow(Jmax, -2.0) / 4.0 + pow(Jmax, -2.0) * d*d*d / 6.0) / (V0 + A0 * (b) + Jmax * b2 + (A0 + Jmax * (b)) * (f) + (V0 + A0 * (b) + Jmax * b2) * (1.0 + pow( c, -1.0 / 2.0) * (g) / Jmax / 4.0) + Jmax * f*f / 2.0 + (A0 + Jmax * (b)) * (f) * (1.0 + pow( c, -1.0 / 2.0) * (g) / Jmax / 4.0) - Jmax * f*f * (1.0 + pow( c, -1.0 / 2.0) * (g) / Jmax / 4.0) / 2.0 + (Vf / 4.0 + sqrt( c) * ( d) / Jmax / 8.0- 1.0 / Jmax * d*d / 8.0) * pow( c, -1.0 / 2.0) * (g) / Jmax);
+    cg = (-Xf + X0 + V0 * (Tjpdc + Tj1) + A0 * pow(Tjpdc + Tj1, 0.2e1) / 0.2e1 + Jmax * pow(Tjpdc + Tj1, 0.3e1) / 0.6e1 + (V0 + A0 * (Tjpdc + Tj1) + Jmax * pow(Tjpdc + Tj1, 0.2e1) / 0.2e1) * (Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) + (A0 / 0.2e1 + Jmax * (Tjpdc + Tj1) / 0.2e1) * pow(Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) - Jmax * pow(Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.3e1) / 0.6e1 + (Vf + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) * ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax / 0.2e1 - 0.1e1 / Jmax * pow( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.2e1) / 0.2e1) * ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) * pow( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.2e1) * pow(Jmax, -0.2e1) / 0.4e1 + pow(Jmax, -0.2e1) * pow( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.3e1) / 0.6e1) / (V0 + A0 * (Tjpdc + Tj1) + Jmax * pow(Tjpdc + Tj1, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpdc + Tj1)) * (Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) + (V0 + A0 * (Tjpdc + Tj1) + Jmax * pow(Tjpdc + Tj1, 0.2e1) / 0.2e1) * (0.1e1 + pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) + Jmax * pow(Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpdc + Tj1)) * (Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) * (0.1e1 + pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) - Jmax * pow(Tjndc + Tj1 + ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) * (0.1e1 + pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) / 0.2e1 + (Vf / 0.4e1 + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) * ( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax / 0.8e1 - 0.1e1 / Jmax * pow( Af + sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.2e1) / 0.8e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax);
 
     x1 = x0 - cg/2;
 
@@ -2228,7 +2213,6 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_31_Z3(SM_LIMITS* limitsGot
   double A0, V0, X0, Xf, Af, Vf;
   double  X1, A1, V1, V2 ;
   double x1, x0;
-  double a,b,c,d,e; //variables intermediaires
 
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
@@ -2273,13 +2257,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_31_Z3(SM_LIMITS* limitsGot
   x0 =Amax/Jmax;
   for (i=1;i<25;i++) {
     Tjpb2=x0;
-    a=A5dc - Jmax * Tjpb2;
-    b=Tjpb2 + Tjpb1;
-    c=Tjn1 + Tjpb2;
-    d=(Amax * Amax - a*a) / 2.0;
-    e=2.0 * Jmax * Tjpb2 - 2.0 * A5dc;
-
-    cg = (-Xf + X1 + V1 * (V5dc - (a) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 2.0 - 1.0 / Jmax * d - V1) / Amax + 1.0 / Amax * pow(V5dc - (a) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 2.0 - 1.0 / Jmax * d - V1, 2.0) / 2.0 + (V5dc - (a) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 2.0 - 1.0 / Jmax * d) * (c) + Amax * c*c / 2.0 - Jmax * c*c*c / 6.0 + (V5dc - (a) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 2.0) * (b) + (a) * b*b / 2.0 + Jmax * b*b*b / 6.0) / (V1 * (e) / Amax + 1.0 / Amax * (V5dc - (a) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 2.0 - 1.0 / Jmax * d - V1) * (e) + (e) * (c) + 2.0 * V5dc - 2.0 * (a) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 - 1.0 / Jmax * d + Amax * (c) - Jmax * c*c / 2.0 + (Jmax * Tjpb2 - A5dc) * (b) + 2.0 * (A5dc / 2.0 - Jmax * Tjpb2 / 2.0) * (b));
+    cg = (-Xf + X1 + V1 * (V5dc - (A5dc - Jmax * Tjpb2) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - pow(A5dc - Jmax * Tjpb2, 0.2e1)) / 0.2e1 - V1) / Amax + 0.1e1 / Amax * pow(V5dc - (A5dc - Jmax * Tjpb2) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - pow(A5dc - Jmax * Tjpb2, 0.2e1)) / 0.2e1 - V1, 0.2e1) / 0.2e1 + (V5dc - (A5dc - Jmax * Tjpb2) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - pow(A5dc - Jmax * Tjpb2, 0.2e1)) / 0.2e1) * (Tjn1 + Tjpb2) + Amax * pow(Tjn1 + Tjpb2, 0.2e1) / 0.2e1 - Jmax * pow(Tjn1 + Tjpb2, 0.3e1) / 0.6e1 + (V5dc - (A5dc - Jmax * Tjpb2) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 0.2e1) * (Tjpb2 + Tjpb1) + (A5dc - Jmax * Tjpb2) * pow(Tjpb2 + Tjpb1, 0.2e1) / 0.2e1 + Jmax * pow(Tjpb2 + Tjpb1, 0.3e1) / 0.6e1) / (V1 * (0.2e1 * Jmax * Tjpb2 - 0.2e1 * A5dc) / Amax + 0.1e1 / Amax * (V5dc - (A5dc - Jmax * Tjpb2) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - pow(A5dc - Jmax * Tjpb2, 0.2e1)) / 0.2e1 - V1) * (0.2e1 * Jmax * Tjpb2 - 0.2e1 * A5dc) + (0.2e1 * Jmax * Tjpb2 - 0.2e1 * A5dc) * (Tjn1 + Tjpb2) + 0.2e1 * V5dc - 0.2e1 * (A5dc - Jmax * Tjpb2) * Tjpb2 - Jmax * Tjpb2 * Tjpb2 - 0.1e1 / Jmax * (Amax * Amax - pow(A5dc - Jmax * Tjpb2, 0.2e1)) / 0.2e1 + Amax * (Tjn1 + Tjpb2) - Jmax * pow(Tjn1 + Tjpb2, 0.2e1) / 0.2e1 + (Jmax * Tjpb2 - A5dc) * (Tjpb2 + Tjpb1) + 0.2e1 * (A5dc / 0.2e1 - Jmax * Tjpb2 / 0.2e1) * (Tjpb2 + Tjpb1));
     x1 = x0 - cg/1.8;
     x0=x1;
     Tjpb2=x1;
@@ -2320,7 +2298,6 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_32_Z3(SM_LIMITS* limitsGot
   double A0, V0, X0, Xf, Af, Vf;
   double A6, V6, X6, V5 ;
   double x1, x0;
-  double a,b,c,d,e,f; //variables intermediaires
 
   /* Set Limits */
   Jmax  = limitsGoto->maxJerk;
@@ -2362,14 +2339,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_32_Z3(SM_LIMITS* limitsGot
   x0 =0;
   for (i=1;i<30;i++) {
     Tjpa2=x0;
-    a=Tjpa1 + Tjpa2;
-    b=Tjn1 + Tjpa2;
-    c=(Amax * Amax - A1dc * A1dc) / 2.0;
-    d=Jmax * Tjpa2 * Tjpa2 / 2.0;
-    e=V0 + A0 * (a) + Jmax * a*a / 2.0 + (A0 + Jmax * (a)) * Tjpa2 - d - 1.0 / Jmax * c;
-    f=e- V6;
-    
-    cg = (X6 - (e) * (f) / Amax + 1.0 / Amax * f*f / 2.0 - (e- (-Amax + Jmax * (b)) * (b) + Jmax * b*b / 2.0) * (b) - (-Amax + Jmax * (b)) * b*b / 2.0 + Jmax * b*b*b / 6.0 - V0 * (a) - A0 * a*a / 2.0 - Jmax * a*a*a / 6.0) / (-(V0 + A0 * (a) + Jmax * a*a / 2.0 + (A0 + Jmax * (a)) * Tjpa2 - d - 1.0 / Jmax * c) * (2.0 * A0 + 2.0 * Jmax * (a)) / Amax - (2.0 * A0 + 2.0 * Jmax * (a) - Jmax * (b) + Amax) * (b) - 2.0 * V0 - 2.0 * A0 * (a) - Jmax * a*a - (A0 + Jmax * (a)) * Tjpa2 + d + 1.0 / Jmax * c + (-Amax + Jmax * (b)) * (b) - Jmax * b*b / 2.0 - 2.0 * (-Amax / 2.0 + Jmax * (b) / 2.0) * (b));
+    cg = (X6 - (V0 + A0 * (Tjpa1 + Tjpa2) + Jmax * pow(Tjpa1 + Tjpa2, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpa1 + Tjpa2)) * Tjpa2 - Jmax * Tjpa2 * Tjpa2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - A1dc * A1dc) / 0.2e1) * (V0 + A0 * (Tjpa1 + Tjpa2) + Jmax * pow(Tjpa1 + Tjpa2, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpa1 + Tjpa2)) * Tjpa2 - Jmax * Tjpa2 * Tjpa2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - A1dc * A1dc) / 0.2e1 - V6) / Amax + 0.1e1 / Amax * pow(V0 + A0 * (Tjpa1 + Tjpa2) + Jmax * pow(Tjpa1 + Tjpa2, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpa1 + Tjpa2)) * Tjpa2 - Jmax * Tjpa2 * Tjpa2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - A1dc * A1dc) / 0.2e1 - V6, 0.2e1) / 0.2e1 - (V0 + A0 * (Tjpa1 + Tjpa2) + Jmax * pow(Tjpa1 + Tjpa2, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpa1 + Tjpa2)) * Tjpa2 - Jmax * Tjpa2 * Tjpa2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - A1dc * A1dc) / 0.2e1 - (-Amax + Jmax * (Tjn1 + Tjpa2)) * (Tjn1 + Tjpa2) + Jmax * pow(Tjn1 + Tjpa2, 0.2e1) / 0.2e1) * (Tjn1 + Tjpa2) - (-Amax + Jmax * (Tjn1 + Tjpa2)) * pow(Tjn1 + Tjpa2, 0.2e1) / 0.2e1 + Jmax * pow(Tjn1 + Tjpa2, 0.3e1) / 0.6e1 - V0 * (Tjpa1 + Tjpa2) - A0 * pow(Tjpa1 + Tjpa2, 0.2e1) / 0.2e1 - Jmax * pow(Tjpa1 + Tjpa2, 0.3e1) / 0.6e1) / (-(V0 + A0 * (Tjpa1 + Tjpa2) + Jmax * pow(Tjpa1 + Tjpa2, 0.2e1) / 0.2e1 + (A0 + Jmax * (Tjpa1 + Tjpa2)) * Tjpa2 - Jmax * Tjpa2 * Tjpa2 / 0.2e1 - 0.1e1 / Jmax * (Amax * Amax - A1dc * A1dc) / 0.2e1) * (0.2e1 * A0 + 0.2e1 * Jmax * (Tjpa1 + Tjpa2)) / Amax - (0.2e1 * A0 + 0.2e1 * Jmax * (Tjpa1 + Tjpa2) - Jmax * (Tjn1 + Tjpa2) + Amax) * (Tjn1 + Tjpa2) - 0.2e1 * V0 - 0.2e1 * A0 * (Tjpa1 + Tjpa2) - Jmax * pow(Tjpa1 + Tjpa2, 0.2e1) - (A0 + Jmax * (Tjpa1 + Tjpa2)) * Tjpa2 + Jmax * Tjpa2 * Tjpa2 / 0.2e1 + 0.1e1 / Jmax * (Amax * Amax - A1dc * A1dc) / 0.2e1 + (-Amax + Jmax * (Tjn1 + Tjpa2)) * (Tjn1 + Tjpa2) - Jmax * pow(Tjn1 + Tjpa2, 0.2e1) / 0.2e1 - 0.2e1 * (-Amax / 0.2e1 + Jmax * (Tjn1 + Tjpa2) / 0.2e1) * (Tjn1 + Tjpa2));
     x1 = x0 - cg/1.8;
     x0=x1;
     Tjpa2=x1;
@@ -2414,7 +2384,6 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_33_Z3(SM_LIMITS* limitsGot
   double DSZ32;
   double Amaxdc;
   double epsilon = 0.0000000000000000001;
-  double a,b,c,d,e,f,g,h,i; //variables intermediaires
 
   double coef =12;
   /* Set Limits */
@@ -2478,15 +2447,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_33_Z3(SM_LIMITS* limitsGot
 	i++;
 	Tj1=x0;
 	Tj1_0=Tj1;
-	a=(2 * Af * Af) - 4.0 * Vf * Jmax + 8.0 * A1dc * Jmax * Tj1 + 4.0 * Jmax * Jmax * Tj1 * Tj1 + 4.0 * V1dc * Jmax + 2.0 * A1dc * A1dc;
-        b=(-Jmax * Tjdc +  Af - sqrt( a) / 2.0) / Jmax;
-        c=8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tj1;
-        d=b + Tjdc;
-        e=Tj1 + b;
-        f=pow( a, -1.0 / 2.0);
-        g=A1dc + Jmax * Tj1;
-
-        cg = (-Xf + X1dc + V1dc * Tj1 + A1dc * Tj1 * Tj1 / 2.0 + Jmax * Tj1*Tj1*Tj1 / 6.0 + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 2.0) * (e) + (g) * e*e / 2.0 - Jmax * e*e*e / 6.0 + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 2.0 + (g) * (e) - Jmax * e*e / 2.0) * (d) + (g - Jmax * (e)) * d*d / 2.0 + Jmax * d*d*d / 6.0) / (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 2.0 + (g) * (e) + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 2.0) * (1.0 - f * (c) / Jmax / 4.0) + Jmax * e*e / 2.0 + 2.0 * (A1dc / 2.0 + Jmax * Tj1 / 2.0) * (e) * (1.0 - f * (c) / Jmax / 4.0) - Jmax * e*e * (1.0 - f * (c) / Jmax / 4.0) / 2.0 + (g + Jmax * (e) + (g) * (1.0 - f * (c) / Jmax / 4.0) - Jmax * (e) * (1.0 - f * (c) / Jmax / 4.0)) * (d) - (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 2.0 + (g) * (e) - Jmax * e*e / 2.0) * f * (c) / Jmax / 4.0 + (Jmax / 2.0 - Jmax * (1.0 - f * (c) / Jmax / 4.0) / 2.0) * d*d - (A1dc / 2.0 + Jmax * Tj1 / 2.0 - Jmax * (e) / 2.0) * (d) * f * (c) / Jmax / 2.0 - d*d * f * (c) / 8.0);
+	cg = (-Xf + X1dc + V1dc * Tj1 + A1dc * Tj1 * Tj1 / 0.2e1 + Jmax * pow(Tj1, 0.3e1) / 0.6e1 + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1) * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) + (A1dc + Jmax * Tj1) * pow(Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) / 0.2e1 - Jmax * pow(Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.3e1) / 0.6e1 + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1 + (A1dc + Jmax * Tj1) * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) - Jmax * pow(Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) / 0.2e1) * ((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) + (A1dc + Jmax * Tj1 - Jmax * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax)) * pow((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) / 0.2e1 + Jmax * pow((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.3e1) / 0.6e1) / (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1 + (A1dc + Jmax * Tj1) * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) + Jmax * pow(Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) / 0.2e1 + 0.2e1 * (A1dc / 0.2e1 + Jmax * Tj1 / 0.2e1) * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) - Jmax * pow(Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) / 0.2e1 + (A1dc + Jmax * Tj1 + Jmax * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) + (A1dc + Jmax * Tj1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) - Jmax * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1)) * ((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) - (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1 + (A1dc + Jmax * Tj1) * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) - Jmax * pow(Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax, 0.2e1) / 0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1 + (Jmax / 0.2e1 - Jmax * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) / 0.2e1) * pow((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) - (A1dc / 0.2e1 + Jmax * Tj1 / 0.2e1 - Jmax * (Tj1 + (-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax) / 0.2e1) * ((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.2e1 - pow((-Jmax * Tjdc +  Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tj1) / 0.8e1);
 
 	x1 = x0 - cg/coef;
 	//	printf("Tj1 %f\n",Tj1);
@@ -2508,7 +2469,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_33_Z3(SM_LIMITS* limitsGot
 
       //printf("Convergence de Newton en %d iterations\n",i);
       //printf("Tj1 %f  Tj2 %f\n",Tj1,Tj2);
-      Tj2 = (- (Jmax * Tjdc)+Af - sqrt( (2 * Af*Af - 4*Vf*Jmax + 8*A1dc*Jmax*Tj1 + 4 * Jmax * Jmax * Tj1 * Tj1 + 4 * V1dc * Jmax + 2 * A1dc * A1dc)) / 2.0) /  Jmax;
+      Tj2 = (- (Jmax * Tjdc)+Af - sqrt( (2 * Af*Af - 4*Vf*Jmax + 8*A1dc*Jmax*Tj1 + 4 * Jmax * Jmax * Tj1 * Tj1 + 4 * V1dc * Jmax + 2 * A1dc * A1dc)) / 0.2e1) /  Jmax;
       //  	printf("Tj2 %f\n",Tj2);
       Tjpa = Tjp1 + Tj1;
       Taca = 0;
@@ -2529,14 +2490,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_33_Z3(SM_LIMITS* limitsGot
 	i++;
 	Tj1=x0;
 	Tj1_0=Tj1;
-	a=Tjdc + Tj1;
-        b=(2 * Af * Af) - 4.0 * Vf * Jmax + 8.0 * A1dc * Jmax * Tj1 + 4.0 * Jmax * Jmax * Tjdc * Tjdc + 4.0 * V1dc * Jmax + 8.0 * A1dc * Jmax * Tjdc + 2.0 * A1dc * A1dc + 8.0 * Jmax * Jmax * Tjdc * Tj1 + 4.0 * Jmax * Jmax * Tj1 * Tj1;
-        c=Af - sqrt( b) / 2.0;
-        d=Tj1 + ( c) / Jmax;
-        e=pow( b, -1.0 / 2.0);
-        f=pow(Jmax, -2.0);
-
-        cg = (-Xf + X1dc + V1dc * (a) + A1dc * a*a / 2.0 + Jmax * a*a*a / 6.0 + (V1dc + A1dc * (a) + Jmax * a*a/ 2.0) * (d) + (A1dc + Jmax * (a)) * d*d / 2.0 - Jmax * d*d*d / 6.0 + (V1dc + A1dc * (a) + Jmax * a*a / 2.0 + (A1dc + Jmax * (a)) * (d) - Jmax * d*d / 2.0) * ( c) / Jmax + (A1dc + Jmax * (a) - Jmax * (d)) * c*c * f / 2.0 + f * c*c*c / 6.0) / (V1dc + A1dc * (a) + Jmax * a*a / 2.0 + (A1dc + Jmax * (a)) * (d) + (V1dc + A1dc * (a) + Jmax * a*a / 2.0) * (1.0 - e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0) + Jmax * d*d / 2.0 + 2.0 * (A1dc / 2.0 + Jmax * (a) / 2.0) * (d) * (1.0 - e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0) - Jmax * d*d * (1.0 - e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0) / 2.0 + (A1dc + Jmax * (a) + Jmax * (d) + (A1dc + Jmax * (a)) * (1.0 - e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0) - Jmax * (d) * (1.0 - e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0)) * ( c) / Jmax - (V1dc + A1dc * (a) + Jmax * a*a / 2.0 + (A1dc + Jmax * (a)) * (d) - Jmax * d*d / 2.0) * e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0 + (Jmax / 2.0 - Jmax * (1.0 - e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / Jmax / 4.0) / 2.0) * c*c * f - (A1dc / 2.0 + Jmax * (a) / 2.0 - Jmax * (d) / 2.0) * ( c) * f * e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / 2.0 - f * c*c * e * (8.0 * A1dc * Jmax + 8.0 * Jmax * Jmax * Tjdc + 8.0 * Jmax * Jmax * Tj1) / 8.0);
+	cg = (-Xf + X1dc + V1dc * (Tjdc + Tj1) + A1dc * pow(Tjdc + Tj1, 0.2e1) / 0.2e1 + Jmax * pow(Tjdc + Tj1, 0.3e1) / 0.6e1 + (V1dc + A1dc * (Tjdc + Tj1) + Jmax * pow(Tjdc + Tj1, 0.2e1) / 0.2e1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) + (A1dc + Jmax * (Tjdc + Tj1)) * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax, 0.2e1) / 0.2e1 - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax, 0.3e1) / 0.6e1 + (V1dc + A1dc * (Tjdc + Tj1) + Jmax * pow(Tjdc + Tj1, 0.2e1) / 0.2e1 + (A1dc + Jmax * (Tjdc + Tj1)) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax, 0.2e1) / 0.2e1) * ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax + (A1dc + Jmax * (Tjdc + Tj1) - Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax)) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1, 0.2e1) * pow(Jmax, -0.2e1) / 0.2e1 + pow(Jmax, -0.2e1) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1, 0.3e1) / 0.6e1) / (V1dc + A1dc * (Tjdc + Tj1) + Jmax * pow(Tjdc + Tj1, 0.2e1) / 0.2e1 + (A1dc + Jmax * (Tjdc + Tj1)) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) + (V1dc + A1dc * (Tjdc + Tj1) + Jmax * pow(Tjdc + Tj1, 0.2e1) / 0.2e1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) + Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax, 0.2e1) / 0.2e1 + 0.2e1 * (A1dc / 0.2e1 + Jmax * (Tjdc + Tj1) / 0.2e1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax, 0.2e1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) / 0.2e1 + (A1dc + Jmax * (Tjdc + Tj1) + Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) + (A1dc + Jmax * (Tjdc + Tj1)) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) - Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1)) * ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax - (V1dc + A1dc * (Tjdc + Tj1) + Jmax * pow(Tjdc + Tj1, 0.2e1) / 0.2e1 + (A1dc + Jmax * (Tjdc + Tj1)) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax, 0.2e1) / 0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1 + (Jmax / 0.2e1 - Jmax * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / Jmax / 0.4e1) / 0.2e1) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1, 0.2e1) * pow(Jmax, -0.2e1) - (A1dc / 0.2e1 + Jmax * (Tjdc + Tj1) / 0.2e1 - Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) / Jmax) / 0.2e1) * ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1) * pow(Jmax, -0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / 0.2e1 - pow(Jmax, -0.2e1) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1) / 0.2e1, 0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.4e1 * Jmax * Jmax * Tjdc * Tjdc + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tjdc + 0.2e1 * A1dc * A1dc + 0.8e1 * Jmax * Jmax * Tjdc * Tj1 + 0.4e1 * Jmax * Jmax * Tj1 * Tj1, -0.1e1 / 0.2e1) * (0.8e1 * A1dc * Jmax + 0.8e1 * Jmax * Jmax * Tjdc + 0.8e1 * Jmax * Jmax * Tj1) / 0.8e1);
 
 	x1 = x0 - cg/7;
 	if (isnan(x1)) {
@@ -2551,7 +2505,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_33_Z3(SM_LIMITS* limitsGot
       } while (ABS(Tj1_0 -Tj1) > epsilon);
       //printf("Convergence de Newton en %d iterations\n",i);
 
-      Tj2 = ( Af - sqrt( (2 * Af * Af - 4 * Vf * Jmax + 8 * A1dc * Jmax * Tj1 + 4 * Jmax * Jmax * Tjdc * Tjdc + 4 * V1dc * Jmax + 8 * A1dc * Jmax * Tjdc + 2 * A1dc * A1dc + 8 * Jmax * Jmax * Tjdc * Tj1 + 4 * Jmax * Jmax * Tj1 * Tj1)) / 2.0) /  Jmax;
+      Tj2 = ( Af - sqrt( (2 * Af * Af - 4 * Vf * Jmax + 8 * A1dc * Jmax * Tj1 + 4 * Jmax * Jmax * Tjdc * Tjdc + 4 * V1dc * Jmax + 8 * A1dc * Jmax * Tjdc + 2 * A1dc * A1dc + 8 * Jmax * Jmax * Tjdc * Tj1 + 4 * Jmax * Jmax * Tj1 * Tj1)) / 0.2e1) /  Jmax;
       Tjpa = Tjp1 + +Tjdc + Tj1;
       Taca = 0;
       Tjna = Tj1+Tj2;
@@ -2580,17 +2534,7 @@ SM_STATUS sm_JerkProfile_Type1_inf_DSAmax_sup_DSAmax2_33_Z3(SM_LIMITS* limitsGot
       i++;
       Tj1=x0;
       Tj1_0=Tj1;
-      a=Jmax * Tj1;
-  b=A1dc + a;
-  c=V1dc + A1dc * Tj1 + a * Tj1 / 2.0;
-  d=(2 * Af * Af) - 4.0 * Vf * Jmax + 4.0 * Jmax * a * Tj1 + 4.0 * V1dc * Jmax + 8.0 * A1dc * a + 2.0 * A1dc * A1dc;
-  e=8.0 * Jmax * a + 8.0 * A1dc * Jmax;
-  f=Af - sqrt( d) / 2.0;
-  g=Tj1 + ( f) / Jmax + Tjdc;
-  h=pow(Jmax, -2.0);
-  i=pow( d, -1.0 / 2.0);
-
-cg = (-Xf + X1dc + V1dc * Tj1 + A1dc * Tj1 * Tj1 / 2.0 + Jmax * Tj1*Tj1*Tj1 / 6.0 + (c) * (g) + (b) * g*g / 2.0 - Jmax * g*g*g / 6.0 + (c + (b) * (g) - Jmax * g*g / 2.0) * ( f) / Jmax + (b - Jmax * (g)) * f*f * h / 2.0 + h * f*f*f / 6.0) / (c + (b) * (g) + (c) * (1.0 - i * (e) / Jmax / 4.0) + Jmax * g*g / 2.0 + 2.0 * (A1dc / 2.0 + a / 2.0) * (g) * (1.0 - i * (e) / Jmax / 4.0) - Jmax * g*g * (1.0 - i * (e) / Jmax / 4.0) / 2.0 + (b + Jmax * (g) + (b) * (1.0 - i * (e) / Jmax / 4.0) - Jmax * (g) * (1.0 - i * (e) / Jmax / 4.0)) * ( f) / Jmax - (c + (b) * (g) - Jmax * g*g / 2.0) * i * (e) / Jmax / 4.0 + (Jmax / 2.0 - Jmax * (1.0 - i * (e) / Jmax / 4.0) / 2.0) * f*f * h - (A1dc / 2.0 + a / 2.0 - Jmax * (g) / 2.0) * ( f) * h * i * (e) / 2.0 - h * f*f * i * (e) / 8.0);
+      cg = (-Xf + X1dc + V1dc * Tj1 + A1dc * Tj1 * Tj1 / 0.2e1 + Jmax * pow(Tj1, 0.3e1) / 0.6e1 + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) + (A1dc + Jmax * Tj1) * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) / 0.2e1 - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.3e1) / 0.6e1 + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1 + (A1dc + Jmax * Tj1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) / 0.2e1) * ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + (A1dc + Jmax * Tj1 - Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc)) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.2e1) * pow(Jmax, -0.2e1) / 0.2e1 + pow(Jmax, -0.2e1) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.3e1) / 0.6e1) / (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1 + (A1dc + Jmax * Tj1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) + (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) + Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) / 0.2e1 + 0.2e1 * (A1dc / 0.2e1 + Jmax * Tj1 / 0.2e1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) / 0.2e1 + (A1dc + Jmax * Tj1 + Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) + (A1dc + Jmax * Tj1) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) - Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1)) * ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax - (V1dc + A1dc * Tj1 + Jmax * Tj1 * Tj1 / 0.2e1 + (A1dc + Jmax * Tj1) * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) - Jmax * pow(Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc, 0.2e1) / 0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1 + (Jmax / 0.2e1 - Jmax * (0.1e1 - pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / Jmax / 0.4e1) / 0.2e1) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.2e1) * pow(Jmax, -0.2e1) - (A1dc / 0.2e1 + Jmax * Tj1 / 0.2e1 - Jmax * (Tj1 + ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) / Jmax + Tjdc) / 0.2e1) * ( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1) * pow(Jmax, -0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / 0.2e1 - pow(Jmax, -0.2e1) * pow( Af - sqrt( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc) / 0.2e1, 0.2e1) * pow( (2 * Af * Af) - 0.4e1 * Vf * Jmax + 0.4e1 * Jmax * Jmax * Tj1 * Tj1 + 0.4e1 * V1dc * Jmax + 0.8e1 * A1dc * Jmax * Tj1 + 0.2e1 * A1dc * A1dc, -0.1e1 / 0.2e1) * (0.8e1 * Jmax * Jmax * Tj1 + 0.8e1 * A1dc * Jmax) / 0.8e1);
 
       x1 = x0 - cg/5;
       //printf("Tj1 %3.12f\n",Tj1);
@@ -2613,7 +2557,7 @@ cg = (-Xf + X1dc + V1dc * Tj1 + A1dc * Tj1 * Tj1 / 2.0 + Jmax * Tj1*Tj1*Tj1 / 6.
     } while (ABS(Tj1_0 -Tj1) > epsilon);
     //printf("Convergence de Newton en %d iterations\n",i);
     //printf("Tj1 %f\n",Tj1);
-    Tj2 = ( Af - sqrt( (2 * Af * Af - 4 * Vf * Jmax + 4 * Jmax * Jmax * Tj1 * Tj1 + 4 * V1dc * Jmax + 8 * A1dc * Jmax * Tj1 + 2 * A1dc * A1dc)) / 2.0) /  Jmax;
+    Tj2 = ( Af - sqrt( (2 * Af * Af - 4 * Vf * Jmax + 4 * Jmax * Jmax * Tj1 * Tj1 + 4 * V1dc * Jmax + 8 * A1dc * Jmax * Tj1 + 2 * A1dc * A1dc)) / 0.2e1) /  Jmax;
 
     //printf("Tj2 %f\n",Tj2);
     Tjpa = Tj1+Tjp1;
@@ -4489,11 +4433,13 @@ SM_STATUS sm_FindTransitionTime( SM_POSELIMITS limitsGoto, SM_TRANSITION_MOTION*
   for(i=0; i<SM_NB_DIM; i++) {
 
     if (i < 3) {
+      // cartesien
       /*Set Limits*/
       auxLimits.maxVel  = limitsGoto.linear.maxVel;
       auxLimits.maxAcc  = limitsGoto.linear.maxAcc;
       auxLimits.maxJerk = limitsGoto.linear.maxJerk * 3;
     } else {
+      //rotation
       auxLimits.maxVel  = limitsGoto.linear.maxVel;
       auxLimits.maxAcc  = limitsGoto.linear.maxAcc;
       auxLimits.maxJerk = limitsGoto.linear.maxJerk * 3;
@@ -8877,6 +8823,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 
 
 
+
 void wait_for_key ()
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__)  // every keypress registered, also arrow keys
@@ -8885,11 +8832,20 @@ void wait_for_key ()
   FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
   _getch();
 #elif defined(unix) || defined(__unix) || defined(__unix__) || defined(__APPLE__)
-  std::cout << std::endl << "Press ENTER to continue..." << std::endl;
 
-  std::cin.clear();
-  std::cin.ignore(std::cin.rdbuf()->in_avail());
-  std::cin.get();
+
+
+ int temps = 3;
+ std::cout << std::endl<< "Wait "<<temps<< " secondes"<<std::endl;
+ clock_t arrivee=clock()+(temps*CLOCKS_PER_SEC); // On calcule le moment ou l'attente devra s'arreter
+ while(clock()<arrivee);
+
+    //   std::cout << std::endl << "Press ENTER to continue..." << std::endl;
+   // std::cin.clear(); //on clear le buffer d'entrer
+   // std::cin.ignore(std::cin.rdbuf()->in_avail(), '\n'); //on ignore toute les touches qui sont taper avant la touche entrer
+   //std::cin.get(); // on
+
+
 #endif
   return;
 }

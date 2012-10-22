@@ -1,8 +1,0 @@
-LDFLAGS = -lm
-
-test-diff: test-diff.c Calcul_cg.o Calcul_cg_modif.o
-
-Calcul_cg_modif.c : Calcul_cg_modif.h
-
-Calcul_cg.c : Calcul_cg.h
-
