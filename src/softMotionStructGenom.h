@@ -35,7 +35,7 @@
 
 
 #define SM_TRAJ_NB_AXIS 32
-#define SM_SEGMENT_TRACK_MAX_SIZE 128
+#define SM_SEGMENT_TRACK_MAX_SIZE 256
 
 /*
  * The two following structures are the new way 
