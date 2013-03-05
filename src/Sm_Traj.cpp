@@ -465,7 +465,7 @@ int SM_TRAJ::append(SM_TRAJ_STR inTraj)
 {
   SM_SEG seg;
   if(traj.size() != (unsigned int)inTraj.nbAxis) {
-    printf("ERROR SM_TRAJ:append() diffrent size in trajs\n");
+    // printf("ERROR SM_TRAJ:append() diffrent size in trajs\n");
     traj.clear();
     traj.resize(inTraj.nbAxis);
   }
@@ -495,7 +495,7 @@ int SM_TRAJ::append(SM_TRAJ &smTraj)
   smTraj.convertToSM_TRAJ_STR(&inTraj);
 
   if(traj.size() != (unsigned int)inTraj.nbAxis) {
-    printf("ERROR SM_TRAJ:append() diffrent size in trajs\n");
+    // printf("ERROR SM_TRAJ:append() diffrent size in trajs\n");
     traj.clear();
     traj.resize(inTraj.nbAxis);
   }
@@ -1433,6 +1433,7 @@ int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::
   return( computeTraj(IC, FC, limits,  mode, imposedDuration));
 }
 
+//imposedDuration should be the same for all axis, if not, only the first value is taken 
 int SM_TRAJ::computeTraj(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits, SM_TRAJ_MODE mode, std::vector<double> imposedDuration) {
 
   
@@ -1473,6 +1474,7 @@ unsigned int nb_dofs = IC.size();
 	motion_arr[i].fc_rel.x =  FC[i].x - IC[i].x;
 	motion_arr[i].motion_duration = imposedDuration.at(i);
       }
+
       if(computeUnsynchronizedMotion(motion_arr) != 0) {
 	printf("ERROR cannot compute unsynchronized motion\n");
 	return 1;
@@ -1520,7 +1522,7 @@ unsigned int nb_dofs = IC.size();
 	motion_arr[i].motion_duration = imposedDuration.at(i);
       }
       if(computeSynchronizedMotion(motion_arr) != 0) {
-	printf("ERROR cannot compute unsynchronized motion\n");
+	printf("ERROR cannot compute synchronized motion\n");
 	return 1;
       }
         checkTrajBounds(0.1, IC, FC);
@@ -1742,7 +1744,7 @@ unsigned int nb_dofs = IC.size();
 
     /* Compute trajectory lenght */
     sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
-
+    
     /* Get initial conditions for each vectors Acc Vel and Pos */
     double GD =  motion_arr[i].fc_rel.x * motion_arr[i].dir;
     if (sm_VerifyTimes( SM_DISTANCE_TOLERANCE, GD,  motion_arr[i].jerk, 
@@ -1757,35 +1759,202 @@ unsigned int nb_dofs = IC.size();
 }
 
 
-
-
-
+// Ran implement
 
 int SM_TRAJ::computeSynchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr)
 {
-    //to implement
+  
+  int nb_dofs = motion_arr.size();
+  SM_COND FCm;
+  
+  if(nb_dofs <= 0) {
+    printf("ERROR  SM_TRAJ::computesynchronizedMotion nb_dofs <= 0\n");
+    return 1;
+  }
+  
+  for (int i=0; i < nb_dofs; i++) {    
+    /* Compute the monodimensional trajectory */
+    if (sm_ComputeSoftMotion( motion_arr[i].ic_rel, motion_arr[i].fc_rel, 
+			      motion_arr[i].limits, &(motion_arr[i].times), 
+			      &(motion_arr[i].dir))!=0) {
+      printf("ERROR Jerk Profile on dim %d\n",i);
+      return 1;
+    }
+
+    /* Compute trajectory lenght */
+    sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+  }
+  /* Get the maximum time on axis */
+  double max_duration = motion_arr[0].motion_duration;
+  int max_axi = 0;
+  for (int i=0;i<nb_dofs;i++)  {
+    if(max_duration < motion_arr[i].motion_duration) {
+      max_duration = motion_arr[i].motion_duration;  
+      max_axi = i;
+    }
+  }
+  //  printf("max_duration = %f\n",max_duration);
+  //  printf("max_axi = %d\n",max_axi);
+  /*--------------Time Synchronized Method----------------------*/
+  std::vector<double> time_factor;
+  time_factor.resize(nb_dofs);
+  std::vector<double> phase_factor;
+  phase_factor.resize(nb_dofs);
+  /*-----------------------------------------------------------
+  for (int i=0;i<nb_dofs;i++)  {
+    time_factor[i] = motion_arr[i].motion_duration/max_duration;
+    printf("time_facotr is %f\n",time_factor[i]);
+    motion_arr[i].limits.maxJerk = motion_arr[i].limits.maxJerk*time_factor[i]*time_factor[i]*time_factor[i];
+    motion_arr[i].limits.maxAcc = motion_arr[i].limits.maxAcc*time_factor[i]*time_factor[i];
+    motion_arr[i].limits.maxVel = motion_arr[i].limits.maxVel*time_factor[i];
+    // Compute the monodimensional trajectory with the same duration by adjust the limits
+    if (sm_ComputeSoftMotion( motion_arr[i].ic_rel, motion_arr[i].fc_rel, 
+			      motion_arr[i].limits, &(motion_arr[i].times), 
+			      &(motion_arr[i].dir))!=0) {
+      printf("ERROR Jerk Profile on dim %d\n",i);
+      return 1;
+    }
+  
+    // Compute new trajectory length with same length
+    sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+    printf("duration new is %f\n",motion_arr[i].motion_duration);
+
+    //Get initial conditions for each vectors Acc Vel and Pos 
+    double GD =  motion_arr[i].fc_rel.x * motion_arr[i].dir;
+    motion_arr[i].jerk.J1 = motion_arr[i].jerk.J1 * time_factor[i]*time_factor[i]*time_factor[i];
+
+    if (sm_VerifyTimes( SM_DISTANCE_TOLERANCE, GD,  motion_arr[i].jerk, 
+			motion_arr[i].ic, motion_arr[i].dir, 
+			motion_arr[i].times, &FCm, &(motion_arr[i].acc), 
+			&(motion_arr[i].vel), &(motion_arr[i].pos), SM_ON)!=0) {
+      printf(" Verify Times on dim %d\n",i);
+      return 1;
+    } 
+     -------------------------------------------------------------*/
+
+
+  /*--------------Frase Synchronized Method----------------------*/
+ 
+    for (int i=0;i<nb_dofs;i++)  {
+    phase_factor[i] =	ABS(motion_arr[i].fc_rel.x/motion_arr[max_axi].fc_rel.x);
+    // printf("phase_facotr is %f\n",phase_factor[i]); 
+    motion_arr[i].times.Tjpa =  motion_arr[max_axi].times.Tjpa;
+    motion_arr[i].times.Taca =  motion_arr[max_axi].times.Taca;
+    motion_arr[i].times.Tjna =  motion_arr[max_axi].times.Tjna;
+    motion_arr[i].times.Tvc =  motion_arr[max_axi].times.Tvc;
+    motion_arr[i].times.Tjnb =  motion_arr[max_axi].times.Tjnb;
+    motion_arr[i].times.Tacb =  motion_arr[max_axi].times.Tacb;
+    motion_arr[i].times.Tjpb =  motion_arr[max_axi].times.Tjpb; 
+
+    motion_arr[i].jerk.sel = 1;
+    motion_arr[i].jerk.J1 =  motion_arr[max_axi].jerk.J1 * phase_factor[i];
+    /*
+    motion_arr[i].pos.Tjpa =  motion_arr[max_axi].pos.Tjpa * phase_factor[i];
+    motion_arr[i].pos.Taca =  motion_arr[max_axi].pos.Taca * phase_factor[i];
+    motion_arr[i].pos.Tjna =  motion_arr[max_axi].pos.Tjna * phase_factor[i];
+    motion_arr[i].pos.Tvc =  motion_arr[max_axi].pos.Tvc * phase_factor[i];
+    motion_arr[i].pos.Tjnb =  motion_arr[max_axi].pos.Tjnb * phase_factor[i];
+    motion_arr[i].pos.Tacb =  motion_arr[max_axi].pos.Tacb * phase_factor[i];
+    motion_arr[i].pos.Tjpb =  motion_arr[max_axi].pos.Tjpb * phase_factor[i];
+    
+    motion_arr[i].vel.Tjpa =  motion_arr[max_axi].vel.Tjpa * pow(phase_factor[i],1.0/2);
+    motion_arr[i].vel.Taca =  motion_arr[max_axi].vel.Taca * pow(phase_factor[i],1.0/2);
+    motion_arr[i].vel.Tjna =  motion_arr[max_axi].vel.Tjna * pow(phase_factor[i],1.0/2);
+    motion_arr[i].vel.Tvc =  motion_arr[max_axi].vel.Tvc * pow(phase_factor[i],1.0/2);
+    motion_arr[i].vel.Tjnb =  motion_arr[max_axi].vel.Tjnb * pow(phase_factor[i],1.0/2);
+    motion_arr[i].vel.Tacb =  motion_arr[max_axi].vel.Tacb * pow(phase_factor[i],1.0/2);
+    motion_arr[i].vel.Tjpb =  motion_arr[max_axi].vel.Tjpb * pow(phase_factor[i],1.0/2);  
+	
+    motion_arr[i].acc.Tjpa =  motion_arr[max_axi].acc.Tjpa *  pow(phase_factor[i],1.0/3);
+    motion_arr[i].acc.Taca =  motion_arr[max_axi].acc.Taca *  pow(phase_factor[i],1.0/3);
+    motion_arr[i].acc.Tjna =  motion_arr[max_axi].acc.Tjna *  pow(phase_factor[i],1.0/3);
+    motion_arr[i].acc.Tvc =  motion_arr[max_axi].acc.Tvc *  pow(phase_factor[i],1.0/3);
+    motion_arr[i].acc.Tjnb =  motion_arr[max_axi].acc.Tjnb*  pow(phase_factor[i],1.0/3);
+    motion_arr[i].acc.Tacb =  motion_arr[max_axi].acc.Tacb*  pow(phase_factor[i],1.0/3);
+    motion_arr[i].acc.Tjpb =  motion_arr[max_axi].acc.Tjpb*  pow(phase_factor[i],1.0/3); */
+    
+    //motion_arr[i].ic.a = motion_arr[max_axi].ic.a * phase_factor[i];
+    //motion_arr[i].ic.v = motion_arr[max_axi].ic.v * phase_factor[i];
+    // motion_arr[i].ic.x = motion_arr[i].ic.x;
+    //motion_arr[i].fc.a = motion_arr[max_axi].fc.a * phase_factor[i];
+    //motion_arr[i].fc.v = motion_arr[max_axi].fc.v * phase_factor[i];
+    //motion_arr[i].fc.x = motion_arr[i].fc.x;	
+    //motion_arr[i].dir =  motion_arr[max_axi].dir;  
+    //motion_arr[i].dir =  motion_arr[i].dir;
+     
+    sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+    // printf("duration on axi %d = %f\n",i,motion_arr[i].motion_duration);
+   
+    // Get initial conditions for each vectors Acc Vel and Pos 
+    double GD = motion_arr[i].fc_rel.x * motion_arr[i].dir;
+    if (sm_VerifyTimes( SM_DISTANCE_TOLERANCE, GD,  motion_arr[i].jerk, 
+			motion_arr[i].ic, motion_arr[i].dir, 
+			motion_arr[i].times, &FCm, &(motion_arr[i].acc), 
+			&(motion_arr[i].vel), &(motion_arr[i].pos), SM_ON)!=0) {
+      printf(" Verify Times on dim %d\n",i);
+      return 1;
+    } 
+    
+  }
     return 0;
 }
+  
 
-int SM_TRAJ::computeTraj(std::vector< std::vector<double> > via_points, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE type)
+
+int SM_TRAJ::computeTraj(std::vector< std::vector<SM_COND> > via_points, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE type)
 {
   std::vector<SM_TRAJ> smTrajs;
   SM_TRAJ smTraj;
   
+  SM_TRAJ Traj_P2P;              // Each point to point trajectory via n points
+  SM_TRAJ Traj_3seg;             // Each smooth 3-segments trajectory 
+  SM_TRAJ Traj_Temp;             // Temporay trajectory to store the extracted trajectory
+  // SM_TRAJ Traj_Smooth;           // Output smooth trajectory
+  std::vector<double> time;      // Time on the beginning/end point of each 3-segments trajectory
+  std::vector<std::vector<SM_COND> > cond_3seg;   // Condition of the beginning/end point of each 3-segments trajectory  
+  std::vector<double> Timp;      // Imposed Time
+
+  int nb_nod,nb_dofs;
+  nb_nod = via_points.size();
+  nb_dofs = via_points[0].size();
+
+  Traj_P2P.resize(nb_dofs);
+  Traj_3seg.resize(nb_dofs);
+  // Traj_Smooth.resize(nb_dofs);
+  Traj_Temp.resize(nb_dofs);
+  time.resize(2*(nb_nod-2));
+
+  cond_3seg.resize(2*(nb_nod-2));
+  for(int i=0;i<2*(nb_nod-2);i++) {
+    cond_3seg[i].resize(nb_dofs);
+  }
+  /* Check if the velocity of each via points is 0 */
+  for(unsigned int i=0;i< via_points.size()-1;i++) {
+    for(unsigned int j=0;j< nb_dofs-1;j++) {
+      if (via_points[i][j].v != 0) {
+	printf("WARNING Velocity of via_points is not 0\n");
+	return 1;
+      }
+    }
+  }
 
   if(via_points.size() < 2) {
     cout << "ERROR computeTraj via_points.size() < 2 " << endl;
     return 1;
+  } 
+  if(limits.size() != nb_dofs) {
+    printf("ERROR SM_TRAJ::computeTraj limits.size() != nb_dofs \n");
+    return 1;
   }
 
   smTrajs.clear();
-  for(unsigned int i=0; i< via_points.size()-1; i++) {
-    smTraj.clear();
-    //    if(smTraj.computeTraj(conds[i], conds[i+1], limits, SM_PTP) != 0) {
-    // cout << "ERROR computeTraj cannot compute traj betewwen configs "<< i << " and " << i+1 << endl; 
-      //  return 1;
-      // }
-    smTrajs.push_back(smTraj);
+  // New Limits
+  std::vector<SM_LIMITS> limits_new(nb_dofs);
+  for(int k=0;k<nb_dofs;k++) {
+    limits_new[k].maxJerk = limits[k].maxJerk*8/27;
+    limits_new[k].maxAcc = limits[k].maxAcc;
+    //limits_new[k].maxVel = limits[k].maxVel * 0.65;
+    limits_new[k].maxVel = limits[k].maxVel;
   }
 
 
@@ -1798,22 +1967,254 @@ int SM_TRAJ::computeTraj(std::vector< std::vector<double> > via_points, std::vec
 
   switch(type) { 
   case SM_STOP_AT_VIA_POINT:
+ {
+    for(unsigned int i=0; i< via_points.size()-1; i++) {
+      Traj_P2P.clear();
+      
+      if(Traj_P2P.computeTraj(via_points[i], via_points[i+1], limits, SM_TRAJ::SM_SYNCHRONIZED) != 0) {
+	std::cout << "ERROR computeTraj cannot compute traj betewwen configs "<< i << " and " << i+1 << std::endl; 
+	return 1;
+      }
+      this->append(Traj_P2P);
+    }
+
     // concat all the ptp trajectories
-    for(unsigned int i=0; i<smTrajs.size(); i++) {
-      this->append(smTrajs[i]);
+    //for(unsigned int i=0; i<smTrajs.size(); i++) {
+    //  this->append(smTrajs[i]);
+    // }
+    break;
+ }
+  case SM_SMOOTH_AT_VIA_POINT:
+ {
+   std::vector<std::vector<SM_COND> > newCond(nb_nod-2);  // new cond for each via points
+    for(int i=0;i<nb_nod-2;i++) {
+      newCond[i].resize(nb_dofs);
+    }
+    Timp.resize(nb_dofs);
+   
+    for(unsigned int i=0; i< via_points.size()-1; i++) {
+      Traj_P2P.clear();
+      Traj_Temp.clear();
+      
+      //if(Traj_P2P.computeTraj(via_points[i], via_points[i+1], limits, SM_TRAJ::SM_SYNCHRONIZED) != 0) {
+      if(Traj_P2P.computeTraj(via_points[i], via_points[i+1], limits_new, SM_TRAJ::SM_SYNCHRONIZED) != 0) {
+	std::cout << "ERROR computeTraj cannot compute traj betewwen configs "<< i << " and " << i+1 << std::endl; 
+	return 1;
+      }
+      // To compute the time of 3seg points
+      if(i == 0)  {
+	time[i] = Traj_P2P.traj[0][4].timeOnTraj; 
+	// Get the condition of the first 3 segment point
+	Traj_P2P.getMotionCond(time[i],cond_3seg[i]); 
+	for(int k=0;k<4;k++) {
+	  Traj_Temp.extractTraj(Traj_P2P,k);
+	}	
+	this->append(Traj_Temp);
+      }
+      if(i > 0 && i<(nb_nod-2)) {
+	time[2*i-1] = Traj_P2P.traj[0][3].timeOnTraj;
+	time[2*i] = Traj_P2P.traj[0][4].timeOnTraj;
+	// Get the condition of each 3 segment point
+	Traj_P2P.getMotionCond(time[2*i-1],cond_3seg[2*i-1]); 
+	Traj_P2P.getMotionCond(time[2*i],cond_3seg[2*i]); 
+      }
+      
+      if(i == (nb_nod-2)) {
+	time[2*i-1] = Traj_P2P.traj[0][3].timeOnTraj; 
+	Traj_P2P.getMotionCond(time[2*i-1],cond_3seg[2*i-1]); 
+      } 
+     
+      if (i>0)  {
+	/* update the new condition of via points */
+	for(int j=0;j<nb_dofs;j++) {
+	  newCond[i-1][j].a = via_points[i][j].a;	
+	  newCond[i-1][j].x = via_points[i][j].x;
+	  newCond[i-1][j].v = (cond_3seg[2*i-2][j].v+cond_3seg[2*i-1][j].v)/5; 
+	  //printf("v = %f\n",newCond[i-1][j].v);
+	}
+	/* Compute 3 segment trajs */
+	Traj_3seg.clear();
+	//Compute Timp 
+	double _Timp;
+	_Timp = computeTimp(cond_3seg[2*i-2],newCond[i-1],limits);
+	//printf("_Timp1 = %f\n",_Timp);
+	//Timp[0] = 0.6;
+	Timp[0] = _Timp;
+	Timp[1] = _Timp;
+	Traj_3seg.computeTraj(cond_3seg[2*i-2],newCond[i-1],limits,SM_TRAJ::SM_3SEGMENT,Timp);
+	std::vector<double> A(2),J(2),V(2);
+	A = Traj_3seg.getAmax();
+	J = Traj_3seg.getJmax();
+	V = Traj_3seg.getVmax();
+	printf("On %d three segment trajectory : Vmax[0] = %f, Vmax[1] = %f\n",i,V[0],V[1]);
+	printf("On %d three segment trajectory : Amax[0] = %f, Amax[1] = %f\n",i,A[0],A[1]);
+	printf("On %d three segment trajectory : Jmax[0] = %f, Jmax[1] = %f\n",i,J[0],J[1]);
+	
+	/*********************************
+	std::vector<double> a(2);
+	a = Traj_3seg.getVmax();
+	//printf("va[0] = %f, va[1] = %f\n",a[0],a[1]);
+	*********************************/
+
+	this->append(Traj_3seg);
+	Traj_3seg.clear();
+	_Timp = computeTimp(newCond[i-1],cond_3seg[2*i-1],limits);
+	//printf("_Timp2 = %f\n",_Timp);
+	Timp[0] = _Timp;
+	Timp[1] = _Timp;
+	Traj_3seg.computeTraj(newCond[i-1],cond_3seg[2*i-1],limits,SM_TRAJ::SM_3SEGMENT,Timp);
+	//std::vector<double> b(2);
+	//b = Traj_3seg.getVmax();
+	//printf("vb[0] = %f, vb[1] = %f\n",b[0],b[1]);
+	this->append(Traj_3seg);
+			
+	if(i < (nb_nod-2)) {
+	  Traj_Temp.extractTraj(Traj_P2P,3);
+	  this->append(Traj_Temp);
+	}  
+	if (i == (nb_nod-2)) {
+	  for(int k=3;k<7;k++) {
+	    Traj_Temp.extractTraj(Traj_P2P,k);
+	  }
+	  this->append(Traj_Temp);
+	}
+      }
+    }
+ 
+    break;
+ }
+
+  case SM_SMOOTH_APPROACH_VIA_POINT:  {
+    Timp.resize(nb_dofs);
+    int m;
+    m = 0;
+   
+    for(unsigned int i=0; i< via_points.size()-1; i++) {
+      Traj_P2P.clear();
+      Traj_Temp.clear();
+      // check the angels between 2 via points (2D)
+      double k;
+      k = ABS((via_points[i+1][1].x-via_points[i][1].x)/(via_points[i+1][0].x-via_points[i][0].x));
+      printf("k = %f\n",k);
+      if(k > 3/4) 
+	{ 
+	  std::vector<SM_LIMITS> limits_new(nb_dofs);
+	  for(int k=0;k<nb_dofs;k++) {
+	    limits_new[k].maxJerk = limits[k].maxJerk*2/3;
+	    limits_new[k].maxAcc = limits[k].maxAcc;
+	    limits_new[k].maxVel = limits[k].maxVel;
+	  }
+	  
+	  if(Traj_P2P.computeTraj(via_points[i], via_points[i+1], limits_new, SM_TRAJ::SM_SYNCHRONIZED) != 0) {
+	    std::cout << "ERROR computeTraj cannot compute traj betewwen configs "<< i << " and " << i+1 << std::endl; 
+	    return 1;
+	  }
+	}
+      
+      else
+	if(Traj_P2P.computeTraj(via_points[i], via_points[i+1], limits, SM_TRAJ::SM_SYNCHRONIZED) != 0) {
+	  //if(Traj_P2P.computeTraj(via_points[i], via_points[i+1], limits_new, SM_TRAJ::SM_SYNCHRONIZED) != 0) {
+	  std::cout << "ERROR computeTraj cannot compute traj betewwen configs "<< i << " and " << i+1 << std::endl; 
+	  return 1;
+	}
+      
+      // To compute the time of 3seg points
+      if(i == 0)  {
+	time[i] = Traj_P2P.traj[0][4].timeOnTraj; 
+	
+	// Get the condition of the first 3 segment point
+	Traj_P2P.getMotionCond(time[i],cond_3seg[i]); 
+	for(int k=0;k<4;k++) {
+	  Traj_Temp.extractTraj(Traj_P2P,k);
+	}	
+	//Traj_Smooth.append(Traj_Temp);
+	this->append(Traj_Temp);
+	//smTrajs.push_back(Traj_Temp);	
+      }
+      
+      if(i > 0 && i<(nb_nod-2)) {
+	time[2*i-1] = Traj_P2P.traj[0][3].timeOnTraj;
+	time[2*i] = Traj_P2P.traj[0][4].timeOnTraj;
+	// Get the condition of each 3 segment point
+	Traj_P2P.getMotionCond(time[2*i-1],cond_3seg[2*i-1]); 
+	Traj_P2P.getMotionCond(time[2*i],cond_3seg[2*i]); 
+      }
+      
+      if(i == (nb_nod-2)) {
+	time[2*i-1] = Traj_P2P.traj[0][3].timeOnTraj; 
+	Traj_P2P.getMotionCond(time[2*i-1],cond_3seg[2*i-1]); 
+      }  
+      
+      if (i>0 && i<(nb_nod-1))  {
+	Traj_3seg.clear();
+	//Compute Timp 
+	double _Timp;
+	_Timp = computeTimp(cond_3seg[2*i-2],cond_3seg[2*i-1],limits);
+	//Timp[0] = 0.7;
+	Timp[0] = _Timp;
+	Timp[1]= _Timp;
+	Traj_3seg.computeTraj(cond_3seg[2*i-2],cond_3seg[2*i-1],limits,SM_TRAJ::SM_3SEGMENT,Timp);
+       	/*	
+	std::vector<double> A(2),J(2),V(2);
+	A = Traj_3seg.getAmax();
+	J = Traj_3seg.getJmax();
+	V = Traj_3seg.getVmax();
+	printf("On %d three segment trajectory : Vmax[0] = %f, Vmax[1] = %f\n",i,V[0],V[1]);
+	printf("On %d three segment trajectory : Amax[0] = %f, Amax[1] = %f\n",i,A[0],A[1]);
+	printf("On %d three segment trajectory : Jmax[0] = %f, Jmax[1] = %f\n",i,J[0],J[1]);  */
+	/*-----------------------------------	
+	SM_STATUS status;
+	std::vector<SM_OUTPUT> motion;
+	motion.resize(3);
+	
+	std::vector<SM_COND_DIM> IC_3seg(1);
+	std::vector<SM_COND_DIM> FC_3seg(1);
+	
+	IC_3seg[0].Axis.resize(nb_dofs);
+	FC_3seg[0].Axis.resize(nb_dofs);
+	IC_3seg[0].Axis = cond_3seg[i-1+m];
+	FC_3seg[0].Axis = cond_3seg[i+m];
+	
+	m++;
+
+	status = sm_SolveWithoutOpt(IC_3seg,FC_3seg, Timp, motion);
+	
+	if( status == SM_ERROR) {
+	  std::cout << "Error in SM when computing 3 segments trajectory" << std::endl;
+	  return 1;
+	}
+	
+	// trajId?
+	int trajId = 0;
+	// sampling?
+	double sampling = 0.001; //1ms, or to be tic* 1/10
+	// premier_point
+	SM_TRAJ traj_3seg;
+	Traj_3seg.importFromSM_OUTPUT(trajId, sampling, motion);  
+	---------------------------------------------------------*/
+	this->append(Traj_3seg);
+	//smTrajs.push_back(Traj_3seg);
+      	
+	if(i < (nb_nod-2)) {
+	  Traj_Temp.extractTraj(Traj_P2P,3);
+	  this->append(Traj_Temp);
+	  //smTrajs.push_back(Traj_Temp);  
+	}  
+	if (i == (nb_nod-2)) {
+	  for(int k=3;k<7;k++) {
+	  Traj_Temp.extractTraj(Traj_P2P,k);
+	  }
+	  this->append(Traj_Temp);
+	  //smTrajs.push_back(Traj_Temp);
+	}
+      }  
     }
     break;
-  case SM_SMOOTH_AT_VIA_POINT:
-
-    break;
-  default:
+  }
+ default:
     cout << "ERROR computeTraj wrong SM_TRAJ_TYPE" << endl;
     return 1;
   }
-
-
-
-
   return 0;
 }
 
@@ -2203,5 +2604,89 @@ int SM_TRAJ::mergetwotrajectories( SM_TRAJ &Trajinitial, SM_TRAJ &Trajfinal)
     // On obtiendra alors les conditions initiales et les conditions finales
 
     // Et il faut calculer la courbe.
+    return 0;
+}
+
+
+double SM_TRAJ::computeTimp(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits)
+{
+  double Timp;
+  unsigned int nb_dofs = IC.size();
+  std::vector<SM_MOTION_AXIS> motion_arr;
+  
+  if(FC.size() != nb_dofs) {
+    printf("ERROR SM_TRAJ::computeTimp FC.size() != nb_dofs\n");
+    return -1;
+  }
+  if(limits.size() != nb_dofs) {
+    printf("ERROR SM_TRAJ::computeTimp limits.size() != nb_dofs\n");
+    return -1;
+  }
+  motion_arr.resize(IC.size());
+
+  /* Fill the motion_arr */
+  for (unsigned i=0; i < nb_dofs; i++) {
+    motion_arr[i].limits = limits[i];
+    motion_arr[i].jerk.J1 = limits[i].maxJerk;
+    motion_arr[i].jerk.sel = 1;
+    motion_arr[i].ic = IC[i];
+    motion_arr[i].fc = FC[i];
+    motion_arr[i].ic_rel.a =  IC[i].a;
+    motion_arr[i].ic_rel.v =  IC[i].v;
+    motion_arr[i].ic_rel.x =  0.0;
+    motion_arr[i].fc_rel.a =  FC[i].a;
+    motion_arr[i].fc_rel.v =  FC[i].v;
+    motion_arr[i].fc_rel.x =  FC[i].x - IC[i].x;
+    motion_arr[i].motion_duration = 0.0;
+  }
+  for (int i=0; i < nb_dofs; i++) {    
+    /* Compute the monodimensional trajectory */
+    if (sm_ComputeSoftMotion( motion_arr[i].ic_rel, motion_arr[i].fc_rel, 
+			      motion_arr[i].limits, &(motion_arr[i].times), 
+			      &(motion_arr[i].dir))!=0) {
+      printf("ERROR Jerk Profile on dim %d\n",i);
+      return -1;
+    }
+
+    /* Compute trajectory lenght */
+    sm_sum_motionTimes(&(motion_arr[i].times), &(motion_arr[i].motion_duration));
+  }
+  /* Get the max duration of each axis */
+  Timp = motion_arr[0].motion_duration;
+  for (int i=0;i<nb_dofs;i++)  {
+    if(Timp < motion_arr[i].motion_duration) {
+      Timp = motion_arr[i].motion_duration;  }
+  }
+  return Timp;
+}
+
+
+  /* Function to extract trajectory  
+   * @ inTraj: input trajectory
+   * @ segment: the number of segment which is extracted
+   */
+ int SM_TRAJ::extractTraj(SM_TRAJ &smTraj,int segment)
+ {
+    SM_SEG seg;
+    SM_TRAJ_STR inTraj;
+    
+    smTraj.convertToSM_TRAJ_STR(&inTraj);
+    if(traj.size() != (unsigned int)inTraj.nbAxis) {
+      // printf("WARNING SM_TRAJ:extractTraj() diffrent size in trajs\n");
+      traj.clear();
+      traj.resize(inTraj.nbAxis);
+    }
+    for(unsigned int i=0; i<traj.size(); i++) {
+      seg.timeOnTraj = 0.0;
+      seg.lpId = inTraj.traj[i].seg[segment].lpId;
+      seg.timeOnTraj = inTraj.traj[i].seg[segment].timeOnTraj;
+      seg.time = inTraj.traj[i].seg[segment].time;
+      seg.jerk = inTraj.traj[i].seg[segment].jerk;
+      seg.IC.a = inTraj.traj[i].seg[segment].ic_a;
+      seg.IC.v = inTraj.traj[i].seg[segment].ic_v;
+      seg.IC.x = inTraj.traj[i].seg[segment].ic_x;
+      traj[i].push_back(seg);
+    }
+    computeTimeOnTraj();
     return 0;
 }

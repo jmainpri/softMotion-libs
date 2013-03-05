@@ -42,7 +42,8 @@
 #include <qwt_symbol.h>
 #include <qprogressbar.h>
 #include <QFileDialog>
-
+#include <qwt_plot_magnifier.h>  
+#include <qwt_plot_panner.h>
 #endif
 
 #include "time_proto.h"
@@ -115,7 +116,14 @@ QWidget *parent
     this->doubleSpinBox_frequency->setValue(10.0);
     this->doubleSpinBox_phase->setValue(0.0);
     this->doubleSpinBox_a->setValue(5.0);
-
+    
+    this-> SpinBox_z_tab3->setEnabled(false);
+    this->Slider_z_tab3->setEnabled(false);
+    this->SpinBox_x_tab3->clear();
+    this->SpinBox_y_tab3->clear();
+    this->SpinBox_z_tab3->clear();
+   
+   
 //     connect(this->doubleSpinBox_xend, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
 //     connect(this->doubleSpinBox_yend, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
 //     connect(this->doubleSpinBox_Radius, SIGNAL(valueChanged(double)), this, SLOT(resetPlanner()));
@@ -152,6 +160,41 @@ QWidget *parent
     connect(this->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(choose_curve()));
     connect(this->pushButton_reset, SIGNAL(clicked(bool)), this, SLOT(resetPlanner()));
     connect(this->pushButtonComputeTrajApproxDivisionPriori, SIGNAL(clicked(bool)), this, SLOT(computeTrajInAdvance()));
+    //ran
+    connect(this->pushButtonComputeP2PTraj,SIGNAL(clicked(bool)), this, SLOT(computeStraightLineTraj()));
+    connect(this->pushButtonComputeApprochTraj,SIGNAL(clicked(bool)), this, SLOT(computeApprochingTraj()));
+    connect(this->pushButtonComputeSmoothTraj,SIGNAL(clicked(bool)), this, SLOT(computeSmoothTraj()));
+    connect(this->SpinBox_nb_tab3,SIGNAL(valueChanged(double)),this,SLOT(resetSpinBox_nb_tab3()));
+    connect(this->comboBox_point_tab3, SIGNAL(currentIndexChanged(int)), this, SLOT(resetCoordinate()));
+    connect(this->SpinBox_x_tab3,SIGNAL(valueChanged(double)),this,SLOT(updatePointCond()));
+    connect(this->SpinBox_y_tab3,SIGNAL(valueChanged(double)),this,SLOT(updatePointCond()));
+    connect(this->SpinBox_z_tab3,SIGNAL(valueChanged(double)),this,SLOT(updatePointCond()));
+    connect(this->comboBox_dim_tab3, SIGNAL(currentIndexChanged(int)), this, SLOT(setZaxiVisable()));
+
+    connect(Slider_Jmax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeStraightLineTraj()));
+    connect(Slider_Jmax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeApprochingTraj()));
+    connect(Slider_Jmax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeSmoothTraj()));
+    connect(Slider_Amax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeStraightLineTraj()));
+    connect(Slider_Amax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeApprochingTraj()));
+    connect(Slider_Amax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeSmoothTraj()));
+    connect(Slider_Vmax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeStraightLineTraj()));
+    connect(Slider_Vmax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeApprochingTraj()));
+    connect(Slider_Vmax_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeSmoothTraj()));
+    /*
+    connect(Slider_x_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeStraightLineTraj()));
+    connect(Slider_x_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeApprochingTraj()));
+    connect(Slider_x_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeSmoothTraj()));
+    connect(Slider_y_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeStraightLineTraj()));
+    connect(Slider_y_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeApprochingTraj()));
+    connect(Slider_y_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeSmoothTraj()));
+    connect(Slider_z_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeStraightLineTraj()));
+    connect(Slider_z_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeApprochingTraj()));
+    connect(Slider_z_tab3, SIGNAL(sliderMoved(double)),this,SLOT(computeSmoothTraj()));  */
+
+    //connect(this->doubleSpinBox_Jmax_tab3,SIGNAL(valueChanged(double)),this,SLOT(updateLimits()));
+    // connect(this->doubleSpinBox_Amax_tab3,SIGNAL(valueChanged(double)),this,SLOT(updateLimits()));
+    //connect(this->doubleSpinBox_Vmax_tab3,SIGNAL(valueChanged(double)),this,SLOT(updateLimits()));
+
 //     connect(this->pushButtonComputeTrajApprox, SIGNAL(clicked(bool)), this, SLOT(computeTraj()));
 
     ////////////////////////////////////////////////////////////
@@ -451,11 +494,17 @@ void QSoftMotionPlanner::genPlotFile(){
     std::cerr << " cannont open file to write the trajectory" << std::endl;
     return;
   }
+  int size;
+  size = _curve.size();
+  if (size == 0 )  {
+    std::cerr << " _curve.size = 0" << std::endl;
+    return;
+  }
   if (_flag_haus_actif == 0){
     _err_haus1.resize(_curve.back().traj.size());
     _err_haus2.resize(_curve.back().traj.size());
   }
-
+  
 //   Calcul_Error_Vilocity(_curve.front().traj, _curve.back().traj, _err_vit, &errMax_pos_subTraj_vit);
 
   for (unsigned int i = 0; i < _curve.back().traj.size(); i += incr){
@@ -495,7 +544,12 @@ void QSoftMotionPlanner::genFileTraj(){
     std::cerr << " cannont open file to write the trajectory" << std::endl;
     return;
   }
-
+  int size;
+  size = _curve.size();
+  if (size == 0)  {
+    std::cerr << " _curve.size = 0" << std::endl;
+    return;
+  }
   cout << "Number of positions in the file " <<_curve.back().traj.size() << endl;
   for (unsigned int i = 0; i < _curve.back().traj.size(); i += incr){
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[0]);
@@ -521,7 +575,13 @@ void QSoftMotionPlanner::computeHausdorff(){
   double sup2 = 0.0;
   double dis_hausdorff = 0.0;
   double w = 0.0;
-
+  
+  int size;
+  size = _curve.size();
+  if (size == 0)  {
+    std::cerr << " _curve.size = 0" << std::endl;
+    return;
+  }
   // f1 pour calculer la distance la plus longue entre courbe1 et courbe2
   for (int i=0; i< (int)_curve.front().traj.size(); i++){
     std::vector<double> dis1;
@@ -1076,18 +1136,24 @@ void QSoftMotionPlanner::computeTrajInAdvance(){
   for(unsigned int i=0 ; i< _curve.size(); i++) {
     _curve[i].setIsDraw(display());
   }
-
   lim.maxVel    = _lim.maxVel;
   lim.maxAcc    = _lim.maxAcc;
   lim.maxJerk   = _lim.maxJerk;
   tic = _sampling;
+  int size;
+  size = _curve.size();
+  if (size == 0)  {
+    std::cerr << " _curve.size = 0" << std::endl;
+    return;
+  }
+ 
   _curve.begin()->setIsDraw(display());
   time_total = (_curve.front().traj.size()-1) * tic;
 
   #ifdef ENABLE_DISPLAY
     viewer->updateGL();
   #endif
-
+  
   curv2.traj.clear();
   curv2.traj.resize(_curve.front().traj.size());
   nbSegment = 10; // par default
@@ -1144,7 +1210,7 @@ void QSoftMotionPlanner::computeTrajInAdvance(){
   #ifdef ENABLE_DISPLAY
     QApplication::setOverrideCursor(Qt::ArrowCursor);
   #endif
-
+  
   return;
 }
 
@@ -1214,6 +1280,12 @@ void QSoftMotionPlanner::computeTraj()
 //   Path_Length(_curve.front().path, &longeur_path);
 
 //  saveTraj("QtIdealTraj2.dat", _curve.begin()->traj);
+  int size;
+  size = _curve.size();
+  if (size == 0 )  {
+    std::cerr << " _curve.size = 0" << std::endl;
+    return;
+  }
   _curve.begin()->setIsDraw(display());
   time_total = (_curve.front().traj.size()-1) * tic;
 
@@ -1465,6 +1537,7 @@ void QSoftMotionPlanner::computeTraj()
 #ifdef ENABLE_DISPLAY
   QApplication::setOverrideCursor(Qt::ArrowCursor);
 #endif
+  
   return;
 }
 
@@ -1863,5 +1936,500 @@ void QSoftMotionPlanner::clearPlot(){
 
    return;
 }
+
+//ran 
+void QSoftMotionPlanner::resetSpinBox_nb_tab3()  {
+  int nb_points;
+  nb_points = this->SpinBox_nb_tab3->value();
+  this->comboBox_point_tab3->clear();
+  std::vector<QString> point_string(20);
+  point_string[0] = "Point 1";
+  point_string[1] = "Point 2";
+  point_string[2] = "Point 3";
+  point_string[3] = "Point 4";
+  point_string[4] = "Point 5";
+  point_string[5] = "Point 6";
+  point_string[6] = "Point 7";
+  point_string[7] = "Point 8";
+  point_string[8] = "Point 9";
+  point_string[9] = "Point 10";
+  point_string[10] = "Point 11";
+  point_string[11] = "Point 12";
+  point_string[12] = "Point 13";
+  point_string[13] = "Point 14";
+  point_string[14] = "Point 15";
+  point_string[15] = "Point 16";
+  point_string[16] = "Point 17";
+  point_string[17] = "Point 18";
+  point_string[18] = "Point 19";
+  point_string[19] = "Point 20";
+
+  for(int i=0;i<nb_points;i++) {
+    this->comboBox_point_tab3->addItem(point_string[i]);
+  }
+  
+}
+
+void QSoftMotionPlanner::resetCoordinate()   {
+  
+  SpinBox_x_tab3->clear();
+  //Slider_x_tab3->clear();
+  SpinBox_y_tab3->clear();
+  //Slider_y_tab3->clear();
+  SpinBox_z_tab3->clear();
+  //Slider_z_tab3->clear();
+}
+
+void QSoftMotionPlanner::setZaxiVisable() {
+  int dimension_num;
+  dimension_num = this->comboBox_dim_tab3->currentIndex();
+  switch(dimension_num) {
+  case 0: {
+    SpinBox_z_tab3->setEnabled(false);
+    Slider_z_tab3->setEnabled(false);
+  };  break;
+  case 1: {
+    SpinBox_z_tab3->setEnabled(true);
+    Slider_z_tab3->setEnabled(true);
+  };  break; 
+  default:      break;
+  }
+  
+}
+
+void QSoftMotionPlanner::updatePointCond()  {
+  int nb_points;
+  nb_points = SpinBox_nb_tab3->value();
+  pointCond.resize(nb_points);
+  int dimension_num;
+  dimension_num = this->comboBox_dim_tab3->currentIndex();
+  int point_no;
+  point_no = this->comboBox_point_tab3->currentIndex();
+
+  switch(dimension_num) {
+  case 0: {
+    
+    pointCond[point_no].resize(2);
+    pointCond[point_no][0].a = 0;
+    pointCond[point_no][0].v = 0;
+    pointCond[point_no][0].x = this->SpinBox_x_tab3->value();
+    pointCond[point_no][1].a = 0;
+    pointCond[point_no][1].v = 0;
+    pointCond[point_no][1].x = this->SpinBox_y_tab3->value();
+    
+  };
+    break;
+  case 1: {
+    pointCond[point_no].resize(3);
+    pointCond[point_no][0].a = 0;
+    pointCond[point_no][0].v = 0;
+    pointCond[point_no][0].x = this->SpinBox_x_tab3->value();
+    pointCond[point_no][1].a = 0;
+    pointCond[point_no][1].v = 0;
+    pointCond[point_no][1].x = this->SpinBox_y_tab3->value();
+    pointCond[point_no][2].a = 0;
+    pointCond[point_no][2].v = 0;
+    pointCond[point_no][2].x = this->SpinBox_z_tab3->value();
+  };
+    break;
+  default:            break;
+  }
+  
+}
+
+
+void QSoftMotionPlanner::computeStraightLineTraj() 
+{ 
+  if (pointCond.size() != 0)  {
+    
+    QwtPlotGrid *grid = new QwtPlotGrid;
+    grid->enableXMin(true);
+    grid->enableYMin(true);
+    grid->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    this->qwtPlot_Traj->clear();
+    grid->attach(this->qwtPlot_Traj);
+    this->qwtPlot_Traj->setCanvasBackground(QColor(Qt::white));
+    
+    int dimension_num;
+    dimension_num = this->comboBox_dim_tab3->currentIndex();
+    switch(dimension_num) {
+      
+    case 0: computeStraightLineTraj2D();break;
+    case 1: computeStraightLineTraj3D(); break;
+    default:            break;
+    } 
+  }
+}
+
+/*Straight Line Traj in 2D */
+void QSoftMotionPlanner::computeStraightLineTraj2D() 
+{
+  SM_TRAJ SLTraj;
+  std::vector<SM_LIMITS> limits;
+  
+  for(int i=0;i<2;i++) {
+    _limit.maxJerk = doubleSpinBox_Jmax_tab3->value();
+    _limit.maxAcc = doubleSpinBox_Amax_tab3->value();
+    _limit.maxVel = doubleSpinBox_Vmax_tab3->value();
+    limits.push_back(_limit);
+  }
+  SLTraj.computeTraj(pointCond,limits,SM_TRAJ::SM_STOP_AT_VIA_POINT);
+  double duration,tic;
+  duration = SLTraj.getDuration();
+  this->lcdNumber_Duration_tab3->setValue(duration);
+  this->lcdNumber_Jmax_tab3->setValue(_limit.maxJerk);
+  this->lcdNumber_Amax_tab3->setValue(_limit.maxAcc);
+  this->lcdNumber_Vmax_tab3->setValue(_limit.maxVel);
+
+  tic = duration/2000;
+  std::vector<SM_COND> cond(2);
+  QVector<double> x(2000),y(2000);
+  for(int j=0;j<2000;j++)  {
+    SLTraj.getMotionCond(tic*j,cond);
+    x[j]= cond[0].x;
+    y[j]=cond[1].x;
+  }
+
+  QwtPlotCurve *curve_SL = new QwtPlotCurve("Straight Line");
+  QPen pen_SL = curve_SL->pen();
+  pen_SL.setColor(Qt::darkYellow);
+  pen_SL.setWidth(2);
+  pen_SL.setStyle(Qt::SolidLine);
+  curve_SL->setPen(pen_SL);
+  curve_SL->setData(x,y);
+  curve_SL->attach(this->qwtPlot_Traj);
+  this->qwtPlot_Traj->replot();
+  /*legend*/
+  QwtLegend *legend = new QwtLegend;
+  qwtPlot_Traj->insertLegend(legend, QwtPlot::BottomLegend);
+ 
+}
+
+
+
+/*Straight Line Traj in 3D */
+void QSoftMotionPlanner::computeStraightLineTraj3D()  
+{
+  SM_TRAJ SLTraj;
+  std::vector<SM_LIMITS> limits;
+  
+  for(int i=0;i<3;i++) {
+    _limit.maxJerk = doubleSpinBox_Jmax_tab3->value();
+    _limit.maxAcc = doubleSpinBox_Amax_tab3->value();
+    _limit.maxVel = doubleSpinBox_Vmax_tab3->value();
+    limits.push_back(_limit);
+  }
+  SLTraj.computeTraj(pointCond,limits,SM_TRAJ::SM_STOP_AT_VIA_POINT);
+  
+
+
+}
+void QSoftMotionPlanner::computeApprochingTraj() 
+{  
+  if(pointCond.size() != 0)  {
+    this->qwtPlot_Vel->clear();
+    this->qwtPlot_Pos->clear();
+    this->qwtPlot_Acc->clear();
+    QwtPlotGrid *grid1 = new QwtPlotGrid;
+    grid1->enableXMin(true);
+    grid1->enableYMin(true);
+    grid1->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid1->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    QwtPlotGrid *grid2 = new QwtPlotGrid;
+    grid2->enableXMin(true);
+    grid2->enableYMin(true);
+    grid2->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    QwtPlotGrid *grid3 = new QwtPlotGrid;
+    grid3->enableXMin(true);
+    grid3->enableYMin(true);
+    grid3->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid3->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    grid1->attach(this->qwtPlot_Vel);
+    grid2->attach(this->qwtPlot_Pos);
+    grid3->attach(this->qwtPlot_Acc);
+    // QwtPlotZoomer *zoomer = new QwtPlotZoomer( this->qwtPlot_Pos->canvas() );
+    //QwtPlotMagnifier *PM = new QwtPlotMagnifier(this->qwtPlot_Pos->canvas());
+    this->qwtPlot_Vel->setCanvasBackground(QColor(Qt::white));
+    this->qwtPlot_Pos->setCanvasBackground(QColor(Qt::white));
+    this->qwtPlot_Acc->setCanvasBackground(QColor(Qt::white));
+  
+    int dimension_num;
+    dimension_num = this->comboBox_dim_tab3->currentIndex();
+    
+    switch(dimension_num) {
+      
+    case 0: computeApprochingTraj2D();break;
+    case 1: computeApprochingTraj3D(); break;
+    default:            break;
+    }
+  }
+  
+}
+/* Approching  Traj in 2D */
+void QSoftMotionPlanner::computeApprochingTraj2D() 
+{
+  SM_TRAJ ApTraj;
+  std::vector<SM_LIMITS> limits;
+  
+  for(int i=0;i<2;i++) {
+    _limit.maxJerk = doubleSpinBox_Jmax_tab3->value();
+    _limit.maxAcc = doubleSpinBox_Amax_tab3->value();
+    _limit.maxVel = doubleSpinBox_Vmax_tab3->value();
+    limits.push_back(_limit);
+  }
+  ApTraj.computeTraj(pointCond,limits,SM_TRAJ::SM_SMOOTH_APPROACH_VIA_POINT);
+  double duration,tic;
+  duration = ApTraj.getDuration();
+  this->lcdNumber_Duration_2_tab3->setValue(duration);
+  //this->lcdNumber_Jmax_2_tab3->setValue(_limit.maxJerk);
+  //this->lcdNumber_Amax_2_tab3->setValue(_limit.maxAcc);
+  //this->lcdNumber_Vmax_2_tab3->setValue(_limit.maxVel);
+  
+  tic = duration/2000;
+  std::vector<SM_COND> cond(2);
+  QVector<double> x(2000),y(2000),vx(2000),vy(2000),ax(2000),ay(2000),t(2000);
+  for(int j=0;j<2000;j++)  {
+    ApTraj.getMotionCond(tic*j,cond);
+    x[j]= cond[0].x;
+    y[j]=cond[1].x;
+    vx[j]= cond[0].v;
+    vy[j]=cond[1].v;
+    ax[j]= cond[0].a;
+    ay[j]=cond[1].a;
+    t[j] = tic*j;
+  }
+
+  // this-> qwtPlot_Traj->clear();
+  QwtPlotCurve *curve_AP = new QwtPlotCurve("Approaching Line");
+  QPen pen_AP = curve_AP->pen();
+  pen_AP.setColor(Qt::red);
+  pen_AP.setWidth(2);
+  pen_AP.setStyle(Qt::SolidLine);
+  curve_AP->setPen(pen_AP);
+  curve_AP->setData(x,y);
+  curve_AP->attach(this->qwtPlot_Traj);
+  this->qwtPlot_Traj->replot();
+  
+  QwtPlotCurve *curve_vx = new QwtPlotCurve("Vel_X--m/s");
+  QPen pen_vx = curve_vx->pen();
+  pen_vx.setColor(Qt::red);
+  pen_vx.setWidth(2);
+  pen_vx.setStyle(Qt::SolidLine);
+  curve_vx->setPen(pen_vx);
+  curve_vx->setData(t,vx);
+  curve_vx->attach(this->qwtPlot_Vel);
+  this->qwtPlot_Vel->replot();
+  
+  QwtPlotCurve *curve_vy = new QwtPlotCurve("Vel_Y--m/s");
+  QPen pen_vy = curve_vy->pen();
+  pen_vy.setColor(Qt::blue);
+  pen_vy.setWidth(2);
+  pen_vy.setStyle(Qt::DotLine);
+  curve_vy->setPen(pen_vy);
+  curve_vy->setData(t,vy);
+  curve_vy->attach(this->qwtPlot_Vel);
+  this->qwtPlot_Vel->replot();
+
+  QwtPlotCurve *curve_ax = new QwtPlotCurve("Acc_X--m/s^2");
+  QPen pen_ax = curve_ax->pen();
+  pen_ax.setColor(Qt::red);
+  pen_ax.setWidth(2);
+  pen_ax.setStyle(Qt::SolidLine);
+  curve_ax->setPen(pen_ax);
+  curve_ax->setData(t,ax);
+  curve_ax->attach(this->qwtPlot_Acc);
+  this->qwtPlot_Acc->replot();
+  
+  QwtPlotCurve *curve_ay = new QwtPlotCurve("Acc_Y--m/s^2");
+  QPen pen_ay = curve_ay->pen();
+  pen_ay.setColor(Qt::blue);
+  pen_ay.setWidth(2);
+  pen_ay.setStyle(Qt::DotLine);
+  curve_ay->setPen(pen_ay);
+  curve_ay->setData(t,ay);
+  curve_ay->attach(this->qwtPlot_Acc);
+  this->qwtPlot_Acc->replot();
+  
+  QwtPlotCurve *curve_x = new QwtPlotCurve("Pos_X--m");
+  QPen pen_x = curve_x->pen();
+  pen_x.setColor(Qt::red);
+  pen_x.setWidth(2);
+  pen_x.setStyle(Qt::SolidLine);
+  curve_x->setPen(pen_x);
+  curve_x->setData(t,x);
+  curve_x->attach(this->qwtPlot_Pos);
+  this->qwtPlot_Pos->replot();
+  
+  QwtPlotCurve *curve_y = new QwtPlotCurve("Pos_Y--m/s");
+  QPen pen_y = curve_y->pen();
+  pen_y.setColor(Qt::blue);
+  pen_y.setWidth(2);
+  pen_y.setStyle(Qt::DotLine);
+  curve_y->setPen(pen_y);
+  curve_y->setData(t,y);
+  curve_y->attach(this->qwtPlot_Pos);
+  this->qwtPlot_Pos->replot();
+
+}
+/* Approching  Traj in 3D */
+void QSoftMotionPlanner::computeApprochingTraj3D() {
+
+
+
+
+}
+ 
+void QSoftMotionPlanner::computeSmoothTraj()  
+{
+  if(pointCond.size() != 0)  {
+    this->qwtPlot_Vel2->clear();
+    this->qwtPlot_Pos_2->clear();
+    this->qwtPlot_Acc2->clear();
+    QwtPlotGrid *grid1 = new QwtPlotGrid;
+    grid1->enableXMin(true);
+    grid1->enableYMin(true);
+    grid1->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid1->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    QwtPlotGrid *grid2 = new QwtPlotGrid;
+    grid2->enableXMin(true);
+    grid2->enableYMin(true);
+    grid2->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid2->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    QwtPlotGrid *grid3 = new QwtPlotGrid;
+    grid3->enableXMin(true);
+    grid3->enableYMin(true);
+    grid3->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
+    grid3->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+    grid1->attach(this->qwtPlot_Vel2);
+    grid2->attach(this->qwtPlot_Pos_2);
+    grid3->attach(this->qwtPlot_Acc2);
+    this->qwtPlot_Vel2->setCanvasBackground(QColor(Qt::white));
+    this->qwtPlot_Pos_2->setCanvasBackground(QColor(Qt::white));
+    this->qwtPlot_Acc2->setCanvasBackground(QColor(Qt::white));
+    int dimension_num;
+    dimension_num = this->comboBox_dim_tab3->currentIndex();
+  
+    switch(dimension_num) {
+      
+    case 0: computeSmoothTraj2D();break;
+    case 1: computeSmoothTraj3D(); break;
+    default:            break;
+    }
+  }
+}
+/* Smooth Traj in 2D */
+void QSoftMotionPlanner::computeSmoothTraj2D()  
+{
+  SM_TRAJ SmTraj;
+  std::vector<SM_LIMITS> limits;
+
+  for(int i=0;i<2;i++) {
+    _limit.maxJerk = doubleSpinBox_Jmax_tab3->value();
+    _limit.maxAcc = doubleSpinBox_Amax_tab3->value();
+    _limit.maxVel = doubleSpinBox_Vmax_tab3->value();
+    limits.push_back(_limit);
+  }
+  SmTraj.computeTraj(pointCond,limits,SM_TRAJ::SM_SMOOTH_AT_VIA_POINT);
+  double duration,tic;
+  duration = SmTraj.getDuration();
+  this->lcdNumber_Duration_3_tab3->setValue(duration);
+  //this->lcdNumber_Jmax_3_tab3->setValue(_limit.maxJerk);
+  //this->lcdNumber_Amax_3_tab3->setValue(_limit.maxAcc);
+  //this->lcdNumber_Vmax_3_tab3->setValue(_limit.maxVel);
+
+  tic = duration/2000;
+  std::vector<SM_COND> cond(2);
+  QVector<double> x(2000),y(2000),vx(2000),vy(2000),ax(2000),ay(2000),t(2000);
+  for(int j=0;j<2000;j++)  {
+    SmTraj.getMotionCond(tic*j,cond);
+    x[j]= cond[0].x;
+    y[j]=cond[1].x;
+    vx[j]= cond[0].v;
+    vy[j]=cond[1].v;
+    ax[j]= cond[0].a;
+    ay[j]=cond[1].a;
+    t[j] = tic*j;
+  }
+
+  //this->qwtPlot_Traj->clear();
+  QwtPlotCurve *curve_SM = new QwtPlotCurve("Smooth at Via_Points");
+  QPen pen_SM = curve_SM->pen();
+  pen_SM.setColor(Qt::blue);
+  pen_SM.setWidth(2);
+  pen_SM.setStyle(Qt::SolidLine);
+  curve_SM->setPen(pen_SM);
+  curve_SM->setData(x,y);
+  curve_SM->attach(this->qwtPlot_Traj);
+  this->qwtPlot_Traj->replot();
+  
+  QwtPlotCurve *curve_vx = new QwtPlotCurve("Vel_X--m/s");
+  QPen pen_vx = curve_vx->pen();
+  pen_vx.setColor(Qt::red);
+  pen_vx.setWidth(2);
+  pen_vx.setStyle(Qt::SolidLine);
+  curve_vx->setPen(pen_vx);
+  curve_vx->setData(t,vx);
+  curve_vx->attach(this->qwtPlot_Vel2);
+  this->qwtPlot_Vel2->replot();
+  
+  QwtPlotCurve *curve_vy = new QwtPlotCurve("Vel_Y--m/s");
+  QPen pen_vy = curve_vy->pen();
+  pen_vy.setColor(Qt::blue);
+  pen_vy.setWidth(2);
+  pen_vy.setStyle(Qt::DotLine);
+  curve_vy->setPen(pen_vy);
+  curve_vy->setData(t,vy);
+  curve_vy->attach(this->qwtPlot_Vel2);
+  this->qwtPlot_Vel2->replot();
+
+  QwtPlotCurve *curve_ax = new QwtPlotCurve("Acc_X--m/s^2");
+  QPen pen_ax = curve_ax->pen();
+  pen_ax.setColor(Qt::red);
+  pen_ax.setWidth(2);
+  pen_ax.setStyle(Qt::SolidLine);
+  curve_ax->setPen(pen_ax);
+  curve_ax->setData(t,ax);
+  curve_ax->attach(this->qwtPlot_Acc2);
+  this->qwtPlot_Acc2->replot();
+  
+  QwtPlotCurve *curve_ay = new QwtPlotCurve("Acc_Y--m/s^2");
+  QPen pen_ay = curve_ay->pen();
+  pen_ay.setColor(Qt::blue);
+  pen_ay.setWidth(2);
+  pen_ay.setStyle(Qt::DotLine);
+  curve_ay->setPen(pen_ay);
+  curve_ay->setData(t,ay);
+  curve_ay->attach(this->qwtPlot_Acc2);
+  this->qwtPlot_Acc2->replot();
+  
+  QwtPlotCurve *curve_x = new QwtPlotCurve("Pos_X--m");
+  QPen pen_x = curve_x->pen();
+  pen_x.setColor(Qt::red);
+  pen_x.setWidth(2);
+  pen_x.setStyle(Qt::SolidLine);
+  curve_x->setPen(pen_x);
+  curve_x->setData(t,x);
+  curve_x->attach(this->qwtPlot_Pos_2);
+  this->qwtPlot_Pos_2->replot();
+  
+  QwtPlotCurve *curve_y = new QwtPlotCurve("Pos_Y--m");
+  QPen pen_y = curve_y->pen();
+  pen_y.setColor(Qt::blue);
+  pen_y.setWidth(2);
+  pen_y.setStyle(Qt::DotLine);
+  curve_y->setPen(pen_y);
+  curve_y->setData(t,y);
+  curve_y->attach(this->qwtPlot_Pos_2);
+  this->qwtPlot_Pos_2->replot();
+
+}
+/* Smooth Traj in 3D */
+void QSoftMotionPlanner::computeSmoothTraj3D()  {
+
+
+}
+
 #endif
 

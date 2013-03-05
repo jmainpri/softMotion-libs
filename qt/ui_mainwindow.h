@@ -313,7 +313,58 @@ public:
     QMenu *menu_Edit;
     QMenu *menu_Window;
     QMenu *menu_Help;
-
+    //ran 
+    QWidget *tabSmoothViaPoints;
+    QVBoxLayout *verticalLayout_tab3;
+    QHBoxLayout *horizontalLayout_tab3;
+    QSplitter *splitter_tab3;
+    QWidget *Configure;				
+    QWidget *TrajIn2D;
+    QWidget *JAVin2D;
+    QWidget *TrajIn3D;
+    QWidget *JAVin3D;
+    QTabWidget *tabWidget_3;
+    QwtSlider *Slider_Jmax_tab3;
+    QwtSlider *Slider_Amax_tab3; 
+    QwtSlider *Slider_Vmax_tab3;
+    QDoubleSpinBox *doubleSpinBox_Jmax_tab3;
+    QDoubleSpinBox *doubleSpinBox_Amax_tab3;
+    QDoubleSpinBox *doubleSpinBox_Vmax_tab3;
+    QLabel *label_tab3; 
+    QLabel *label_1_tab3; 
+    QLabel *label_2_tab3; 
+    QLabel *label_3_tab3;
+    QLabel *label_4_tab3;
+    QVBoxLayout *verticalLayout_10_tab3;
+    QComboBox *comboBox_dim_tab3;
+    QComboBox *comboBox_point_tab3; 
+    QPushButton *pushButtonComputeP2PTraj;
+    QPushButton *pushButtonComputeApprochTraj;
+    QPushButton *pushButtonComputeSmoothTraj;
+    QDoubleSpinBox *SpinBox_nb_tab3;
+    QDoubleSpinBox *SpinBox_x_tab3;
+    QwtSlider *Slider_x_tab3;
+    QDoubleSpinBox *SpinBox_y_tab3;
+    QwtSlider *Slider_y_tab3;
+    QDoubleSpinBox *SpinBox_z_tab3;
+    QwtSlider *Slider_z_tab3;
+    QwtPlot *qwtPlot_Traj;
+    QDoubleSpinBox *lcdNumber_Duration_tab3;
+    QDoubleSpinBox *lcdNumber_Jmax_tab3;
+    QDoubleSpinBox *lcdNumber_Amax_tab3;
+    QDoubleSpinBox *lcdNumber_Vmax_tab3;
+    QDoubleSpinBox *lcdNumber_Duration_2_tab3;
+    QDoubleSpinBox *lcdNumber_Jmax_2_tab3;
+    QDoubleSpinBox *lcdNumber_Amax_2_tab3;
+    QDoubleSpinBox *lcdNumber_Vmax_2_tab3;
+    QDoubleSpinBox *lcdNumber_Duration_3_tab3;
+    QwtPlot *qwtPlot_Vel;
+    QwtPlot *qwtPlot_Pos;
+    QwtPlot *qwtPlot_Acc;
+    QwtPlot *qwtPlot_Vel2;
+    QwtPlot *qwtPlot_Pos_2;
+    QwtPlot *qwtPlot_Acc2;
+    
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
@@ -361,8 +412,10 @@ public:
         tabWidget_2->setObjectName(QString::fromUtf8("tabWidget_2"));
         sizePolicy1.setHeightForWidth(tabWidget_2->sizePolicy().hasHeightForWidth());
         tabWidget_2->setSizePolicy(sizePolicy1);
+	/* The 1st Tab */
         tabSoftMotionPlanner = new QWidget();
         tabSoftMotionPlanner->setObjectName(QString::fromUtf8("tabSoftMotionPlanner"));
+	
         verticalLayout_33 = new QVBoxLayout(tabSoftMotionPlanner);
         verticalLayout_33->setSpacing(6);
         verticalLayout_33->setContentsMargins(0, 0, 0, 0);
@@ -961,6 +1014,7 @@ public:
         verticalLayout_33->addWidget(widget_4);
 
         tabWidget_2->addTab(tabSoftMotionPlanner, QString());
+	/* The 2nd Tab */
         tabTrajectoryApproximation = new QWidget();
         tabTrajectoryApproximation->setObjectName(QString::fromUtf8("tabTrajectoryApproximation"));
         horizontalLayout = new QHBoxLayout(tabTrajectoryApproximation);
@@ -1046,7 +1100,7 @@ public:
 
 
         verticalLayout_10->addWidget(widget);
-
+	
         widget_2 = new QWidget(frame);
         widget_2->setObjectName(QString::fromUtf8("widget_2"));
         verticalLayout_8 = new QVBoxLayout(widget_2);
@@ -1693,7 +1747,7 @@ public:
         qwtPlot_JerkYapprox->setObjectName(QString::fromUtf8("qwtPlot_JerkYapprox"));
 
         verticalLayout_5->addWidget(qwtPlot_JerkYapprox);
-
+	
         qwtPlot_AccYapprox = new QwtPlot(axisY);
         qwtPlot_AccYapprox->setObjectName(QString::fromUtf8("qwtPlot_AccYapprox"));
 
@@ -1793,7 +1847,7 @@ public:
         qwtPlot_errortraj->setObjectName(QString::fromUtf8("qwtPlot_errortraj"));
 
         verticalLayout_2->addWidget(qwtPlot_errortraj);
-
+	
         tabWidget->addTab(tabError, QString());
         splitter->addWidget(tabWidget);
         viewer = new Viewer(splitter);
@@ -1814,6 +1868,709 @@ public:
         scrollArea->setWidget(scrollAreaWidgetContents);
 
         verticalLayout_18->addWidget(scrollArea);
+
+        //ran
+        /* The 3rd Tab */
+        tabSmoothViaPoints = new QWidget();
+        tabSmoothViaPoints->setObjectName(QString::fromUtf8("tabSmoothViaPoints"));
+        horizontalLayout_tab3 = new QHBoxLayout(tabSmoothViaPoints);
+        horizontalLayout_tab3->setSpacing(6);
+        horizontalLayout_tab3->setContentsMargins(11, 11, 11, 11);
+        horizontalLayout_tab3->setObjectName(QString::fromUtf8("horizontalLayout_sm"));
+        splitter_tab3 = new QSplitter(tabSmoothViaPoints);
+        splitter_tab3->setObjectName(QString::fromUtf8("splitter_sm"));
+        splitter_tab3->setOrientation(Qt::Horizontal);
+        tabWidget_3 = new QTabWidget(splitter_tab3);
+        tabWidget_3->setObjectName(QString::fromUtf8("tabWidget_3"));
+        QSizePolicy sizePolicy55(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy55.setHorizontalStretch(35);
+        sizePolicy55.setVerticalStretch(0);
+        sizePolicy55.setHeightForWidth(tabWidget_3->sizePolicy().hasHeightForWidth());
+        tabWidget_3->setSizePolicy(sizePolicy55);
+        tabWidget_3->setBaseSize(QSize(0, 0));
+        tabWidget_3->setFont(font2);
+        tabWidget_3->setTabPosition(QTabWidget::North);
+        tabWidget_3->setTabShape(QTabWidget::Rounded);
+
+        // Children Taps  --->Similar with Tab2.  Add suffix "tab3"
+        Configure = new QWidget();
+        Configure->setObjectName(QString::fromUtf8("Configure"));
+	QGridLayout *gridLayout_21_tab3 = new QGridLayout(Configure);
+        gridLayout_21_tab3->setSpacing(6);
+        gridLayout_21_tab3->setContentsMargins(11, 11, 11, 11);
+        gridLayout_21_tab3->setObjectName(QString::fromUtf8("gridLayout_21"));
+        QGridLayout *gridLayout_20_tab3 = new QGridLayout();
+        gridLayout_20_tab3->setSpacing(6);
+        gridLayout_20_tab3->setObjectName(QString::fromUtf8("gridLayout_20"));
+        QGridLayout *gridLayout_6_tab3 = new QGridLayout();
+        gridLayout_6_tab3->setSpacing(6);
+        gridLayout_6_tab3->setObjectName(QString::fromUtf8("gridLayout_6"));
+       	QFrame *frame_tab3 = new QFrame(Configure);
+        frame_tab3->setObjectName(QString::fromUtf8("frame"));
+        sizePolicy4.setHeightForWidth(frame_tab3->sizePolicy().hasHeightForWidth());
+        frame_tab3->setSizePolicy(sizePolicy4);
+        frame_tab3->setFrameShape(QFrame::Panel);
+        frame_tab3->setFrameShadow(QFrame::Sunken);
+        frame_tab3->setLineWidth(1);  
+	frame_tab3->setGeometry(10,10,550,275);//test
+
+	verticalLayout_10_tab3 = new QVBoxLayout(frame_tab3);
+	verticalLayout_10_tab3->setSpacing(6);
+        verticalLayout_10_tab3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_10_tab3->setObjectName(QString::fromUtf8("verticalLayout_10"));
+        label_4_tab3 = new QLabel(frame_tab3);
+        label_4_tab3->setObjectName(QString::fromUtf8("label_4"));
+        label_4_tab3->setFont(font1);
+        label_4_tab3->setAlignment(Qt::AlignCenter);
+
+        verticalLayout_10_tab3->addWidget(label_4_tab3);
+
+
+        QWidget *widget_tab3 = new QWidget(frame_tab3);
+        widget_tab3->setObjectName(QString::fromUtf8("widget"));
+        QVBoxLayout *verticalLayout_7_tab3 = new QVBoxLayout(widget_tab3);
+        verticalLayout_7_tab3->setSpacing(6);
+        verticalLayout_7_tab3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_7_tab3->setObjectName(QString::fromUtf8("verticalLayout_7"));
+        label_tab3 = new QLabel(widget_tab3);
+        label_tab3->setObjectName(QString::fromUtf8("label"));
+
+        verticalLayout_7_tab3->addWidget(label_tab3);
+
+	
+	QFormLayout *formLayout_tab3 = new QFormLayout();
+        formLayout_tab3->setSpacing(6);
+        formLayout_tab3->setObjectName(QString::fromUtf8("formLayout"));
+        doubleSpinBox_Jmax_tab3 = new QDoubleSpinBox(widget_tab3);
+        doubleSpinBox_Jmax_tab3->setObjectName(QString::fromUtf8("doubleSpinBox_Jmax"));
+	doubleSpinBox_Jmax_tab3->setRange(0,200);
+	doubleSpinBox_Jmax_tab3->setValue(0.900);
+	doubleSpinBox_Jmax_tab3->setDecimals(3);
+	doubleSpinBox_Jmax_tab3->setSingleStep(0.01);
+
+        formLayout_tab3->setWidget(0, QFormLayout::LabelRole, doubleSpinBox_Jmax_tab3);
+
+        Slider_Jmax_tab3 = new QwtSlider(widget_tab3);
+        Slider_Jmax_tab3->setObjectName(QString::fromUtf8("Slider_Jmax"));
+        Slider_Jmax_tab3->setValid(true);
+        Slider_Jmax_tab3->setMass(0);
+        Slider_Jmax_tab3->setThumbLength(31);
+        Slider_Jmax_tab3->setThumbWidth(16);
+	Slider_Jmax_tab3->setRange(0,200,0.01);
+	Slider_Jmax_tab3->setValue(0.900);
+	
+        formLayout_tab3->setWidget(0, QFormLayout::FieldRole, Slider_Jmax_tab3);
+	verticalLayout_7_tab3->addLayout(formLayout_tab3);
+        verticalLayout_10_tab3->addWidget(widget_tab3);   
+		
+        QWidget *widget_2_tab3 = new QWidget(frame_tab3);
+        widget_2_tab3->setObjectName(QString::fromUtf8("widget_2"));
+        QVBoxLayout *verticalLayout_8_tab3 = new QVBoxLayout(widget_2_tab3);
+        verticalLayout_8_tab3->setSpacing(6);
+        verticalLayout_8_tab3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_8_tab3->setObjectName(QString::fromUtf8("verticalLayout_8"));
+        label_2_tab3 = new QLabel(widget_2_tab3);
+        label_2_tab3->setObjectName(QString::fromUtf8("label_2"));
+
+        verticalLayout_8_tab3->addWidget(label_2_tab3);
+
+	QFormLayout *formLayout_2_tab3 = new QFormLayout();
+	formLayout_2_tab3->setSpacing(6);
+        formLayout_2_tab3->setObjectName(QString::fromUtf8("formLayout_2"));
+        doubleSpinBox_Amax_tab3 = new QDoubleSpinBox(widget_2_tab3);
+        doubleSpinBox_Amax_tab3->setObjectName(QString::fromUtf8("doubleSpinBox_Amax"));
+	doubleSpinBox_Amax_tab3->setRange(0,40);
+	doubleSpinBox_Amax_tab3->setValue(0.300);
+	doubleSpinBox_Amax_tab3->setDecimals(3);
+	doubleSpinBox_Amax_tab3->setSingleStep(0.01);
+
+        formLayout_2_tab3->setWidget(0, QFormLayout::LabelRole, doubleSpinBox_Amax_tab3);
+
+        Slider_Amax_tab3 = new QwtSlider(widget_2_tab3);
+        Slider_Amax_tab3->setObjectName(QString::fromUtf8("Slider_Amax"));
+	Slider_Amax_tab3->setRange(0,40,0.01);
+	Slider_Amax_tab3->setValue(0.300);
+
+
+        formLayout_2_tab3->setWidget(0, QFormLayout::FieldRole, Slider_Amax_tab3);
+        verticalLayout_8_tab3->addLayout(formLayout_2_tab3);
+
+        verticalLayout_10_tab3->addWidget(widget_2_tab3);
+
+        QWidget *widget_3_tab3 = new QWidget(frame_tab3);
+        widget_3_tab3->setObjectName(QString::fromUtf8("widget_3"));
+        QVBoxLayout *verticalLayout_9_tab3 = new QVBoxLayout(widget_3_tab3);
+        verticalLayout_9_tab3->setSpacing(6);
+        verticalLayout_9_tab3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_9_tab3->setObjectName(QString::fromUtf8("verticalLayout_9"));
+        label_3_tab3 = new QLabel(widget_3);
+        label_3_tab3->setObjectName(QString::fromUtf8("label_3"));
+
+        verticalLayout_9_tab3->addWidget(label_3_tab3);
+
+        QFormLayout *formLayout_3_tab3 = new QFormLayout();
+        formLayout_3_tab3->setSpacing(6);
+        formLayout_3_tab3->setObjectName(QString::fromUtf8("formLayout_3"));
+        doubleSpinBox_Vmax_tab3 = new QDoubleSpinBox(widget_3);
+        doubleSpinBox_Vmax_tab3->setObjectName(QString::fromUtf8("doubleSpinBox_Vmax"));
+	doubleSpinBox_Vmax_tab3->setRange(0,2);
+	doubleSpinBox_Vmax_tab3->setValue(0.150);
+	doubleSpinBox_Vmax_tab3->setDecimals(3);
+	doubleSpinBox_Vmax_tab3->setSingleStep(0.001);
+	
+        formLayout_3_tab3->setWidget(0, QFormLayout::LabelRole, doubleSpinBox_Vmax_tab3);
+
+        Slider_Vmax_tab3 = new QwtSlider(widget_3_tab3);
+        Slider_Vmax_tab3->setObjectName(QString::fromUtf8("Slider_Vmax"));
+	Slider_Vmax_tab3->setRange(0,2,0.001);
+	Slider_Vmax_tab3->setValue(0.04);
+
+	formLayout_3_tab3->setWidget(0, QFormLayout::FieldRole, Slider_Vmax_tab3);
+        verticalLayout_9_tab3->addLayout(formLayout_3_tab3);
+        verticalLayout_10_tab3->addWidget(widget_3_tab3);
+
+        QSpacerItem *verticalSpacer_3_tab3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+        verticalLayout_10_tab3->addItem(verticalSpacer_3_tab3);
+
+        gridLayout_6_tab3->addWidget(frame_tab3, 0, 1, 1, 1);   
+	
+	
+	QFrame *frame_1_tab3 = new QFrame(Configure);
+        frame_1_tab3->setObjectName(QString::fromUtf8("frame_1_tab3"));
+        sizePolicy4.setHeightForWidth(frame_tab3->sizePolicy().hasHeightForWidth());
+        frame_1_tab3->setSizePolicy(sizePolicy4);
+        frame_1_tab3->setFrameShape(QFrame::Panel);
+        frame_1_tab3->setFrameShadow(QFrame::Sunken);
+        frame_1_tab3->setLineWidth(1);  
+	frame_1_tab3->setGeometry(10,610,550,200);
+	
+	QVBoxLayout *buttonLayout_tab3 = new QVBoxLayout(frame_1_tab3);
+	buttonLayout_tab3->setSpacing(6);
+        buttonLayout_tab3->setContentsMargins(11, 11, 11, 11);
+        buttonLayout_tab3->setObjectName(QString::fromUtf8("buttonLayout_tab3"));
+	
+        pushButtonComputeP2PTraj = new QPushButton("Compute Straight Line Trajectory Via Points");
+        pushButtonComputeApprochTraj = new QPushButton("Compute Trajecoty Approaching Via Points");
+        pushButtonComputeSmoothTraj = new QPushButton("Compute Trajectory Smooth Via Points");
+        
+	buttonLayout_tab3->addWidget(pushButtonComputeP2PTraj);
+	buttonLayout_tab3->addWidget(pushButtonComputeApprochTraj);
+	buttonLayout_tab3->addWidget(pushButtonComputeSmoothTraj);
+	
+	qwtPlot_Traj = new QwtPlot();
+	qwtPlot_Traj->setObjectName(QString::fromUtf8("qwtPlot_Traj"));
+        qwtPlot_Traj->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Traj->setFrameShadow(QFrame::Plain);
+	qwtPlot_Traj->setTitle("Trajectory in 2D");
+
+	QFrame *frame_2_tab3 = new QFrame(Configure);
+        frame_2_tab3->setObjectName(QString::fromUtf8("frame_1_tab3"));
+        sizePolicy4.setHeightForWidth(frame_tab3->sizePolicy().hasHeightForWidth());
+        frame_2_tab3->setSizePolicy(sizePolicy4);
+        frame_2_tab3->setFrameShape(QFrame::Panel);
+        frame_2_tab3->setFrameShadow(QFrame::Sunken);
+        frame_2_tab3->setLineWidth(0);  
+	frame_2_tab3->setGeometry(560,0,900,600);
+	QVBoxLayout *trajPlotLayout_tab3 = new QVBoxLayout(frame_2_tab3);
+        trajPlotLayout_tab3->addWidget(qwtPlot_Traj);
+	
+	QFrame *frame_12_tab3 = new QFrame(Configure);
+	frame_12_tab3->setFrameShape(QFrame::Panel);
+        frame_12_tab3->setFrameShadow(QFrame::Sunken);
+        frame_12_tab3->setLineWidth(1);  
+	frame_12_tab3->setGeometry(210,295,350,315);
+
+	QVBoxLayout *verticalLayout_mid_tab3 = new QVBoxLayout(frame_12_tab3);
+	verticalLayout_mid_tab3->setSpacing(6);
+        verticalLayout_mid_tab3->setContentsMargins(11, 11, 11, 11);
+
+
+	//
+	QFrame *frame_13_tab3 = new QFrame(Configure);
+	frame_13_tab3->setFrameShape(QFrame::Panel);
+        frame_13_tab3->setFrameShadow(QFrame::Sunken);
+        frame_13_tab3->setLineWidth(1);  
+	frame_13_tab3->setGeometry(10,295,200,315);
+
+	QVBoxLayout *verticalLayout_midright_tab3 = new QVBoxLayout(frame_13_tab3);
+	verticalLayout_midright_tab3->setSpacing(6);
+        verticalLayout_midright_tab3->setContentsMargins(11, 11, 11, 11);
+
+	
+	comboBox_dim_tab3 = new QComboBox(frame_13_tab3);
+	comboBox_dim_tab3->setGeometry(20,300,100,50);
+	//comboBox_dim_tab3->addItem("2D");
+	//comboBox_dim_tab3->addItem("3D");
+       	QLabel *label_dim_tab3 = new QLabel("Dimension");
+	QWidget *widget_6_tab3 = new QWidget(frame_13_tab3);
+        QVBoxLayout *verticalLayout_midright1_tab3 = new QVBoxLayout(widget_6_tab3);
+        verticalLayout_midright1_tab3->setSpacing(6);
+        verticalLayout_midright1_tab3->setContentsMargins(11, 11, 11, 11);
+	verticalLayout_midright1_tab3->addWidget(label_dim_tab3);
+	QFormLayout *formLayout_6_tab3 = new QFormLayout();
+        formLayout_6_tab3->setSpacing(6);
+	formLayout_6_tab3->setWidget(1, QFormLayout::LabelRole,comboBox_dim_tab3);
+	//verticalLayout_midright1_tab3->addLayout(formLayout_6_tab3);
+	verticalLayout_midright1_tab3->addWidget(comboBox_dim_tab3);
+	verticalLayout_midright_tab3->addWidget(widget_6_tab3);   
+	
+       
+        QWidget *widget_5_tab3 = new QWidget(frame_13_tab3);
+        QVBoxLayout *verticalLayout_midright2_tab3 = new QVBoxLayout(widget_5_tab3);
+        verticalLayout_midright2_tab3->setSpacing(6);
+        verticalLayout_midright2_tab3->setContentsMargins(11, 11, 11, 11);
+        QLabel *label_22_tab3 = new QLabel("Number of Via Points");
+
+        verticalLayout_midright2_tab3->addWidget(label_22_tab3);
+	QFormLayout *formLayout_5_tab3 = new QFormLayout();
+        formLayout_5_tab3->setSpacing(6);
+        SpinBox_nb_tab3 = new QDoubleSpinBox(widget_5_tab3);
+       
+	SpinBox_nb_tab3->setRange(0,20);
+	SpinBox_nb_tab3->setValue(3);
+	SpinBox_nb_tab3->setSingleStep(1);
+	SpinBox_nb_tab3->setDecimals(0);
+
+	// formLayout_5_tab3->setWidget(0, QFormLayout::LabelRole, SpinBox_nb_tab3);
+	//verticalLayout_midright2_tab3->addLayout(formLayout_5_tab3);
+	verticalLayout_midright2_tab3->addWidget(SpinBox_nb_tab3);
+        verticalLayout_midright_tab3->addWidget(widget_5_tab3);   
+
+	comboBox_point_tab3 = new QComboBox;
+	comboBox_point_tab3->addItem("Point 1");
+	comboBox_point_tab3->addItem("Point 2");
+	comboBox_point_tab3->addItem("Point 3");
+	
+	QLabel *label_point_tab3 = new QLabel("Coordinate Value of");
+	QWidget *widget_10_tab3 = new QWidget(frame_13_tab3);
+        QVBoxLayout *verticalLayout_midright3_tab3 = new QVBoxLayout(widget_10_tab3);
+        verticalLayout_midright3_tab3->setSpacing(6);
+        verticalLayout_midright3_tab3->setContentsMargins(11, 11, 11, 11);
+	verticalLayout_midright3_tab3->addWidget(label_point_tab3);
+	QFormLayout *formLayout_10_tab3 = new QFormLayout();
+        formLayout_10_tab3->setSpacing(6);
+	//formLayout_10_tab3->setWidget(0, QFormLayout::LabelRole,comboBox_point_tab3);
+	//verticalLayout_midright3_tab3->addLayout(formLayout_10_tab3);
+	verticalLayout_midright3_tab3->addWidget(comboBox_point_tab3);
+	verticalLayout_midright_tab3->addWidget(widget_10_tab3);   
+	
+	
+	QWidget *widget_7_tab3 = new QWidget(frame_12_tab3);
+        QVBoxLayout *verticalLayout_mid3_tab3 = new QVBoxLayout(widget_7_tab3);
+        verticalLayout_mid3_tab3->setSpacing(6);
+        verticalLayout_mid3_tab3->setContentsMargins(11, 11, 11, 11);
+        QLabel *label_23_tab3 = new QLabel("X Axi :");
+
+        verticalLayout_mid3_tab3->addWidget(label_23_tab3);
+	QFormLayout *formLayout_7_tab3 = new QFormLayout();
+        formLayout_7_tab3->setSpacing(6);
+        SpinBox_x_tab3 = new QDoubleSpinBox(widget_7_tab3);
+       
+	SpinBox_x_tab3->setRange(0,10);
+	SpinBox_x_tab3->setSingleStep(0.01);
+	SpinBox_x_tab3->setDecimals(2);
+
+        formLayout_7_tab3->setWidget(0, QFormLayout::LabelRole, SpinBox_x_tab3);
+
+        Slider_x_tab3 = new QwtSlider(widget_5_tab3);
+        Slider_x_tab3->setValid(true);
+        Slider_x_tab3->setMass(0);
+        Slider_x_tab3->setThumbLength(31);
+        Slider_x_tab3->setThumbWidth(16);
+	Slider_x_tab3->setRange(0,10,0.01);
+	Slider_x_tab3->setValue(0);
+	
+        formLayout_7_tab3->setWidget(0, QFormLayout::FieldRole, Slider_x_tab3);
+	verticalLayout_mid3_tab3->addLayout(formLayout_7_tab3);
+        verticalLayout_mid_tab3->addWidget(widget_7_tab3);   
+	//
+	QWidget *widget_8_tab3 = new QWidget(frame_12_tab3);
+        QVBoxLayout *verticalLayout_mid4_tab3 = new QVBoxLayout(widget_8_tab3);
+        verticalLayout_mid4_tab3->setSpacing(6);
+        verticalLayout_mid4_tab3->setContentsMargins(11, 11, 11, 11);
+        QLabel *label_24_tab3 = new QLabel("Y Axi :");
+
+        verticalLayout_mid4_tab3->addWidget(label_24_tab3);
+	QFormLayout *formLayout_8_tab3 = new QFormLayout();
+        formLayout_8_tab3->setSpacing(6);
+        SpinBox_y_tab3 = new QDoubleSpinBox(widget_8_tab3);
+       
+	SpinBox_y_tab3->setRange(0,10);
+	SpinBox_y_tab3->setSingleStep(0.01);
+	SpinBox_y_tab3->setDecimals(2);
+
+        formLayout_8_tab3->setWidget(0, QFormLayout::LabelRole, SpinBox_y_tab3);
+
+        Slider_y_tab3 = new QwtSlider(widget_8_tab3);
+        Slider_y_tab3->setValid(true);
+        Slider_y_tab3->setMass(0);
+        Slider_y_tab3->setThumbLength(31);
+        Slider_y_tab3->setThumbWidth(16);
+	Slider_y_tab3->setRange(0,10,0.01);
+	Slider_y_tab3->setValue(0);
+	
+        formLayout_8_tab3->setWidget(0, QFormLayout::FieldRole, Slider_y_tab3);
+	verticalLayout_mid4_tab3->addLayout(formLayout_8_tab3);
+        verticalLayout_mid_tab3->addWidget(widget_8_tab3);   
+	//
+	QWidget *widget_9_tab3 = new QWidget(frame_12_tab3);
+        QVBoxLayout *verticalLayout_mid5_tab3 = new QVBoxLayout(widget_9_tab3);
+        verticalLayout_mid5_tab3->setSpacing(6);
+        verticalLayout_mid5_tab3->setContentsMargins(11, 11, 11, 11);
+        QLabel *label_25_tab3 = new QLabel("Z Axi :");
+
+        verticalLayout_mid5_tab3->addWidget(label_25_tab3);
+	QFormLayout *formLayout_9_tab3 = new QFormLayout();
+        formLayout_9_tab3->setSpacing(6);
+        SpinBox_z_tab3 = new QDoubleSpinBox(widget_9_tab3);
+       
+	SpinBox_z_tab3->setRange(0,10);
+	SpinBox_z_tab3->setSingleStep(0.01);
+	SpinBox_z_tab3->setDecimals(2);
+
+        formLayout_9_tab3->setWidget(0, QFormLayout::LabelRole, SpinBox_z_tab3);
+
+        Slider_z_tab3 = new QwtSlider(widget_9_tab3);
+        Slider_z_tab3->setValid(true);
+        Slider_z_tab3->setMass(0);
+        Slider_z_tab3->setThumbLength(31);
+        Slider_z_tab3->setThumbWidth(16);
+	Slider_z_tab3->setRange(0,10,0.01);
+	Slider_z_tab3->setValue(0);
+	
+        formLayout_9_tab3->setWidget(0, QFormLayout::FieldRole, Slider_z_tab3);
+	verticalLayout_mid5_tab3->addLayout(formLayout_9_tab3);
+        verticalLayout_mid_tab3->addWidget(widget_9_tab3);   
+
+
+       
+	
+	//result of straigt line traj
+	QLabel *label_5_tab3 = new QLabel("Straight Line Trajectory");
+	label_5_tab3->setFont(font3);
+	label_5_tab3->setAlignment(Qt::AlignCenter);
+	QLabel *label_6_tab3 = new QLabel("Duration (s)");
+	QLabel *label_7_tab3 = new QLabel("Jmax (m/s\263)");
+	QLabel *label_8_tab3 = new QLabel("Amax (m/s\262)");
+	QLabel *label_9_tab3 = new QLabel("Vmax (m/s)");
+	
+
+	QFrame *frame_3_tab3 = new QFrame(Configure);
+        frame_3_tab3->setObjectName(QString::fromUtf8("frame_3_tab3"));
+        sizePolicy4.setHeightForWidth(frame_tab3->sizePolicy().hasHeightForWidth());
+        frame_3_tab3->setSizePolicy(sizePolicy4);
+        frame_3_tab3->setFrameShape(QFrame::Panel);
+        frame_3_tab3->setFrameShadow(QFrame::Sunken);
+        frame_3_tab3->setLineWidth(1);  
+	frame_3_tab3->setGeometry(600,610,280,180);
+	QVBoxLayout *bottomRightLayout_tab3 = new QVBoxLayout(frame_3_tab3);
+
+	QGridLayout *bottomRightGridLayout_tab3 = new QGridLayout();
+
+	lcdNumber_Duration_tab3 = new QDoubleSpinBox(frame_3_tab3);
+        lcdNumber_Duration_tab3->setObjectName(QString::fromUtf8("lcdNumber_Duration_tab3"));
+        lcdNumber_Duration_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Duration_tab3->setDecimals(8);
+        lcdNumber_Duration_tab3->setMaximum(200);
+        lcdNumber_Duration_tab3->setSingleStep(0.001);
+
+	lcdNumber_Jmax_tab3 = new QDoubleSpinBox(frame_3_tab3);
+        lcdNumber_Jmax_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Jmax_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Jmax_tab3->setDecimals(8);
+        lcdNumber_Jmax_tab3->setMaximum(200);
+        lcdNumber_Jmax_tab3->setSingleStep(0.01);
+
+	lcdNumber_Amax_tab3 = new QDoubleSpinBox(frame_3_tab3);
+        lcdNumber_Amax_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Amax_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Amax_tab3->setDecimals(8);
+        lcdNumber_Amax_tab3->setMaximum(200);
+        lcdNumber_Amax_tab3->setSingleStep(0.01);
+
+	lcdNumber_Vmax_tab3 = new QDoubleSpinBox(frame_3_tab3);
+        lcdNumber_Vmax_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Vmax_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Vmax_tab3->setDecimals(8);
+        lcdNumber_Vmax_tab3->setMaximum(200);
+        lcdNumber_Vmax_tab3->setSingleStep(0.01);
+	
+	bottomRightGridLayout_tab3->addWidget(label_6_tab3,0,0,1,1);
+	bottomRightGridLayout_tab3->addWidget(label_7_tab3,1,0,1,1);
+	bottomRightGridLayout_tab3->addWidget(label_8_tab3,2,0,1,1);
+	bottomRightGridLayout_tab3->addWidget(label_9_tab3,3,0,1,1);
+	bottomRightGridLayout_tab3->addWidget(lcdNumber_Duration_tab3,0,1,1,1);
+	bottomRightGridLayout_tab3->addWidget(lcdNumber_Jmax_tab3,1,1,1,1);
+	bottomRightGridLayout_tab3->addWidget(lcdNumber_Amax_tab3,2,1,1,1);
+	bottomRightGridLayout_tab3->addWidget(lcdNumber_Vmax_tab3,3,1,1,1);
+
+	bottomRightLayout_tab3->addWidget(label_5_tab3);
+	bottomRightLayout_tab3->addLayout(bottomRightGridLayout_tab3);
+	
+	//result of approching traj
+	QLabel *label_10_tab3 = new QLabel("Approaching via_points Trajectory");
+	label_10_tab3->setFont(font3);
+	label_10_tab3->setAlignment(Qt::AlignCenter);
+	QLabel *label_11_tab3 = new QLabel("Duration (s)");
+	QLabel *label_12_tab3 = new QLabel("Jmax (m/s\263)");
+	QLabel *label_13_tab3 = new QLabel("Amax (m/s\262)");
+	QLabel *label_14_tab3 = new QLabel("Vmax (m/s)");
+	
+
+	QFrame *frame_4_tab3 = new QFrame(Configure);
+        frame_4_tab3->setObjectName(QString::fromUtf8("frame_4_tab3"));
+        sizePolicy4.setHeightForWidth(frame_tab3->sizePolicy().hasHeightForWidth());
+        frame_4_tab3->setSizePolicy(sizePolicy4);
+        frame_4_tab3->setFrameShape(QFrame::Panel);
+        frame_4_tab3->setFrameShadow(QFrame::Sunken);
+        frame_4_tab3->setLineWidth(1);  
+	frame_4_tab3->setGeometry(900,610,280,180);
+	QVBoxLayout *bottomRightLayout_2_tab3 = new QVBoxLayout(frame_4_tab3);
+
+	QGridLayout *bottomRightGridLayout_2_tab3 = new QGridLayout();
+
+	lcdNumber_Duration_2_tab3 = new QDoubleSpinBox(frame_4_tab3);
+        lcdNumber_Duration_2_tab3->setObjectName(QString::fromUtf8("lcdNumber_Duration_tab3"));
+        lcdNumber_Duration_2_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Duration_2_tab3->setDecimals(8);
+        lcdNumber_Duration_2_tab3->setMaximum(200);
+        lcdNumber_Duration_2_tab3->setSingleStep(0.001);
+
+	lcdNumber_Jmax_2_tab3 = new QDoubleSpinBox(frame_4_tab3);
+        lcdNumber_Jmax_2_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Jmax_2_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Jmax_2_tab3->setDecimals(8);
+        lcdNumber_Jmax_2_tab3->setMaximum(200);  
+        lcdNumber_Jmax_2_tab3->setSingleStep(0.01);
+
+	lcdNumber_Amax_2_tab3 = new QDoubleSpinBox(frame_4_tab3);
+        lcdNumber_Amax_2_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Amax_2_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Amax_2_tab3->setDecimals(8);
+        lcdNumber_Amax_2_tab3->setMaximum(200);
+        lcdNumber_Amax_2_tab3->setSingleStep(0.01);
+
+	lcdNumber_Vmax_2_tab3 = new QDoubleSpinBox(frame_4_tab3);
+        lcdNumber_Vmax_2_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Vmax_2_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Vmax_2_tab3->setDecimals(8);
+        lcdNumber_Vmax_2_tab3->setMaximum(200);
+        lcdNumber_Vmax_2_tab3->setSingleStep(0.01);
+	
+	bottomRightGridLayout_2_tab3->addWidget(label_11_tab3,0,0,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(label_12_tab3,1,0,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(label_13_tab3,2,0,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(label_14_tab3,3,0,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(lcdNumber_Duration_2_tab3,0,1,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(lcdNumber_Jmax_2_tab3,1,1,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(lcdNumber_Amax_2_tab3,2,1,1,1);
+	bottomRightGridLayout_2_tab3->addWidget(lcdNumber_Vmax_2_tab3,3,1,1,1);
+
+	bottomRightLayout_2_tab3->addWidget(label_10_tab3);
+	bottomRightLayout_2_tab3->addLayout(bottomRightGridLayout_2_tab3);
+
+	//results of Smooth via_points traj
+	QLabel *label_15_tab3 = new QLabel("Smooth via_points Trajectory");
+	label_15_tab3->setFont(font3);
+	label_15_tab3->setAlignment(Qt::AlignCenter);
+	QLabel *label_16_tab3 = new QLabel("Duration (s)");
+	QLabel *label_17_tab3 = new QLabel("Jmax (m/s\263)");
+	QLabel *label_18_tab3 = new QLabel("Amax (m/s\262)");
+	QLabel *label_19_tab3 = new QLabel("Vmax (m/s)");
+	
+
+	QFrame *frame_5_tab3 = new QFrame(Configure);
+        frame_5_tab3->setObjectName(QString::fromUtf8("frame_5_tab3"));
+        sizePolicy4.setHeightForWidth(frame_tab3->sizePolicy().hasHeightForWidth());
+        frame_5_tab3->setSizePolicy(sizePolicy4);
+        frame_5_tab3->setFrameShape(QFrame::Panel);
+        frame_5_tab3->setFrameShadow(QFrame::Sunken);
+        frame_5_tab3->setLineWidth(1);  
+	frame_5_tab3->setGeometry(1200,610,280,180);
+	QVBoxLayout *bottomRightLayout_3_tab3 = new QVBoxLayout(frame_5_tab3);
+
+	QGridLayout *bottomRightGridLayout_3_tab3 = new QGridLayout();
+
+	lcdNumber_Duration_3_tab3 = new QDoubleSpinBox(frame_5_tab3);
+        lcdNumber_Duration_3_tab3->setObjectName(QString::fromUtf8("lcdNumber_Duration_tab3"));
+        lcdNumber_Duration_3_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Duration_3_tab3->setDecimals(8); lcdNumber_Duration_3_tab3->setMaximum(200);
+        lcdNumber_Duration_3_tab3->setSingleStep(0.001);
+	QDoubleSpinBox *lcdNumber_Jmax_3_tab3 = new QDoubleSpinBox(frame_5_tab3);
+        lcdNumber_Jmax_3_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Jmax_3_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Jmax_3_tab3->setDecimals(8);
+        lcdNumber_Jmax_3_tab3->setMaximum(200);
+        lcdNumber_Jmax_3_tab3->setSingleStep(0.01);
+	QDoubleSpinBox *lcdNumber_Amax_3_tab3 = new QDoubleSpinBox(frame_5_tab3);
+        lcdNumber_Amax_3_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Amax_3_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Amax_3_tab3->setDecimals(8);
+        lcdNumber_Amax_3_tab3->setMaximum(200);
+        lcdNumber_Amax_3_tab3->setSingleStep(0.01);
+	QDoubleSpinBox *lcdNumber_Vmax_3_tab3 = new QDoubleSpinBox(frame_5_tab3);
+        lcdNumber_Vmax_3_tab3->setObjectName(QString::fromUtf8("lcdNumber_Amax"));
+        lcdNumber_Vmax_3_tab3->setButtonSymbols(QAbstractSpinBox::NoButtons);
+        lcdNumber_Vmax_3_tab3->setDecimals(8);
+        lcdNumber_Vmax_3_tab3->setMaximum(200);
+        lcdNumber_Vmax_3_tab3->setSingleStep(0.01);
+	
+	bottomRightGridLayout_3_tab3->addWidget(label_16_tab3,0,0,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(label_17_tab3,1,0,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(label_18_tab3,2,0,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(label_19_tab3,3,0,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(lcdNumber_Duration_3_tab3,0,1,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(lcdNumber_Jmax_3_tab3,1,1,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(lcdNumber_Amax_3_tab3,2,1,1,1);
+	bottomRightGridLayout_3_tab3->addWidget(lcdNumber_Vmax_3_tab3,3,1,1,1);
+
+	bottomRightLayout_3_tab3->addWidget(label_15_tab3);
+	bottomRightLayout_3_tab3->addLayout(bottomRightGridLayout_3_tab3);
+
+       
+	// deleted	
+	//TrajIn2D = new QWidget();
+	//TrajIn2D->setObjectName(QString::fromUtf8("TrajIn2D"));
+	JAVin2D = new QWidget();
+	JAVin2D->setObjectName(QString::fromUtf8("JAVin2D"));
+	
+	//plot of P A V of approching via points
+	qwtPlot_Pos = new QwtPlot();
+	qwtPlot_Pos->setObjectName(QString::fromUtf8("qwtPlot_Traj"));
+        qwtPlot_Pos->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Pos->setFrameShadow(QFrame::Plain);
+	//qwtPlot_Pos->setTitle("Approching Trajectory--Position");   
+	qwtPlot_Pos->setAxisTitle(0,"Position (m)");
+	qwtPlot_Pos->setAxisTitle(2,"time (s)");
+	QFrame *frame_6_tab3 = new QFrame(JAVin2D);
+	frame_6_tab3->setSizePolicy(sizePolicy4);
+        frame_6_tab3->setFrameShape(QFrame::Panel);
+        frame_6_tab3->setFrameShadow(QFrame::Sunken);
+        frame_6_tab3->setLineWidth(0);  
+	frame_6_tab3->setGeometry(0,0,740,290);
+	QVBoxLayout *posPlotLayout_tab3 = new QVBoxLayout(frame_6_tab3);
+	QLabel *label_20_tab3 = new QLabel("Approaching via_points Trajectory");
+	QFont font_tab3;
+	font_tab3.setBold(true);
+	font_tab3.setPointSize(15);
+	label_20_tab3->setFont(font_tab3);
+	label_20_tab3->setAlignment(Qt::AlignCenter);
+	posPlotLayout_tab3->addWidget(label_20_tab3);
+	posPlotLayout_tab3->addWidget(qwtPlot_Pos);
+
+		
+	qwtPlot_Acc = new QwtPlot();
+	qwtPlot_Acc->setObjectName(QString::fromUtf8("qwtPlot_Traj"));
+        qwtPlot_Acc->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Acc->setFrameShadow(QFrame::Plain);
+	//qwtPlot_Acc->setTitle("Approching Trajectory--Acceleration"); 
+	qwtPlot_Acc->setAxisTitle(0,"Acceleration (m/s\262)");
+	qwtPlot_Acc->setAxisTitle(2,"time (s)");
+	QFrame *frame_7_tab3 = new QFrame(JAVin2D);
+	frame_7_tab3->setSizePolicy(sizePolicy4);
+        frame_7_tab3->setFrameShape(QFrame::Panel);
+        frame_7_tab3->setFrameShadow(QFrame::Sunken);
+        frame_7_tab3->setLineWidth(0);  
+	frame_7_tab3->setGeometry(0,285,740,272.5);
+	QVBoxLayout *accPlotLayout_tab3 = new QVBoxLayout(frame_7_tab3);
+	accPlotLayout_tab3->addWidget(qwtPlot_Acc);
+       
+
+	qwtPlot_Vel = new QwtPlot();
+	qwtPlot_Vel->setObjectName(QString::fromUtf8("qwtPlot_Traj"));
+        qwtPlot_Vel->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Vel->setFrameShadow(QFrame::Plain);
+	//	qwtPlot_Vel->setTitle("Approching Trajectory--Velocity"); 
+	qwtPlot_Vel->setAxisTitle(0,"Velotcity (m/s)");
+	qwtPlot_Vel->setAxisTitle(2,"time (s)");
+	QFrame *frame_8_tab3 = new QFrame(JAVin2D);
+	frame_8_tab3->setSizePolicy(sizePolicy4);
+        frame_8_tab3->setFrameShape(QFrame::Panel);
+        frame_8_tab3->setFrameShadow(QFrame::Sunken);
+        frame_8_tab3->setLineWidth(0);  
+	frame_8_tab3->setGeometry(0,562.5,740,272.5);
+	QVBoxLayout *velPlotLayout_tab3 = new QVBoxLayout(frame_8_tab3);
+	velPlotLayout_tab3->addWidget(qwtPlot_Vel);
+	
+	//plot of P A V of smooth via points
+	qwtPlot_Pos_2 = new QwtPlot();
+	qwtPlot_Pos_2->setObjectName(QString::fromUtf8("qwtPlot_Traj"));
+        qwtPlot_Pos_2->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Pos_2->setFrameShadow(QFrame::Plain);
+	//	qwtPlot_Pos_2->setTitle("Smooth Trajectory--Position");   
+	qwtPlot_Pos_2->setAxisTitle(0,"Position (m)");
+	qwtPlot_Pos_2->setAxisTitle(2,"time (s)");
+	QFrame *frame_9_tab3 = new QFrame(JAVin2D);
+	frame_9_tab3->setSizePolicy(sizePolicy4);
+        frame_9_tab3->setFrameShape(QFrame::Panel);
+        frame_9_tab3->setFrameShadow(QFrame::Sunken);
+        frame_9_tab3->setLineWidth(0);  
+	frame_9_tab3->setGeometry(740,0,740,290);
+	QVBoxLayout *pos2PlotLayout_tab3 = new QVBoxLayout(frame_9_tab3);
+	QLabel *label_21_tab3 = new QLabel("Smooth via_points Trajectory");
+	label_21_tab3->setFont(font_tab3);
+	label_21_tab3->setAlignment(Qt::AlignCenter);
+	pos2PlotLayout_tab3->addWidget(label_21_tab3);
+	pos2PlotLayout_tab3->addWidget(qwtPlot_Pos_2);
+	
+	
+	qwtPlot_Acc2 = new QwtPlot();
+	qwtPlot_Acc2->setObjectName(QString::fromUtf8("qwtPlot_Traj"));
+        qwtPlot_Acc2->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Acc2->setFrameShadow(QFrame::Plain);
+	//qwtPlot_Acc2->setTitle("Smooth Trajectory--Acceleration"); 
+	qwtPlot_Acc2->setAxisTitle(0,"Acceleration (m/s\262)");
+	qwtPlot_Acc2->setAxisTitle(2,"time (s)");
+	QFrame *frame_10_tab3 = new QFrame(JAVin2D);
+	frame_10_tab3->setSizePolicy(sizePolicy4);
+        frame_10_tab3->setFrameShape(QFrame::Panel);
+        frame_10_tab3->setFrameShadow(QFrame::Sunken);
+        frame_10_tab3->setLineWidth(0);  
+	frame_10_tab3->setGeometry(740,275,740,272.5);
+	QVBoxLayout *acc2PlotLayout_tab3 = new QVBoxLayout(frame_10_tab3);
+	acc2PlotLayout_tab3->addWidget(qwtPlot_Acc2);
+       
+
+	qwtPlot_Vel2 = new QwtPlot();
+        qwtPlot_Vel2->setFrameShape(QFrame::NoFrame);
+        qwtPlot_Vel2->setFrameShadow(QFrame::Plain);
+	//	qwtPlot_Vel2->setTitle("Smooth Trajectory--Velocity"); 
+	qwtPlot_Vel2->setAxisTitle(0,"Velotcity (m/s)");
+	qwtPlot_Vel2->setAxisTitle(2,"time (s)");
+	QFrame *frame_11_tab3 = new QFrame(JAVin2D);
+	frame_11_tab3->setSizePolicy(sizePolicy4);
+        frame_11_tab3->setFrameShape(QFrame::Panel);
+        frame_11_tab3->setFrameShadow(QFrame::Sunken);
+        frame_11_tab3->setLineWidth(0);  
+	frame_11_tab3->setGeometry(740,562.5,740,272.5);
+	QVBoxLayout *vel2PlotLayout_tab3 = new QVBoxLayout(frame_11_tab3);
+	vel2PlotLayout_tab3->addWidget(qwtPlot_Vel2);
+
+
+	// 3D Empety Now
+	TrajIn3D = new QWidget();
+	TrajIn3D->setObjectName(QString::fromUtf8("TrajIn3D"));
+	// 3D Empety Now
+	JAVin3D = new QWidget();
+	JAVin3D->setObjectName(QString::fromUtf8("JAVin3D"));
+
+	tabWidget_3->addTab(Configure,QString());
+	//tabWidget_3->addTab(TrajIn2D,QString());
+	tabWidget_3->addTab(JAVin2D,QString());
+	tabWidget_3->addTab(TrajIn3D,QString());
+	tabWidget_3->addTab(JAVin3D,QString());
+
+	splitter_tab3->addWidget(tabWidget_3);
+	viewer->setSizePolicy(sizePolicy6);
+        horizontalLayout_tab3->addWidget(splitter_tab3);
+
+	tabWidget_2->addTab(tabSmoothViaPoints, QString()); 
+	verticalLayout_17->addWidget(tabWidget_2);
+        scrollArea->setWidget(scrollAreaWidgetContents);
+        verticalLayout_18->addWidget(scrollArea);
+
+
+
 
         MainWindow->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(MainWindow);
@@ -1890,13 +2647,30 @@ public:
         QObject::connect(Slider_desError, SIGNAL(valueChanged(double)), doubleSpinBox_DesError, SLOT(setValue(double)));
         QObject::connect(doubleSpinBox_DesError, SIGNAL(valueChanged(double)), Slider_desError, SLOT(setValue(double)));
 
+	//ran
+	QObject::connect(Slider_Jmax_tab3, SIGNAL(sliderMoved(double)), doubleSpinBox_Jmax_tab3, SLOT(setValue(double)));
+	QObject::connect(doubleSpinBox_Amax_tab3, SIGNAL(valueChanged(double)), Slider_Amax_tab3, SLOT(setValue(double)));
+        QObject::connect(Slider_Amax_tab3, SIGNAL(sliderMoved(double)), doubleSpinBox_Amax_tab3, SLOT(setValue(double)));
+        QObject::connect(Slider_Vmax_tab3, SIGNAL(sliderMoved(double)), doubleSpinBox_Vmax_tab3, SLOT(setValue(double)));
+        QObject::connect(doubleSpinBox_Jmax_tab3, SIGNAL(valueChanged(double)), Slider_Jmax_tab3, SLOT(setValue(double)));
+	QObject::connect(doubleSpinBox_Vmax_tab3, SIGNAL(valueChanged(double)), Slider_Vmax_tab3, SLOT(setValue(double)));
+	//QObject::connect(Slider_nb_tab3, SIGNAL(sliderMoved(double)), SpinBox_nb_tab3, SLOT(setValue(double)));
+	//QObject::connect(SpinBox_nb_tab3, SIGNAL(valueChanged(double)), Slider_nb_tab3, SLOT(setValue(double)));
+	QObject::connect(Slider_x_tab3, SIGNAL(sliderMoved(double)), SpinBox_x_tab3, SLOT(setValue(double)));
+	QObject::connect(SpinBox_x_tab3, SIGNAL(valueChanged(double)), Slider_x_tab3, SLOT(setValue(double)));
+        QObject::connect(Slider_y_tab3, SIGNAL(sliderMoved(double)), SpinBox_y_tab3, SLOT(setValue(double)));
+        QObject::connect(Slider_z_tab3, SIGNAL(sliderMoved(double)), SpinBox_z_tab3, SLOT(setValue(double)));
+        QObject::connect(SpinBox_y_tab3, SIGNAL(valueChanged(double)), Slider_y_tab3, SLOT(setValue(double)));
+	QObject::connect(SpinBox_z_tab3, SIGNAL(valueChanged(double)), Slider_z_tab3, SLOT(setValue(double)));
+
+
         tabWidget_2->setCurrentIndex(1);
         tabWidget->setCurrentIndex(0);
-
+	tabWidget_3->setCurrentIndex(2);
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
-
+    
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", 0, QApplication::UnicodeUTF8));
@@ -1933,7 +2707,7 @@ public:
         label_18->setText(QApplication::translate("MainWindow", "Vf", 0, QApplication::UnicodeUTF8));
         label_19->setText(QApplication::translate("MainWindow", "Xf", 0, QApplication::UnicodeUTF8));
         tabWidget_2->setTabText(tabWidget_2->indexOf(tabSoftMotionPlanner), QApplication::translate("MainWindow", "Soft Motion Planner", 0, QApplication::UnicodeUTF8));
-        label_4->setText(QApplication::translate("MainWindow", "Trajectory Motion Law", 0, QApplication::UnicodeUTF8));
+	label_4->setText(QApplication::translate("MainWindow", "Trajectory Motion Law", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("MainWindow", "Maximum Jerk (m/s\302\263)", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("MainWindow", "Maximum Acceleration (m/s\302\262)", 0, QApplication::UnicodeUTF8));
         label_3->setText(QApplication::translate("MainWindow", "Maximum Velocity (m/s)", 0, QApplication::UnicodeUTF8));
@@ -1990,8 +2764,25 @@ public:
         menu_Edit->setTitle(QApplication::translate("MainWindow", "&Edit", 0, QApplication::UnicodeUTF8));
         menu_Window->setTitle(QApplication::translate("MainWindow", "&Window", 0, QApplication::UnicodeUTF8));
         menu_Help->setTitle(QApplication::translate("MainWindow", "&Help", 0, QApplication::UnicodeUTF8));
-    } // retranslateUi
 
+	//ran 
+	tabWidget_2->setTabText(tabWidget_2->indexOf(tabSmoothViaPoints), QApplication::translate("MainWindow", "Smooth Trajectory Via Points", 0, QApplication::UnicodeUTF8));
+	tabWidget_3->setTabText(tabWidget_3->indexOf(Configure), QApplication::translate("MainWindow", "Configuration", 0, QApplication::UnicodeUTF8));
+	tabWidget_3->setTabText(tabWidget_3->indexOf(TrajIn2D), QApplication::translate("MainWindow", "Trajectory in 2D", 0, QApplication::UnicodeUTF8));
+	tabWidget_3->setTabText(tabWidget_3->indexOf(JAVin2D), QApplication::translate("MainWindow", "Pos,Acc Vel in 2D", 0, QApplication::UnicodeUTF8));
+	tabWidget_3->setTabText(tabWidget_3->indexOf(TrajIn3D), QApplication::translate("MainWindow", "Trajectory in 3D", 0, QApplication::UnicodeUTF8));
+	tabWidget_3->setTabText(tabWidget_3->indexOf(JAVin3D), QApplication::translate("MainWindow", "Pos,Acc Vel in 3D", 0, QApplication::UnicodeUTF8));
+	label_tab3->setText(QApplication::translate("MainWindow", "Maximum Jerk (m/s\302\263)", 0, QApplication::UnicodeUTF8));
+	label_2_tab3->setText(QApplication::translate("MainWindow", "Maximum Acceleration (m/s\302\262)", 0, QApplication::UnicodeUTF8));
+	label_3_tab3->setText(QApplication::translate("MainWindow", "Maximum Velocity (m/s)", 0, QApplication::UnicodeUTF8));
+	label_4_tab3->setText(QApplication::translate("MainWindow", "Trajectory Motion Law", 0, QApplication::UnicodeUTF8));   
+	comboBox_dim_tab3->clear();
+        comboBox_dim_tab3->insertItems(0, QStringList()
+         << QApplication::translate("MainWindow", "2D", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("MainWindow", "3D", 0, QApplication::UnicodeUTF8)
+	);
+	  } // retranslateUi
+    
 };
 
 namespace Ui {

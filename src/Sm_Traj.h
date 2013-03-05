@@ -75,6 +75,7 @@ class SM_TRAJ {
 
   enum SM_TRAJ_TYPE {
     SM_STOP_AT_VIA_POINT,
+    SM_SMOOTH_APPROACH_VIA_POINT, // not implementd
     SM_SMOOTH_AT_VIA_POINT // not implemented
   };
 
@@ -152,7 +153,8 @@ class SM_TRAJ {
    *       \li SM_STOP_AT_VIA_POINT the trajectory pass at each via point with NULL velocity and acceleration 
    *       \li SM_SMOOTH_AT_VIA_POINT the trajectory does not pass at the via points but near and without stopping
    */
-  int computeTraj(std::vector< std::vector<double> > pos, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE mode);
+  // int computeTraj(std::vector< std::vector<double> > pos, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE mode);
+  int computeTraj(std::vector< std::vector<SM_COND> > via_points, std::vector<SM_LIMITS> limits, SM_TRAJ_TYPE type);
 
   /** approximate a discrete trajectory
    * @param trajIn the discrete trajectory in a array of SM_COND
@@ -256,8 +258,17 @@ class SM_TRAJ {
    */
   double getDuration();
 
-
-//get max values in the vector
+  /*! compute the Imposed Time for 3 segment trajectory 
+   */
+  double computeTimp(std::vector<SM_COND> IC, std::vector<SM_COND> FC, std::vector<SM_LIMITS> limits);
+  
+  /* Function to extract trajectory  
+   * @ inTraj: input trajectory
+   * @ segment: the number of segment which is extracted
+   */
+  int extractTraj(SM_TRAJ &smTraj,int segment);
+  
+  //get max values in the vector
 
   std::vector<double> getVmax() const;
 
@@ -329,6 +340,8 @@ class SM_TRAJ {
   int ThreeSegSynchronizedMotion(std::vector<SM_MOTION_AXIS>  &motion_arr);
   //int synchronizedMotion(std::vector<SM_MOTION_AXIS> &motion_arr); 
   //to implement
+
+ 
 };
 
 #endif

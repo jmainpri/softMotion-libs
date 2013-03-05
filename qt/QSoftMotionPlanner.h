@@ -191,7 +191,26 @@ public slots:
     /** @brief Clear all graphs
      *
      *  clear all the graphs in the qt interface
+
      */
+//ran 
+    void computeStraightLineTraj();
+    void computeApprochingTraj();
+    void computeSmoothTraj();
+
+    void computeStraightLineTraj2D();
+    void computeApprochingTraj2D();
+    void computeSmoothTraj2D();
+    
+    void computeStraightLineTraj3D();
+    void computeApprochingTraj3D();
+    void computeSmoothTraj3D();
+
+    void resetSpinBox_nb_tab3();
+    void resetCoordinate();
+    void updatePointCond();
+    void setZaxiVisable();
+
 #ifdef ENABLE_DISPLAY
     void clearPlot();
 #endif
@@ -226,8 +245,9 @@ private:
     std::string _fileName;
     bool _isFullScreen;
     bool _display;
-
-
+    std::vector<std::vector<SM_COND> > pointCond;
+    SM_LIMITS _limit;
+    
 };
 
 #endif // QSOFTMOTIONPLANNER_H
