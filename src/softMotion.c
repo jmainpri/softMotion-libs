@@ -7465,6 +7465,12 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	  std::cout << "cntrl2 point " << path.back().subpath.back().bezier3[1].x << " " << path.back().subpath.back().bezier3[1].y << std::endl;
 	}
       }
+    else if(element=="c" || element=="l") {
+        std::cerr << "Error! Your SVG path contains relative coordinates, \
+            which are not understood by softMotion." << endl << 
+            "Please disable relative coordinate in the editor settings." << endl;
+        exit(1);
+    }
       iss >> element;
 
     }
