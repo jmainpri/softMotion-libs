@@ -40,6 +40,25 @@
 #include <vector>
 #endif
 
+#define DEBUG 0
+#define INFO 1
+#define WARNING 2
+#define ERROR 3
+#define SILENT 99
+
+// set here the desired level of log
+#define LOGLEVEL INFO
+
+#define LOG(level, what) {  \
+    if (level >= LOGLEVEL) {\
+        if (level >= WARNING) std::cerr << __FILE__ << " (" << __LINE__ << "): "; \
+        if (level == ERROR) std::cerr << "ERROR "; \
+        if (level == WARNING) std::cerr << "WARNING "; \
+        std::cerr << what << std::endl; \
+    } \
+    }
+
+
 /** @file softMotion.h
  * @brief This file includes all declarations for different functions of computing the SoftMotion
  * sm_VerifyInitialAndFinalConditions etc......

@@ -68,7 +68,9 @@
 #include "gnuplot_i.hpp"
 
 using std::cout;
+using std::cerr;
 using std::endl;
+
 static double step_for_bezier = 0.001;
 
 SM_STATUS sm_VerifyInitialAndFinalConditions( SM_LIMITS* limitsGoto, SM_COND* IC, SM_COND* FC, SM_PARTICULAR_VELOCITY* PartVel, SM_COND* ICm, SM_COND* FCm)
@@ -6220,17 +6222,13 @@ SM_STATUS sm_ComputeCondition(std::vector<SM_CURVE_DATA3> &IdealTraj,std::vector
 //      motion[i * 3 + 0].Jerk[j] =  1.0 * locRHS[0] -  9.0 * locRHS[1]  + 27.0 * locRHS[2];
 //      motion[i * 3 + 1].Jerk[j] = -3.5 * locRHS[0] + 27.0 * locRHS[1]  - 54.0 * locRHS[2];
 //      motion[i * 3 + 2].Jerk[j] =  5.5 * locRHS[0] - 18.0 * locRHS[1]  + 27.0 * locRHS[2];
-//      if(0) {
-//	cout << "J1 " << motion[i * 3 + 0].Jerk[j] << " J2 " <<motion[i * 3 + 1].Jerk[j] << " J3 " <<motion[i * 3 + 2].Jerk[j] << endl;
-//      }
+//      LOG(DEBUG,  "J1 " << motion[i * 3 + 0].Jerk[j] << " J2 " <<motion[i * 3 + 1].Jerk[j] << " J3 " <<motion[i * 3 + 2].Jerk[j]);
 //
 //      motion[i * 3 + 0].Time[j] = Timp[i] / 3.0;
 //      motion[i * 3 + 1].Time[j] = Timp[i] / 3.0;
 //      motion[i * 3 + 2].Time[j] = Timp[i] / 3.0;
 //
-//      if(0) {
-//	cout << "T1 " << motion[i * 3 + 0].Time[j] << " T2 " <<motion[i * 3 + 1].Time[j] << " T3 " <<motion[i * 3 + 2].Time[j] << endl;
-//      }
+//      LOG(DEBUG,  "T1 " << motion[i * 3 + 0].Time[j] << " T2 " <<motion[i * 3 + 1].Time[j] << " T3 " <<motion[i * 3 + 2].Time[j]);
 //    }
 //  }
 //  // Compute motion condition at the beginning of each segment
@@ -6337,17 +6335,13 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM3> &IC, std::vector<SM_COND_
       motion[i * 3 + 0].Jerk[j] =  1.0 * locRHS[0] -  9.0 * locRHS[1]  + 27.0 * locRHS[2];
       motion[i * 3 + 1].Jerk[j] = -3.5 * locRHS[0] + 27.0 * locRHS[1]  - 54.0 * locRHS[2];
       motion[i * 3 + 2].Jerk[j] =  5.5 * locRHS[0] - 18.0 * locRHS[1]  + 27.0 * locRHS[2];
-      if(0) {
-	cout << "J1 " << motion[i * 3 + 0].Jerk[j] << " J2 " <<motion[i * 3 + 1].Jerk[j] << " J3 " <<motion[i * 3 + 2].Jerk[j] << endl;
-      }
-			
+      LOG(DEBUG,  "J1 " << motion[i * 3 + 0].Jerk[j] << " J2 " <<motion[i * 3 + 1].Jerk[j] << " J3 " <<motion[i * 3 + 2].Jerk[j]);
+
       motion[i * 3 + 0].Time[j] = Timp[i] / 3.0;
       motion[i * 3 + 1].Time[j] = Timp[i] / 3.0;
       motion[i * 3 + 2].Time[j] = Timp[i] / 3.0;
 
-      if(0) {
-	cout << "T1 " << motion[i * 3 + 0].Time[j] << " T2 " <<motion[i * 3 + 1].Time[j] << " T3 " <<motion[i * 3 + 2].Time[j] << endl;
-      }
+      LOG(DEBUG,  "T1 " << motion[i * 3 + 0].Time[j] << " T2 " <<motion[i * 3 + 1].Time[j] << " T3 " <<motion[i * 3 + 2].Time[j]);
     }
   }
 
@@ -6388,15 +6382,9 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM3> &IC, std::vector<SM_COND_
 
       sm_AVX_TimeVar(ICloc, Tloc, Jloc, Tloc, aloc, vloc, xloc);
 
-
-			
-     if(0){
-	cout << endl << "segement " << i << endl;
-	cout << " IC " << motion[i].IC[j].a << " " << motion[i].IC[j].v << " " << motion[i].IC[j].x << endl;
-	cout << " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0) << endl;
-	cout << endl;
-
-      }
+      LOG(DEBUG, endl << "segement " << i);
+      LOG(DEBUG, " IC " << motion[i].IC[j].a << " " << motion[i].IC[j].v << " " << motion[i].IC[j].x);
+      LOG(DEBUG, " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0));
   
     }
 	
@@ -6452,17 +6440,13 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
       motion[i * 3 + 0].Jerk[j] =  1.0 * locRHS[0] -  9.0 * locRHS[1]  + 27.0 * locRHS[2];
       motion[i * 3 + 1].Jerk[j] = -3.5 * locRHS[0] + 27.0 * locRHS[1]  - 54.0 * locRHS[2];
       motion[i * 3 + 2].Jerk[j] =  5.5 * locRHS[0] - 18.0 * locRHS[1]  + 27.0 * locRHS[2];
-      if(0) {
-	cout << "J1 " << motion[i * 3 + 0].Jerk[j] << " J2 " <<motion[i * 3 + 1].Jerk[j] << " J3 " <<motion[i * 3 + 2].Jerk[j] << endl;
-      }
+      LOG(DEBUG,  "J1 " << motion[i * 3 + 0].Jerk[j] << " J2 " <<motion[i * 3 + 1].Jerk[j] << " J3 " <<motion[i * 3 + 2].Jerk[j]);
 
       motion[i * 3 + 0].Time[j] = Timp[i] / 3.0;
       motion[i * 3 + 1].Time[j] = Timp[i] / 3.0;
       motion[i * 3 + 2].Time[j] = Timp[i] / 3.0;
 
-      if(0) {
-	cout << "T1 " << motion[i * 3 + 0].Time[j] << " T2 " <<motion[i * 3 + 1].Time[j] << " T3 " <<motion[i * 3 + 2].Time[j] << endl;
-      }
+      LOG(DEBUG,  "T1 " << motion[i * 3 + 0].Time[j] << " T2 " <<motion[i * 3 + 1].Time[j] << " T3 " <<motion[i * 3 + 2].Time[j]);
     }
   }
 
@@ -6477,15 +6461,10 @@ SM_STATUS sm_SolveWithoutOpt(std::vector<SM_COND_DIM> &IC, std::vector<SM_COND_D
     //}
   }
 
-       if(0){
-	
-	cout << endl << "segement " << 0 << endl;
-	cout << " IC " << motion[0].IC[0].a << " " << motion[0].IC[0].v << " " << motion[0].IC[0].x << endl;
-       cout << " Jerk " << motion[0].Jerk[0] << " Time " << motion[0].Time[0]<< endl;
-	//cout << " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0) << endl;
-	cout << endl;
-
-      }
+    LOG(DEBUG, endl << "segement " << 0);
+    LOG(DEBUG, " IC " << motion[0].IC[0].a << " " << motion[0].IC[0].v << " " << motion[0].IC[0].x);
+    LOG(DEBUG, " Jerk " << motion[0].Jerk[0] << " Time " << motion[0].Time[0]);
+    //LOG(DEBUG, " FC " << aloc.at(0) << " " << vloc.at(0) << " " << xloc.at(0));
 
   for (i = 1; i < (3 * IC.size()); i++){
 
@@ -7252,10 +7231,10 @@ SM_STATUS sm_Main(std::vector<SM_OUTPUT> &motion, int*nbJerkConst , std::string 
   nbIntervals = 40; // on definit le nombre d'interval
 
   if (parseSvg(fileName, path, &width, &height) == SM_ERROR) {
-    cout << " parse ERROR" << endl;
+    LOG(ERROR, " parse ERROR");
     return SM_ERROR;
   }
-  cout << " parse is OK" << endl;
+  LOG(INFO, " parse is OK");
   constructTrajSvg(path,  tic, Lim, IdealTraj);
    plotIdealTraj(fileNameIdeal, IdealTraj, width, height) ;
 
@@ -7277,7 +7256,7 @@ SM_STATUS sm_Main(std::vector<SM_OUTPUT> &motion, int*nbJerkConst , std::string 
 
 // maintenant, il y a 40 donnee dans Timp
   if (sm_SolveWithoutOpt(IC, FC, Timp, motion) != 0){
-    printf("Solve Problem \n");
+    LOG(INFO, "Solve Problem");
     return SM_ERROR;
   }
 
@@ -7401,9 +7380,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	  lpath.origin.y = (lpath.origin.y* svg_ratio * svg_y_sign + svg_y_offset)* scaley;
 	  lpath.nbSubPath = 0;
 	  path.push_back(lpath);
- if(0) {
-	  std::cout <<"path origin : x = "<< path.back().origin.x << " y = " << path.back().origin.y << std::endl;
-}
+      LOG(DEBUG, "path origin : x = "<< path.back().origin.x << " y = " << path.back().origin.y);
 	}
       else if(element=="L") {
 	iss >> element ;
@@ -7426,12 +7403,9 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	lsubpath.type = LINE;
 	path.back().subpath.push_back(lsubpath);
 	path.back().nbSubPath ++;
-	if(0) {
-	  std::cout << "LINE" << std::endl;
-	  std::cout << "start point " << path.back().subpath.back().start.x << " " << path.back().subpath.back().start.y << std::endl;
-	  std::cout << "end   point " << path.back().subpath.back().end.x << " " << path.back().subpath.back().end.y << std::endl;
-
-	}
+	LOG(DEBUG,  "LINE");
+	LOG(DEBUG, "start point " << path.back().subpath.back().start.x << " " << path.back().subpath.back().start.y);
+	LOG(DEBUG, "end   point " << path.back().subpath.back().end.x << " " << path.back().subpath.back().end.y);
       }
 
     else if(element=="C") {
@@ -7490,15 +7464,15 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
   double svg_ratio = (1.0 / 3.5433)/1000.0;
   double svg_y_sign = -1.0;
   double svg_y_offset;
-  cout << "parsing " << fileName.c_str() << endl;
+  LOG(INFO, "parsing " << fileName);
   if(doc==NULL) {
-      printf("%s: %d: parseSvg(): document \"%s\" does not exist or was not parsed successfully by libxml2.\n", __FILE__, __LINE__, fileName.c_str());
+      LOG(ERROR, "parseSvg(): document \"" << fileName << "\" does not exist or was not parsed successfully by libxml2.");
       return SM_ERROR;
   }
   root = xmlDocGetRootElement(doc);
 
   if(root==NULL) {
-      printf("%s: %d: parseSvg(): document \"%s\" is empty.\n", __FILE__, __LINE__, fileName.c_str());
+      LOG(ERROR, "parseSvg(): document \""<< fileName << "\" is empty.");
       xmlFreeDoc(doc);
       return SM_ERROR;
   }
@@ -7515,9 +7489,8 @@ SM_STATUS parseSvg(std::string fileName, std::list<Path> &path, double* width, d
   *height =  *height *svg_ratio * svg_y_sign;
   iss.clear();
   xmlFree(attribute);
-if(0) {
-  std::cout << " width " << *width << " height " << *height << std::endl;
-}
+  LOG(DEBUG, " width " << *width << " height " << *height);
+
   svg_y_offset =  svg_y_sign* *height;
 
   for(cur= root->xmlChildrenNode; cur!=NULL; cur= cur->next)
@@ -7534,10 +7507,8 @@ if(0) {
 	    iss >> element;
 	    sscanf(element.c_str(), "matrix(%lf,%lf,%lf,%lf,%lf,%lf)", &ldv1, &ldv2, &ldv3, &ldv4, &ldv5, &ldv6);
 	    iss.clear();
-if(0) {
-	    cout << "scale " << ldv1 << " " << ldv4 << endl;
-}
-	      xmlFree(attribute);
+        LOG(DEBUG,  "scale " << ldv1 << " " << ldv4);
+	    xmlFree(attribute);
 	}
 
 	for(cur2= cur->xmlChildrenNode; cur2!=NULL; cur2= cur2->next) {
@@ -7563,11 +7534,9 @@ if(0) {
 		if(attribute != NULL) {
 		    iss.str((char*)attribute);
 		    iss >> element;
-		    cout << attribute << " " << element <<endl;
+		    LOG(INFO, attribute << " " << element);
 		    sscanf(element.c_str(), "matrix(%lf,%lf,%lf,%lf,%lf,%lf)", &ldv1, &ldv2, &ldv3, &ldv4, &ldv5, &ldv6);
-if(0) {
-		     cout << "scale cur2 " << ldv1 << " " << ldv4 << endl;
-}
+            LOG(DEBUG,  "scale cur2 " << ldv1 << " " << ldv4);
 		     iss.clear();
 		      xmlFree(attribute);
 		}
@@ -7583,9 +7552,7 @@ if(0) {
 		      iss.str((char*)attribute);
 		      iss >> element;
 		      sscanf(element.c_str(), "matrix(%lf,%lf,%lf,%lf,%lf,%lf)", &ldv1, &ldv2, &ldv3, &ldv4, &ldv5, &ldv6);
-if(0) {
-		       cout << "scale " << ldv1 << " " << ldv4 << endl;
-}
+              LOG(DEBUG,  "scale " << ldv1 << " " << ldv4);
 		       iss.clear();
 			xmlFree(attribute);
 		  }
@@ -7594,33 +7561,23 @@ if(0) {
 		   for(cur4= cur3->xmlChildrenNode; cur4!=NULL; cur4= cur4->next) {
 
 		     if(!xmlStrcmp(cur4->name, (const xmlChar *)"path")) {
-if(0){
-		    std::cout << "path foud in a group " << cur4->name << std::endl;
-}
+		    LOG(DEBUG, "path foud in a group " << cur4->name);
 		    attribute = xmlGetProp(cur4, (xmlChar*)"d");
 		    iss.str((char*)attribute);
 		    parsePath(iss, path, svg_ratio, svg_y_sign, svg_y_offset, ldv1,ldv4);
-if(0){
-		     cout << "scale " << ldv1 << " " << ldv4 << endl;
-}
+		     LOG(DEBUG, "scale " << ldv1 << " " << ldv4);
 		    xmlFree(attribute);
 		  }
 		}
 
 	      }
 	      if(!xmlStrcmp(cur3->name, (const xmlChar *)"path")) {
-if(0) {
-		std::cout << "path foud in a sub group " << cur3->name << std::endl;
-}
+		LOG(DEBUG,  "path foud in a sub group " << cur3->name);
 		attribute = xmlGetProp(cur3, (xmlChar*)"d");
 		iss.str((char*)attribute);
-if(0) {
-		cout << "path cur3"<< endl;
-}
+		LOG(DEBUG, "path cur3");
 		parsePath(iss, path, svg_ratio, svg_y_sign, svg_y_offset, ldv1,ldv4);
-if(0){
-		cout << "path out"<< endl;
-}
+		LOG(DEBUG, "path out");
 		xmlFree(attribute);
 	      }
 	    }
@@ -7638,11 +7595,9 @@ if(0){
 
       }
     }
-if(0) {
-  cout << "Number of path : " << path.size() << endl;
-}
+  LOG(DEBUG,  "Number of path : " << path.size());
   if (path.size()==0) {
-    cout << "There is no path in your file" << endl;
+    LOG(ERROR,  "There is no path in your file");
     return SM_ERROR;
   }
   return SM_OK;
@@ -7658,7 +7613,7 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
   //printf("traj.size() %d\n", (int)traj.size() );
   f = fopen(fileName.c_str(),"w");
   if(f == NULL) {
-    printf("ERROR saveTraj : cannot open file\n");
+    LOG(ERROR, "saveTraj : cannot open file");
     return SM_ERROR;
   }
 
@@ -7677,7 +7632,7 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA> &traj)
     
  f = fopen(str.c_str(),"w");
   if(f == NULL) {
-    printf("ERROR saveTraj : cannot open file\n");
+    LOG(ERROR, "saveTraj : cannot open file");
     return SM_ERROR;
   }
   
@@ -7705,7 +7660,7 @@ SM_STATUS saveTraj(std::string fileName, std::vector<SM_CURVE_DATA3> &traj)
 
   f = fopen(fileName.c_str(),"w");
   if(f == NULL) {
-    printf("ERROR saveTraj : cannot open file\n");
+    LOG(ERROR, "saveTraj : cannot open file");
     return SM_ERROR;
   }
 
@@ -7726,7 +7681,7 @@ SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA> &IdealT
   f = fopen(fileName.c_str(),"w");
 
   if(f == NULL) {
-    printf("ERROR plotIdealTraj : cannot open file\n");
+    LOG(ERROR, "plotIdealTraj : cannot open file");
     return SM_ERROR;
   }
 
@@ -7756,7 +7711,7 @@ SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA> &IdealT
     }
     catch (GnuplotException ge)
     {
-      cout << ge.what() << endl;
+      LOG(ERROR, ge.what());
     }
   return SM_OK;
 }
@@ -7770,7 +7725,7 @@ SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA3> &Ideal
   f = fopen(fileName.c_str(),"w");
 
   if(f == NULL) {
-    printf("ERROR plotIdealTraj : cannot open file\n");
+    LOG(ERROR, "plotIdealTraj : cannot open file");
     return SM_ERROR;
   }
 
@@ -7800,7 +7755,7 @@ SM_STATUS plotIdealTraj(std::string fileName, std::vector<SM_CURVE_DATA3> &Ideal
     }
     catch (GnuplotException ge)
     {
-      cout << ge.what() << endl;
+      LOG(ERROR, ge.what());
     }
   return SM_OK;
 }
@@ -8187,14 +8142,14 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   J[5] = 0.0;
   J[6] = Lim.maxJerk;
 
-  printf("Lmits: %f %f %f\n", Lim.maxJerk, Lim.maxAcc, Lim.maxVel);
+  LOG(INFO, "Limits: " << Lim.maxJerk << ", "<< Lim.maxAcc << ", " << Lim.maxVel);
 
   for (i = 0; i < 7; i++){
     total_time = total_time + Time[i]; // total_time is the time for 7 segment
   }
 
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
-  std::cout << "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time << std::endl;
+  LOG(INFO, "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time);
   IdealTraj.resize(nbPoints);
   for(unsigned int h=0; h<IdealTraj.size(); h++) {
     IdealTraj[h].Pos.resize(3);
@@ -8580,14 +8535,14 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
   J[6] = Lim.maxJerk;
 
 
-  printf("Lmits: %f %f %f\n", Lim.maxJerk, Lim.maxAcc, Lim.maxVel);
+  LOG(INFO, "Limits: " << Lim.maxJerk << ", " << Lim.maxAcc << ", " << Lim.maxVel);
 
   for (i = 0; i < 7; i++){
     total_time = total_time + Time[i]; // total_time is the time for 7 segment
   }
 
   nbPoints = ((int) (total_time/tic)) + 1; // nbPoints is the point discretized by step of 0.001
-  std::cout << "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time << std::endl;
+  LOG(INFO, "tic = " << tic << " -- nbpoint = " <<  nbPoints << " -- totaltime = " << total_time);
   IdealTraj.resize(nbPoints);
 //  for(unsigned int h=0; h<IdealTraj.size(); h++) {
 //    IdealTraj[h].Pos.resize(3);
@@ -8833,7 +8788,7 @@ SM_STATUS constructTrajSvg(std::list<Path> &path, double tic, SM_LIMITS Lim, std
 void wait_for_key ()
 {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__)  // every keypress registered, also arrow keys
-  cout << endl << "Press any key to continue..." << endl;
+  LOG(INFO,  endl << "Press any key to continue...");
 
   FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
   _getch();
@@ -8842,7 +8797,7 @@ void wait_for_key ()
 
 
  int temps = 3;
- std::cout << std::endl<< "Wait "<<temps<< " secondes"<<std::endl;
+ LOG(INFO,  endl<< "Wait "<< temps << " seconds");
  clock_t arrivee=clock()+(temps*CLOCKS_PER_SEC); // On calcule le moment ou l'attente devra s'arreter
  while(clock()<arrivee);
 

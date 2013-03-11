@@ -132,19 +132,19 @@ void ChronoPrint ( const char *msg )
   {
     ChronoTimes ( &tu,&ts );
     /*
-    fprintf(stdout,"Clock[%2d]: Utime=%6.3f sec , Stime=%6.3f sec : %s\n",
+    fprintf(stderr,"Clock[%2d]: Utime=%6.3f sec , Stime=%6.3f sec : %s\n",
         counter,tu,ts,msg);
         */
 #ifdef HRI_COSTSPACE
     std::cout << "Clock = " <<tu<<"  sec"<<std::endl;
 #endif
-    fprintf ( stdout,"Clock = %6.3f sec : ",tu );
+    fprintf ( stderr,"Clock = %6.3f sec : ",tu );
     //calcul en microsecondes
     ChronoMicroTimes ( &tu, &ts );
-    fprintf ( stdout,"Clock user = %f sec ",tu);
+    fprintf ( stderr,"Clock user = %f sec ",tu);
 
-    for ( i=0;i<counter;i++ ) fprintf ( stdout,"  " );
-    fprintf ( stdout,"[%d] %s\n",counter,msg );
+    for ( i=0;i<counter;i++ ) fprintf ( stderr,"  " );
+    fprintf ( stderr,"[%d] %s\n",counter,msg );
   }
 }
 
@@ -250,7 +250,7 @@ void ChronoPrint ( char *msg )
   if ( print_flag )
   {
     ChronoTimes ( &tu,&ts );
-    // fprintf(stdout,"Clock[%2d]: Utime=%6.3f sec : %s\n", counter, tu, msg);
+    // fprintf(stderr,"Clock[%2d]: Utime=%6.3f sec : %s\n", counter, tu, msg);
     PrintInfo ( ( "Clock = %6.3f sec : ",tu ) );
     for ( i=0;i<counter;i++ )
       PrintInfo ( ( "  " ) );
@@ -355,12 +355,12 @@ void ChronoPrint ( char *msg )
   {
     ChronoTimes ( &tu,&ts );
     /*
-    fprintf(stdout,"Clock[%2d]: Utime=%6.3f sec , Stime=%6.3f sec : %s\n",
+    fprintf(stderr,"Clock[%2d]: Utime=%6.3f sec , Stime=%6.3f sec : %s\n",
     counter,tu,ts,msg);
     */
-    fprintf ( stdout,"Clock = %6.3f sec : ",tu );
-    for ( i=0;i<counter;i++ ) fprintf ( stdout,"  " );
-    fprintf ( stdout,"[%d] %s\n",counter,msg );
+    fprintf ( stderr,"Clock = %6.3f sec : ",tu );
+    for ( i=0;i<counter;i++ ) fprintf ( stderr,"  " );
+    fprintf ( stderr,"[%d] %s\n",counter,msg );
   }
 }
 //
