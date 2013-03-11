@@ -75,7 +75,7 @@ class Sm_Approx {
    * export the discretized approximated trajectory into a file
    * with a specified sampling time ( 10 ms by default)
    */
-  void genFileTraj();
+  void genFileTraj(bool use_stdout = false);
 
   void genPlotFile();
 

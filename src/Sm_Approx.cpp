@@ -226,8 +226,12 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime,
 
 
   if(flagExport) {
-    genFileTraj();
+    genFileTraj(false);
     LOG(INFO, " ... File exported ");
+  }
+  else { // output it on stdout
+      LOG(INFO, "Writing approximated trajectory on stdout...");
+      genFileTraj(true);
   }
 
   /* fill result */
@@ -353,17 +357,23 @@ void Sm_Approx::setNbAxis(int v)
   _nbAxis = v;
 }
 
-void Sm_Approx::genFileTraj(){
+void Sm_Approx::genFileTraj(bool use_stdout){
 
   int incr = _timeStep;
+
   FILE *fp = NULL;
-  fp = fopen("output.traj", "w");
+
+  if (use_stdout) fp = stdout;
+  else fp = fopen("output.traj", "w");
+
   if(fp==NULL) {
-    LOG(ERROR, " cannont open file to write the trajectory");
+    LOG(ERROR, " canont open file to write the trajectory");
     return;
   }
 
-  LOG(INFO, "Number of positions in the file " <<_curve.back().traj.size());
+  LOG(INFO, "Number of positions in the trajectory: " <<_curve.back().traj.size());
+  LOG(INFO, "Subsampling level: " << incr);
+  LOG(INFO, "Number of resulting positions: " << (int) _curve.back().traj.size() / incr);
   for (unsigned int i = 0; i < _curve.back().traj.size(); i += incr){
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[0]);
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[1]);
