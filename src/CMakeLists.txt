@@ -41,6 +41,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib/${CMAKE_BUILD_TYPE})
 
 IF(${CMAKE_BUILD_TYPE} MATCHES "Debug")
   ADD_DEFINITIONS(-g -Wall -Wno-unknown-pragmas)
+  ADD_DEFINITIONS(-g -Wall -Wno-unknown-pragmas -DLOGLEVEL=0)
 ELSEIF(${CMAKE_BUILD_TYPE} MATCHES "Release")
   ADD_DEFINITIONS(-O2 -Wall -Wno-unknown-pragmas)
 ENDIF(${CMAKE_BUILD_TYPE} MATCHES "Debug")

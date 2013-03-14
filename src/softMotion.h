@@ -47,7 +47,9 @@
 #define SILENT 99
 
 // set here the desired level of log
+#ifndef LOGLEVEL
 #define LOGLEVEL INFO
+#endif
 
 #define LOG(level, what) {  \
     if (level >= LOGLEVEL) {\
