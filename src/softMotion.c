@@ -7365,8 +7365,8 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
       if(element=="M" || element=="m")
 	{
 	  if(0) {
-	  	printf("=======================\n");
-	  	printf("   New Path\n");
+	    LOG(DEBUG, "=======================");
+	    LOG(DEBUG, "   New Path");
 	  }
 	  if(element=="M") {relative= false;}
 	  else {relative= true;}
@@ -7381,6 +7381,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
 	  lpath.nbSubPath = 0;
 	  path.push_back(lpath);
       LOG(DEBUG, "path origin : x = "<< path.back().origin.x << " y = " << path.back().origin.y);
+      cout << path.back().origin.x << " " << path.back().origin.y << endl;
 	}
       else if(element=="L") {
 	iss >> element ;
