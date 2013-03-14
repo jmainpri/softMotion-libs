@@ -55,12 +55,16 @@ SHARED
 ${source_files}
 )
 
+add_executable(svg2traj svg2traj.cpp)
+
+
 #add_executable(
 #softMotionPlannerTest
 #${source_files}
 #)
 
 TARGET_LINK_LIBRARIES(softMotion ${LIBS})
+TARGET_LINK_LIBRARIES(svg2traj softMotion)
 
 #TARGET_LINK_LIBRARIES(softMotionPlannerTest ${LIBS})
 
@@ -76,6 +80,8 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 INSTALL(TARGETS softMotion
 
         LIBRARY DESTINATION lib PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ GROUP_WRITE WORLD_READ CONFIGURATIONS ${CMAKE_BUILD_TYPE})
+
+INSTALL(TARGETS svg2traj RUNTIME DESTINATION bin)
 
 FILE(GLOB HEADER "${CMAKE_SOURCE_DIR}/src/*.h"  "${CMAKE_SOURCE_DIR}/src/*.hpp" )
 INSTALL(FILES ${HEADER} DESTINATION include/softMotion)
