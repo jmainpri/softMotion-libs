@@ -1,6 +1,6 @@
 /*
   #
-  # Copyright (c) 2010 LAAS/CNRS
+  # Copyright (c) 2010,2013 LAAS/CNRS
   # All rights reserved.
   #
   # Permission to use, copy, modify, and distribute this software for any purpose
@@ -7444,7 +7444,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
         std::cerr << "Error! Your SVG path contains relative coordinates, \
             which are not understood by softMotion." << endl << 
             "Please disable relative coordinate in the editor settings." << endl;
-        exit(1);
+        return SM_ERROR;
     }
       iss >> element;
 
