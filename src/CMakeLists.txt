@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010 LAAS/CNRS
+# Copyright (c) 2010,2013 LAAS/CNRS
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any purpose
@@ -18,9 +18,15 @@
 
 project(src)
 
-file(GLOB source_files ./*.c ./*.cpp)
-
-
+set(source_files
+  Sm_Approx.cpp
+  Sm_Curve.cpp
+  Sm_Traj.cpp
+  debug.c
+  gnuplot_i.cpp
+  matrix.c
+  softMotion.c
+  time.c)
 
 SET(CMAKE_CXX_FLAGS " -lm")
 
@@ -85,5 +91,3 @@ INSTALL(TARGETS svg2traj RUNTIME DESTINATION bin)
 
 FILE(GLOB HEADER "${CMAKE_SOURCE_DIR}/src/*.h"  "${CMAKE_SOURCE_DIR}/src/*.hpp" )
 INSTALL(FILES ${HEADER} DESTINATION include/softMotion)
-
-
