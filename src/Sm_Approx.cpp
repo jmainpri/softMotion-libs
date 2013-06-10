@@ -74,7 +74,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
     str2.clear();
     str2 += "SmIdealTraj.dat";
     saveTraj(str2, curv.traj);
-    LOG(INFO, "Sm_Approx::approximate Ideal Trajectory Already Computed and Saved");
+    SM_LOG(SM_LOG_INFO, "Sm_Approx::approximate Ideal Trajectory Already Computed and Saved");
   }
 
   /* Handle the path */
@@ -84,7 +84,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   ChronoTimes(&tu, &ts);
   /// CALCUL DE L'APPROXIMATION //
   computeTraj();
-  LOG(INFO, "Sm_Approx::approximate Computation Duration : ");
+  SM_LOG(SM_LOG_INFO, "Sm_Approx::approximate Computation Duration : ");
   ChronoPrint("");
   std::cout << std::endl;
   ChronoTimes(&tu, &ts);
@@ -94,10 +94,10 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   if(flagExport==true) {
     // SAUVE LA TRAJCTOIRE APPROXIMEE (sous la forme d'un tableau)
     saveTraj("SmApproxTraj.dat", (_curve.back()).traj);
-    LOG(INFO, "Sm_Approx::approximate Approximated Trajectory Saved");
+    SM_LOG(SM_LOG_INFO, "Sm_Approx::approximate Approximated Trajectory Saved");
   }
 
-  LOG(INFO, "Sm_Approx::approximate Error Max Pos " << (_curve.back()).errorMaxVal);
+  SM_LOG(SM_LOG_INFO, "Sm_Approx::approximate Error Max Pos " << (_curve.back()).errorMaxVal);
 
   /* fill result */
   for (unsigned int i = 1; i < _result.size(); i++){
@@ -120,7 +120,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
     //printf("approximate: There are %f axes and %f segments\n", (double)_result[0].Time.size(), (double)_result.size());  
     fp_segMotion = fopen("SmSegMotion.dat", "w");
     if(fp_segMotion==NULL) {
-      LOG(ERROR, " cannot open file to write the trajectory");
+      SM_LOG(SM_LOG_ERROR, " cannot open file to write the trajectory");
       return 1;
     }
     for (unsigned int i = 0; i < _result.size(); i++){
@@ -144,7 +144,7 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
 
   if(flagExport==true) {  
     smTraj.save((char*)"SmApproxTraj_Seg.traj");
-    LOG(INFO, "Sm_Approx::approximate Series of cubics Trajectory Saved");
+    SM_LOG(SM_LOG_INFO, "Sm_Approx::approximate Series of cubics Trajectory Saved");
   }
   /* compare end point */
   /* verification du point final atteint par smTraj par rapport a IdealTraj */
@@ -154,14 +154,14 @@ int Sm_Approx::approximate(Sm_Curve &curv, double SampTime,  double ErrPosMax, d
   for(unsigned int i=0; i<cond.size(); i++) {
     double err = fabs(cond[i].x -  (_curve.back()).traj[ (_curve.back()).traj.size()-1].Pos[i] );
     if( err > 0.001) {
-        LOG(WARNING, "Sm_Approx::approximate: final pose on axis " << i << ", err=" << err);
+        SM_LOG(SM_LOG_WARNING, "Sm_Approx::approximate: final pose on axis " << i << ", err=" << err);
     }
     if(err > errMax){
       errMax = err;
     }
   }
   if(errMax < 0.001) {
-    LOG(INFO, "Sm_Approx::approximate runs successfully ... Algo Written by Xavier BROQUERE (Feb 2011)");
+    SM_LOG(SM_LOG_INFO, "Sm_Approx::approximate runs successfully ... Algo Written by Xavier BROQUERE (Feb 2011)");
   }
   //printf("Final Conditions of the Ideal trajectory\n");
   //for(unsigned int i=0; i<cond.size(); i++) {
@@ -199,13 +199,13 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime,
 
  
   if(_nbAxis == 0){
-    LOG(ERROR, "NbAxis is null, set it before with setNbAxis() ");
+    SM_LOG(SM_LOG_ERROR, "NbAxis is null, set it before with setNbAxis() ");
     return;
   }
-  LOG(INFO, "Open file " << this->_fileName);
+  SM_LOG(SM_LOG_INFO, "Open file " << this->_fileName);
 
   if (parseSvg(this->_fileName.c_str(), curv.path, &curv.width, &curv.height) == SM_ERROR) {
-    LOG(INFO, "... file parsed ");
+    SM_LOG(SM_LOG_INFO, "... file parsed ");
     return;
   }
 
@@ -217,20 +217,20 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime,
 
   /* Handle the path */
   _curve.push_back(curv);
-  LOG(INFO, " ... Ideal Trajectory Computed ");
+  SM_LOG(SM_LOG_INFO, " ... Ideal Trajectory Computed ");
 
   ChronoOn();
 
   computeTraj();
-  LOG(INFO, " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE");
+  SM_LOG(SM_LOG_INFO, " ... Approximated Trajectory Computed --> Algo Written by Xavier BROQUERE");
 
 
   if(flagExport) {
     genFileTraj(false);
-    LOG(INFO, " ... File exported ");
+    SM_LOG(SM_LOG_INFO, " ... File exported ");
   }
   else { // output it on stdout
-      LOG(INFO, "Writing approximated trajectory on stdout...");
+      SM_LOG(SM_LOG_INFO, "Writing approximated trajectory on stdout...");
       genFileTraj(true);
   }
 
@@ -247,7 +247,7 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime,
 
   fp_segMotion = fopen("segMotion.dat", "w");
   if(fp_segMotion==NULL) {
-    LOG(ERROR, " cannont open file to write the trajectory");
+    SM_LOG(SM_LOG_ERROR, " cannont open file to write the trajectory");
     return;
   }
 
@@ -259,7 +259,7 @@ void Sm_Approx::approximate(double jmax,double amax,double vmax,double SampTime,
   }
 
   fclose(fp_segMotion);
-  LOG(INFO, "motion file exported");
+  SM_LOG(SM_LOG_INFO, "motion file exported");
 
   ChronoTimes(&tu, &ts);
   ChronoPrint("");
@@ -367,13 +367,13 @@ void Sm_Approx::genFileTraj(bool use_stdout){
   else fp = fopen("output.traj", "w");
 
   if(fp==NULL) {
-    LOG(ERROR, " canont open file to write the trajectory");
+    SM_LOG(SM_LOG_ERROR, " canont open file to write the trajectory");
     return;
   }
 
-  LOG(INFO, "Number of positions in the trajectory: " <<_curve.back().traj.size());
-  LOG(INFO, "Subsampling level: " << incr);
-  LOG(INFO, "Number of resulting positions: " << (int) _curve.back().traj.size() / incr);
+  SM_LOG(SM_LOG_INFO, "Number of positions in the trajectory: " <<_curve.back().traj.size());
+  SM_LOG(SM_LOG_INFO, "Subsampling level: " << incr);
+  SM_LOG(SM_LOG_INFO, "Number of resulting positions: " << (int) _curve.back().traj.size() / incr);
   for (unsigned int i = 0; i < _curve.back().traj.size(); i += incr){
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[0]);
     fprintf(fp, "%lf\t", _curve.back().traj[i].Pos[1]);
@@ -604,7 +604,7 @@ void Sm_Approx::computeTraj(){
       }
       else{
 	if( (errMax_pos_subTraj > err_max_def_pos)){
-	  LOG(WARNING, "Cannot approximate the subtraj accept the error " << errMax_pos_subTraj);
+	  SM_LOG(SM_LOG_WARNING, "Cannot approximate the subtraj accept the error " << errMax_pos_subTraj);
 	}
 	/* save the approximated subTraj into curv_stock */
 	if(test_for_circle_only == 0){
@@ -809,7 +809,7 @@ void Sm_Approx::computeHausdorff(){
 
   // calcul de la distance hausdorff
   dis_hausdorff = (sup1 > sup2 ? sup1 : sup2);
-  LOG(INFO,  "Hausdorff distance = " << dis_hausdorff);
+  SM_LOG(SM_LOG_INFO,  "Hausdorff distance = " << dis_hausdorff);
 
   return;
   

@@ -40,22 +40,16 @@
 #include <vector>
 #endif
 
-#define DEBUG 0
-#define INFO 1
-#define WARNING 2
-#define ERROR 3
-#define SILENT 99
-
 // set here the desired level of log
-#ifndef LOGLEVEL
-#define LOGLEVEL INFO
+#ifndef SM_LOG_LEVEL_VAL
+#define SM_LOG_LEVEL_VAL SM_LOG_INFO
 #endif
 
-#define LOG(level, what) {  \
-    if (level >= LOGLEVEL) {\
-        if (level >= WARNING) std::cerr << __FILE__ << " (" << __LINE__ << "): "; \
-        if (level == ERROR) std::cerr << "ERROR "; \
-        if (level == WARNING) std::cerr << "WARNING "; \
+#define SM_LOG(level, what) {  \
+    if (level >= SM_LOG_LEVEL_VAL) {					\
+        if (level >= SM_LOG_WARNING) std::cerr << __FILE__ << " (" << __LINE__ << "): "; \
+        if (level == SM_LOG_ERROR) std::cerr << "SM_ERROR "; \
+        if (level == SM_LOG_WARNING) std::cerr << "SM_WARNING "; \
         std::cerr << what << std::endl; \
     } \
     }

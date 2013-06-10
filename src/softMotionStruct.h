@@ -51,6 +51,17 @@
  */
 
 /**
+ * @brief Log warning level 
+ */
+typedef enum SM_LOG_LEVEL {
+  SM_LOG_DEBUG    = 0,
+  SM_LOG_INFO = 1,
+  SM_LOG_WARNING = 2,
+  SM_LOG_ERROR =3,
+  SM_LOG_SILENT = 99
+} SM_LOG_LEVEL;
+
+/**
  * @brief Status that return softMotion functions
  */
 typedef enum SM_STATUS {
