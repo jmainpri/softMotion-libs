@@ -31,8 +31,6 @@ exec elwish "$0" "$@"
 #  *  AUTHOR: DANIEL SIDOBRE (bltplot) & XAVIER BROQUERE (JerkTimeViewer)
 #  *  
 #  *------------------------------------------------------------*
-lappend auto_path /usr/local/openrobots/tclTools
-lappend auto_path /home/xbroquer/openrobots/src/tclTools
 
 package require BLT
 namespace import blt::*
