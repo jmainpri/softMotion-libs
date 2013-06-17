@@ -16,7 +16,7 @@
 #
 #                                            Xavier BROQUERE on Fri Feb 26 2010
 
-project(src)
+project(src CXX)
 
 set(source_files
   Sm_Approx.cpp
@@ -27,12 +27,7 @@ set(source_files
   matrix.c
   softMotion.c
   time.c)
-
-SET(CMAKE_CXX_FLAGS " -lm")
-
-
-SET(CMAKE_C_COMPILER g++)
-SET(CMAKE_CXX_COMPILER g++)
+set_source_files_properties(${source_files} PROPERTIES LANGUAGE CXX)
 
 FIND_PACKAGE(LibXml2 REQUIRED)
 INCLUDE_directories(${LIBXML2_INCLUDE_DIR})
@@ -69,7 +64,7 @@ add_executable(svg2traj svg2traj.cpp)
 #${source_files}
 #)
 
-TARGET_LINK_LIBRARIES(softMotion ${LIBS})
+TARGET_LINK_LIBRARIES(softMotion ${LIBS} m)
 TARGET_LINK_LIBRARIES(svg2traj softMotion)
 
 #TARGET_LINK_LIBRARIES(softMotionPlannerTest ${LIBS})
