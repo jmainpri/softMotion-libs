@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010 LAAS/CNRS
+# Copyright (c) 2010,2013 LAAS/CNRS
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any purpose
@@ -31,8 +31,8 @@ ENDIF(NOT CMAKE_BUILD_TYPE)
 # Set the project version
 
 set( PROJECT_MAJOR_VERSION 3)
-set( PROJECT_MINOR_VERSION 11)
-set( PROJECT_PATCH_VERSION 99)
+set( PROJECT_MINOR_VERSION 12)
+set( PROJECT_PATCH_VERSION 0)
 
 set( PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}")
 set(SOFTMOTION_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}")
