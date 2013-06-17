@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010 LAAS/CNRS
+# Copyright (c) 2010,2013 LAAS/CNRS
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any purpose
@@ -156,8 +156,6 @@ ENDIF(QT_LIBRARY)
 # -------------------------------------------------------------
 # --- Compiler and Compilation flags --------------------------
 # -------------------------------------------------------------
-SET(CMAKE_CXX_COMPILER g++)
-SET(CMAKE_C_COMPILER g++)
 
 IF(UNIX)
   ADD_DEFINITIONS(-DUNIX)
