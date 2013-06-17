@@ -28,14 +28,12 @@ exec elwish "$0" "$@"
 #  *  DESCRIPTION: Compute optimal time motion and adjust time slowing velocity
 #  *  CREATION DATE : MON AUG 20 09:00:00 2007 
 #  *  MODIFICATION : Plot vector when slider are moved
-#  *  AUTHOR: DANIEL SIDOBRE (bltplot) & XAVIER BROQUERE (JerkTimeViewer)
+#  *  AUTHOR: DANIEL SIDOBRE (dplot) & XAVIER BROQUERE (JerkTimeViewer)
 #  *  
 #  *------------------------------------------------------------*
 
-package require BLT
-namespace import blt::*
 package require editval
-package require bltplot
+package require dplot
 
 package require jerk
 
