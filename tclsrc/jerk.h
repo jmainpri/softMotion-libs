@@ -1,6 +1,6 @@
 /*
 #
-# Copyright (c) 2010 LAAS/CNRS
+# Copyright (c) 2010,2013 LAAS/CNRS
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any purpose
@@ -78,12 +78,23 @@ typedef struct jerkConditions {
   double X;
 } jerkConditions;
 
-extern double jerkTimes(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkData *jerkdata);
+#ifdef __cplusplus
+extern "C"
+#endif
+double jerkTimes(jerkParams* limits, jerkConditions* IC, jerkConditions* FC,
+               jerkData *jerkdata);
 
-//extern double adjustTimeSlowingVc(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkTimesAdjusted *jerkTimesAdjusted);
+#ifdef __cplusplus
+extern "C"
+#endif
+double calculTimeProfileWithVcFixed(jerkParams* limits, jerkConditions* IC,
+               jerkConditions* FC, jerkTimesAdjusted *jerkTimesAdjusted);
 
-extern double calculTimeProfileWithVcFixed(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkTimesAdjusted *jerkTimesAdjusted);
-
-extern double adjustTimeSlowingVc1Vc2(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkTimesAdjustedVc1Vc2 *jerkTimesAdjustedVc1Vc2);
+#ifdef __cplusplus
+extern "C"
+#endif
+double adjustTimeSlowingVc1Vc2(jerkParams* limits, jerkConditions* IC,
+               jerkConditions* FC,
+               jerkTimesAdjustedVc1Vc2 *jerkTimesAdjustedVc1Vc2);
 
 #endif

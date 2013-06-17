@@ -1,6 +1,6 @@
 /*
 #
-# Copyright (c) 2010 LAAS/CNRS
+# Copyright (c) 2010,2013 LAAS/CNRS
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any purpose
@@ -24,6 +24,7 @@
 #include "../src/softMotionStruct.h"
 #include <stdio.h>
 
+extern "C"
 double jerkTimes(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkData *jerkdata) {
   SM_LIMITS limitsGoto;
   SM_COND IC2;
@@ -66,6 +67,7 @@ double jerkTimes(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jer
 }
 
 
+extern "C"
 double adjustTimeSlowingVc1Vc2(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkTimesAdjustedVc1Vc2 *jerkTimesAdjustedVc1Vc2)
 {
   double V0, Vf, A0, Af, GoalDist;
@@ -104,6 +106,7 @@ double adjustTimeSlowingVc1Vc2(jerkParams* limits, jerkConditions* IC, jerkCondi
 }
 
 
+extern "C"
 double calculTimeProfileWithVcFixed(jerkParams* limits, jerkConditions* IC, jerkConditions* FC, jerkTimesAdjusted *jerkTimesAdjusted)
 {
   double V0, Vf, A0, Af;
