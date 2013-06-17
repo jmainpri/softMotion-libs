@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2010 LAAS/CNRS
+# Copyright (c) 2010,2013 LAAS/CNRS
 # All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software for any purpose
@@ -29,5 +29,4 @@
 
 
 
-package ifneeded jerk 0.0.0 [list load [file join $dir ../../lib/jerk.so]]
-
+package ifneeded jerk 0.0.0 [list load [file join $dir ../../lib/libjerk.so]]
