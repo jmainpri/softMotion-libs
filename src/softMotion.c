@@ -7356,7 +7356,7 @@ SM_STATUS parsePath(std::istringstream &iss, std::list<Path> &path, double svg_r
   size_t found;
   bool result, relative;
 
-  result= (iss >> element );
+  result= static_cast<bool>(iss >> element );
 
   while( !result || !iss.eof() )
     {// std::cout << element << std::endl;
